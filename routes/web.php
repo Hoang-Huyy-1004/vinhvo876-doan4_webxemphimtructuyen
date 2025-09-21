@@ -11,3 +11,4 @@ Route::get('/', function () {
 Route::get('/admin', function () {
     return view('admin.dashboard');
 });
+Route::get('/search', [VideoController::class, 'search'])->name('search');

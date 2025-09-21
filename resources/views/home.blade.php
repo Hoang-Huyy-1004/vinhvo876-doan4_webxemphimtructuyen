@@ -35,7 +35,7 @@
 
     <main class="container my-4 text-white">
 
-    
+
     </main>
 
     @include('footer')

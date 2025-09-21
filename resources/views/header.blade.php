@@ -1,6 +1,6 @@
 <!-- resources/views/layouts/header.blade.php -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-black px-4">
-    <a class="navbar-brand d-flex align-items-center" href="#">
+    <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
         <img src="https://upload.wikimedia.org/wikipedia/commons/4/47/FPT_Telecom_logo_2017.svg"
             alt="Logo" width="40" height="40" class="me-2">
         <span class="fw-bold text-white">FILMHAY</span>
@@ -15,7 +15,7 @@
         <!-- Menu giữa -->
         <ul class="navbar-nav mx-auto">
             <li class="nav-item">
-                <a class="nav-link text-white fw-bold" href="#">Trang chủ</a>
+                <a class="nav-link text-white fw-bold" href="{{ url('/') }}">Trang chủ</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-white" href="#">Phim lẻ</a>
@@ -41,16 +41,24 @@
                         <a class="dropdown-item text-white" href="#">Giải trí</a>
                         <a class="dropdown-item text-white" href="#">Phim lẻ</a>
                         <a class="dropdown-item text-white" href="#">Học tập</a>
-
                     </div>
                 </div>
             </li>
-
         </ul>
 
-        <!-- Icon bên phải -->
-        <div class="d-flex align-items-center">
-            <a href="#" class="text-white me-3"><i class="bi bi-search"></i></a>
+       <!-- Search Form -->
+<form action="{{ route('search') }}" method="GET" class="d-flex me-3">
+    <input type="text" name="q"
+        class="form-control form-control-sm bg-dark text-white border-0"
+        placeholder="Tìm phim..." value="{{ request('q') }}">
+
+    <!-- Icon search nằm ngoài, không có ô vuông -->
+    <button type="submit" class="border-0 bg-transparent ms-2">
+        <i class="bi bi-search text-white"></i>
+    </button>
+</form>
+
+
             <a href="#" class="text-white me-3"><i class="bi bi-bell"></i></a>
             <a href="#" class="btn btn-danger rounded-pill px-3 me-3">Mua gói</a>
             <a href="#" class="text-white"><i class="bi bi-person-circle fs-4"></i></a>
