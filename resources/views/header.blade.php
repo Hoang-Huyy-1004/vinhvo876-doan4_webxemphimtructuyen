@@ -46,22 +46,49 @@
             </li>
         </ul>
 
-       <!-- Search Form -->
-<form action="{{ route('search') }}" method="GET" class="d-flex me-3">
-    <input type="text" name="q"
-        class="form-control form-control-sm bg-dark text-white border-0"
-        placeholder="Tìm phim..." value="{{ request('q') }}">
+        <!-- Search Form -->
+        <form action="{{ route('search') }}" method="GET" class="d-flex me-3">
+            <input type="text" name="q"
+                class="form-control form-control-sm bg-dark text-white border-0"
+                placeholder="Tìm phim..." value="{{ request('q') }}">
 
-    <!-- Icon search nằm ngoài, không có ô vuông -->
-    <button type="submit" class="border-0 bg-transparent ms-2">
-        <i class="bi bi-search text-white"></i>
-    </button>
-</form>
+            <!-- Icon search nằm ngoài, không có ô vuông -->
+            <button type="submit" class="border-0 bg-transparent ms-2">
+                <i class="bi bi-search text-white"></i>
+            </button>
+        </form>
 
 
-            <a href="#" class="text-white me-3"><i class="bi bi-bell"></i></a>
-            <a href="#" class="btn btn-danger rounded-pill px-3 me-3">Mua gói</a>
-            <a href="#" class="text-white"><i class="bi bi-person-circle fs-4"></i></a>
+        <!-- <a href="#" class="text-white me-3"><i class="bi bi-bell"></i></a> -->
+        <!-- Thông báo -->
+        <div class="nav-item dropdown me-3">
+            <a class="nav-link position-relative" href="#" id="notificationDropdown"
+                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-bell text-white fs-5"></i>
+                @if($notifications->where('is_read', false)->count() > 0)
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {{ $notifications->where('is_read', false)->count() }}
+                </span>
+                @endif
+            </a>
+
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark p-2" aria-labelledby="notificationDropdown" style="width: 300px; max-height: 400px; overflow-y: auto;">
+                @forelse($notifications as $notification)
+                <li>
+                    <a href="{{ route('notifications.show', $notification->id) }}"
+                        class="dropdown-item {{ $notification->is_read ? 'text-muted' : 'fw-bold' }}">
+                        {{ $notification->message }}
+                        <small class="d-block text-secondary">{{ $notification->created_at->diffForHumans() }}</small>
+                    </a>
+                </li>
+                @empty
+                <li><span class="dropdown-item text-center text-muted">Không có thông báo</span></li>
+                @endforelse
+            </ul>
         </div>
+
+        <a href="#" class="btn btn-danger rounded-pill px-3 me-3">Mua gói</a>
+        <a href="#" class="text-white"><i class="bi bi-person-circle fs-4"></i></a>
+    </div>
     </div>
 </nav>
