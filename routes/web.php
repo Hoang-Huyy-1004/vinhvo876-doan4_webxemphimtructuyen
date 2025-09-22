@@ -24,7 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications', [NotificationController::class, 'store'])->name('notifications.store');
 });
 
-Route::get('/', [HomeController::class, 'index']);
+// Route::get('/', [HomeController::class, 'index']);
 
 // Đăng ký
 Route::get('/dang-ky', [AuthController::class, 'showRegister'])->name('dangky.form');
