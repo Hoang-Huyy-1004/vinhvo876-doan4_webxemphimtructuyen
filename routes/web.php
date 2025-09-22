@@ -4,12 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AuthController;
 
 
 
 Route::get('/', function () {
     return view('home');  // tự động tìm home.blade.php trong resources/views
-});
+})->name('home');
 
 Route::get('/admin', function () {
     return view('admin.dashboard');
@@ -23,5 +24,20 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications', [NotificationController::class, 'store'])->name('notifications.store');
 });
 
-
 Route::get('/', [HomeController::class, 'index']);
+
+// Đăng ký
+Route::get('/dang-ky', [AuthController::class, 'showRegister'])->name('dangky.form');
+Route::post('/dang-ky', [AuthController::class, 'register'])->name('dangky');
+
+// Đăng nhập
+Route::get('/dang-nhap', [AuthController::class, 'showLogin'])->name('dangnhap.form');
+Route::post('/dang-nhap', [AuthController::class, 'login'])->name('dangnhap');
+
+// Đăng xuất
+Route::post('/dang-xuat', [AuthController::class, 'logout'])->name('dangxuat');
+
+// Thông tin tài khoản (chỉ khi đã đăng nhập)
+Route::get('/taikhoan', [AuthController::class, 'profile'])
+    ->name('thongtintaikhoan')
+    ->middleware('auth');
