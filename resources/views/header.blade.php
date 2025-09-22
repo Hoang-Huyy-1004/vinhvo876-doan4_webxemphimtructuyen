@@ -15,24 +15,24 @@
         <!-- Menu giữa -->
         <ul class="navbar-nav mx-auto">
             <li class="nav-item">
-                <a class="nav-link text-white fw-bold" href="{{ url('/') }}">Trang chủ</a>
+                <a class="nav-link text-white fw-bold" href="{{ url('/') }}">TRANG CHỦ</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-white" href="#">Phim lẻ</a>
+                <a class="nav-link text-white" href="#">PHIM LẺ</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-white" href="#">Phim bộ</a>
+                <a class="nav-link text-white" href="#">PHIM BỘ</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-white" href="#">Anime</a>
+                <a class="nav-link text-white" href="#">ANIME</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-white" href="#">Phim hoạt hình</a>
+                <a class="nav-link text-white" href="#">PHIM HOẠT HÌNH</a>
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link text-white dropdown-toggle" href="#" id="navbarDropdown" role="button"
                     data-bs-toggle="dropdown" aria-expanded="false">
-                    Xem thêm
+                    XEM THÊM
                 </a>
                 <div class="dropdown-menu dropdown-menu-dark p-3" aria-labelledby="navbarDropdown">
                     <div class="d-flex flex-wrap" style="min-width: 100px;">

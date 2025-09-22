@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\VideoController;
+use App\Http\Controllers\HomeController;
 
 
 
@@ -21,3 +22,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('notifications.show');
     Route::post('/notifications', [NotificationController::class, 'store'])->name('notifications.store');
 });
+
+
+Route::get('/', [HomeController::class, 'index']);
