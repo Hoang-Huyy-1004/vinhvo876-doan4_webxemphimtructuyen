@@ -26,15 +26,13 @@ Route::middleware('auth')->group(function () {
 
 // Route::get('/', [HomeController::class, 'index']);
 
-// Đăng ký
+// user- đăng ký, đăng nhập, thông tin tài khoản
 Route::get('/dang-ky', [AuthController::class, 'showRegister'])->name('dangky.form');
 Route::post('/dang-ky', [AuthController::class, 'register'])->name('dangky');
 
-// Đăng nhập
 Route::get('/dang-nhap', [AuthController::class, 'showLogin'])->name('dangnhap.form');
 Route::post('/dang-nhap', [AuthController::class, 'login'])->name('dangnhap');
 
-// Đăng xuất
 Route::post('/dang-xuat', [AuthController::class, 'logout'])->name('dangxuat');
 
 // Thông tin tài khoản (chỉ khi đã đăng nhập)
