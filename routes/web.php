@@ -7,7 +7,6 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
 
 
-
 Route::get('/', function () {
     return view('home');  // tự động tìm home.blade.php trong resources/views
 })->name('home');

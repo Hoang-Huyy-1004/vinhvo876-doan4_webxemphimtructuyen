@@ -3,8 +3,8 @@
         <div class="row">
             <!-- Logo -->
             <div class="col-md-2 mb-3">
-                <img src=""
-                     alt="FILMHAY" width="120">
+                <img src="{{ asset('img/logo.png') }}"
+            alt="Logo" width="50%" class="me-2">
             </div>
 
             <!-- Cột 1 -->
