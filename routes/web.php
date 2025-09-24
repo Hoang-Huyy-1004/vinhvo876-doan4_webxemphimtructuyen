@@ -23,7 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications', [NotificationController::class, 'store'])->name('notifications.store');
 });
 
-Route::get('/', [HomeController::class, 'index']);
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // user- đăng ký, đăng nhập, thông tin tài khoản
 Route::get('/dang-ky', [AuthController::class, 'showRegister'])->name('dangky.form');
