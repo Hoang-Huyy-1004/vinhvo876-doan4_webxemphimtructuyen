@@ -96,7 +96,7 @@
                 </div>
                 <div class="info-card">
                     <span class="label">UID</span>
-                    <span class="value">{{ $user->uid }}</span>
+                    <span class="value">{{ $user->user_id }}</span>
                 </div>
                 <div class="info-card">
                     <span class="label">Email</span>

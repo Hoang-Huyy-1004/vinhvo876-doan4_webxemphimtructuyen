@@ -25,15 +25,15 @@ class AuthController extends Controller
 
         // Tạo uid 8 số ngẫu nhiên, tránh trùng
         do {
-            $uid = (string) random_int(10000000, 99999999);
-        } while (User::where('uid', $uid)->exists());
+            $user_id = (string) random_int(10000000, 99999999);
+        } while (User::where('user_id', $user_id)->exists());
 
         // Tạo name mặc định từ email (phần trước @)
         $name = strstr($request->email, '@', true);
 
         // Lưu vào DB
         User::create([
-            'uid' => $uid,
+            'user_id' => $user_id,
             'name' => $name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
