@@ -5,6 +5,15 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DanhMucController;
+
+Route::prefix('admin')->group(function () {
+    Route::get('/danhmuc', [DanhMucController::class, 'index'])->name('danhmuc.index');
+    Route::post('/danhmuc', [DanhMucController::class, 'store'])->name('danhmuc.store');
+    Route::put('/danhmuc/{id}', [DanhMucController::class, 'update'])->name('danhmuc.update');
+    Route::delete('/danhmuc/{id}', [DanhMucController::class, 'destroy'])->name('danhmuc.destroy');
+});
+
 
 
 Route::get('/', function () {
@@ -13,7 +22,8 @@ Route::get('/', function () {
 
 Route::get('/admin', function () {
     return view('admin.dashboard');
-});
+})->name('admin.dashboard');
+
 Route::get('/search', [VideoController::class, 'search'])->name('search');
 
 
