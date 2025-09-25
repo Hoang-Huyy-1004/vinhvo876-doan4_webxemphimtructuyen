@@ -10,8 +10,10 @@
     <table class="table table-bordered">
         <thead>
             <tr class="bg-primary text-white">
+                <th>Ảnh bìa</th>
                 <th>Tên phim</th>
                 <th>Năm phát hành</th>
+                <th>Thời lượng</th>
                 <th>Thể loại</th>
                 <th>Hành động</th>
             </tr>
@@ -19,8 +21,10 @@
         <tbody>
             @forelse($phims as $phim)
                 <tr>
+                    <td> <img src="{{ asset($phim->anh_bia) }}" alt="{{ $phim->ten_phim }}" width="100"></td>
                     <td>{{ $phim->ten_phim }}</td>
                     <td>{{ $phim->nam_phat_hanh }}</td>
+                    <td>{{ $phim->thoi_luong }}</td>
                     <td>
                         @foreach($phim->theloais as $tl)
                             <span class="badge bg-primary">{{ $tl->ten_the_loai }}</span>
