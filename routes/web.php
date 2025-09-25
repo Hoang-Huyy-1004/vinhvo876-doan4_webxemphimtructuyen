@@ -6,15 +6,7 @@ use App\Http\Controllers\VideoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DanhMucController;
-
-Route::prefix('admin')->group(function () {
-    Route::get('/danhmuc', [DanhMucController::class, 'index'])->name('danhmuc.index');
-    Route::post('/danhmuc', [DanhMucController::class, 'store'])->name('danhmuc.store');
-    Route::put('/danhmuc/{id}', [DanhMucController::class, 'update'])->name('danhmuc.update');
-    Route::delete('/danhmuc/{id}', [DanhMucController::class, 'destroy'])->name('danhmuc.destroy');
-});
-
-
+use App\Http\Controllers\PhimController;
 
 Route::get('/', function () {
     return view('home');  // tự động tìm home.blade.php trong resources/views
@@ -48,3 +40,47 @@ Route::post('/dang-xuat', [AuthController::class, 'logout'])->name('dangxuat');
 Route::get('/taikhoan', [AuthController::class, 'profile'])
     ->name('thongtintaikhoan')
     ->middleware('auth');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//admin
+Route::prefix('admin')->group(function () {
+    Route::get('/danhmuc', [DanhMucController::class, 'index'])->name('danhmuc.index');
+    Route::post('/danhmuc', [DanhMucController::class, 'store'])->name('danhmuc.store');
+    Route::put('/danhmuc/{id}', [DanhMucController::class, 'update'])->name('danhmuc.update');
+    Route::delete('/danhmuc/{id}', [DanhMucController::class, 'destroy'])->name('danhmuc.destroy');
+});
+
+// Nhóm route cho phim
+Route::prefix('admin/phim')->name('phim.')->group(function () {
+    // Danh sách tất cả phim
+    Route::get('/', [PhimController::class, 'index'])->name('index');
+
+    // Danh sách phim lẻ
+    Route::get('/phim-le', [PhimController::class, 'phimLe'])->name('phim_le');
+
+    // Danh sách phim bộ
+    Route::get('/phim-bo', [PhimController::class, 'phimBo'])->name('phim_bo');
+
+    // Form thêm phim
+    Route::get('/them-phim', [PhimController::class, 'create'])->name('create');
+
+    // Lưu phim mới
+    Route::post('/them', [PhimController::class, 'store'])->name('store');
+
+});
