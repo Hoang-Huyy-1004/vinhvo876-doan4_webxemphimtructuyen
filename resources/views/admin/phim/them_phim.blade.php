@@ -106,6 +106,16 @@
         </select>
     </div>
 
+    <div class="mb-3">
+        <label for="hien_thi" class="form-label">Hiển thị</label>
+        <select name="hien_thi" id="hien_thi" class="form-select">
+            <option value="binh_thuong">Bình thường</option>
+            <option value="noi_bat">Nổi bật</option>
+            <option value="moi">Phim mới</option>
+            <option value="hot">Phim hot</option>
+        </select>
+    </div>
+
 
     <button type="submit" class="btn btn-primary">Lưu phim</button>
 </form>

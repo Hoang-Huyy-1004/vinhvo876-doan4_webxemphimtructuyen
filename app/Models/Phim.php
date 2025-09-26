@@ -22,6 +22,7 @@ class Phim extends Model
         'video',
         'thoi_luong',
         'trang_thai',
+        'hien_thi',
     ];
 
     public function theloais()

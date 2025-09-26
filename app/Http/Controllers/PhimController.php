@@ -51,6 +51,7 @@ class PhimController extends Controller
             'thoi_luong' => 'nullable|string|max:50',
             'trang_thai' => 'nullable|string|in:cong_khai,nhap',
             'theloai' => 'required|array',
+            'hien_thi' => 'required|string|in:binh_thuong,noi_bat,moi,hot', //mới thêm
         ]);
 
         // Tạo thư mục theo loại và tên phim
@@ -59,9 +60,12 @@ class PhimController extends Controller
 
         // Chuyển đổi giá trị 'le' và 'bo' từ form thành 'phim_le' và 'phim_bo' cho DB
         $loaiValue = ($request->loai === 'le') ? 'phim_le' : 'phim_bo';
-        
+
         // Lấy giá trị trực tiếp từ form
         $trangThaiValue = $request->trang_thai;
+
+        // Dòng mới: Lấy giá trị trực tiếp từ form cho 'hien_thi'
+        $hienThiValue = $request->hien_thi;
 
 
         if ($request->loai === 'bo') {
@@ -111,6 +115,8 @@ class PhimController extends Controller
             'thoi_luong' => $request->thoi_luong,
             'trang_thai' => $trangThaiValue,
             // Thêm trường 'duong_dan' với giá trị mặc định là null
+            // Dòng mới: Thêm trường 'hien_thi' vào đây
+            'hien_thi' => $hienThiValue,
             'duong_dan' => null,
         ]);
 
