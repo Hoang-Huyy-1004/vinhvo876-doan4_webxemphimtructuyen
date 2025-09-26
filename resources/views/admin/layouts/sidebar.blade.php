@@ -45,8 +45,9 @@
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Danh mục phim:</h6>
-                <a class="collapse-item" href="buttons.html">Phim bộ</a>
-                <a class="collapse-item" href="cards.html">Phim lẻ</a>
+                <a class="collapse-item" href="{{ route('phim.create') }}">Thêm phim</a>
+                <a class="collapse-item" href="{{ route('phim.phim_bo') }}">Phim bộ</a>
+                <a class="collapse-item" href="{{ route('phim.phim_le') }}">Phim lẻ</a>
             </div>
         </div>
     </li>
@@ -103,8 +104,8 @@
     <hr class="sidebar-divider d-none d-md-block">
 
     <!-- Sidebar Toggler -->
-    <!-- <div class="text-center d-none d-md-inline">
+    <div class="text-center d-none d-md-inline">
         <button class="rounded-circle border-0" id="sidebarToggle"></button>
-    </div> -->
+    </div>
 
 </ul>
