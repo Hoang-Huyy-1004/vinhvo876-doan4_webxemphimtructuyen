@@ -41,12 +41,17 @@ Route::get('/taikhoan', [AuthController::class, 'profile'])
     ->name('thongtintaikhoan')
     ->middleware('auth');
 
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 
+// routes/web.php
 
-
+// Định nghĩa route cho việc xem một bộ phim
+Route::get('/xem-phim/{phim}', [HomeController::class, 'phuongThucXemPhim'])
+      ->name('xemphim'); // Đặt tên route là 'xemphim'
 
 
 

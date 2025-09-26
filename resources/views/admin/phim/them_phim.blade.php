@@ -30,28 +30,6 @@
         <input type="number" name="nam_phat_hanh" class="form-control">
     </div>
 
-    <!-- <div class="mb-3">
-        <label class="form-label">Đường dẫn (slug)</label>
-        <input type="text" name="duong_dan" id="duong_dan" class="form-control" readonly>
-        <small class="text-muted">Đường dẫn sẽ được tự động tạo theo tên phim</small>
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const tenPhimInput = document.querySelector("input[name='ten_phim']");
-            const slugInput = document.getElementById("duong_dan");
-
-            tenPhimInput.addEventListener("input", function() {
-                let slug = tenPhimInput.value
-                    .toLowerCase()
-                    .replace(/ /g, "-") 
-                    .replace(/[^\w-]+/g, ""); 
-                slugInput.value = slug;
-            });
-        });
-    </script> -->
-
-
     <div class="mb-3">
         <label class="form-label">Ảnh bìa</label>
         <input type="file" name="anh_bia" class="form-control" accept="image/*">
