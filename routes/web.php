@@ -16,7 +16,7 @@ Route::get('/admin', function () {
     return view('admin.dashboard');
 })->name('admin.dashboard');
 
-Route::get('/search', [VideoController::class, 'search'])->name('search');
+// Route::get('/search', [VideoController::class, 'search'])->name('search');
 
 
 Route::middleware('auth')->group(function () {
@@ -25,7 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications', [NotificationController::class, 'store'])->name('notifications.store');
 });
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
+// Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // user- đăng ký, đăng nhập, thông tin tài khoản
 Route::get('/dang-ky', [AuthController::class, 'showRegister'])->name('dangky.form');

@@ -35,26 +35,7 @@
 
     <main class="container my-4 text-white">
 
-<div class="container mt-4">
-    <h5 class="text-white mb-3"><b>Mới ra mắt</b></h5>
 
-    <div class="d-flex overflow-auto">
-        @foreach($videos as $video)
-            <div class="me-3" style="width: 200px;">
-                <div class="position-relative">
-                    <img src="{{ $video->thumbnail }}" alt="{{ $video->title }}" class="img-fluid rounded">
-
-                    @if($video->tag)
-                        <span class="badge bg-danger position-absolute top-0 start-0 m-2">
-                            {{ $video->tag }}
-                        </span>
-                    @endif
-                </div>
-                <p class="text-white mt-2">{{ $video->title }}</p>
-            </div>
-        @endforeach
-    </div>
-</div>
 
 
 

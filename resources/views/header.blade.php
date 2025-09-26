@@ -44,7 +44,7 @@
         <div class="d-flex align-items-center gap-3">
 
             {{-- Search --}}
-            <form action="{{ route('search') }}" method="GET" class="d-flex align-items-center">
+            <form action="" method="GET" class="d-flex align-items-center">
                 <input type="text" name="q"
                     class="form-control form-control-sm bg-dark text-white border-0"
                     placeholder="Tìm phim..." value="{{ request('q') }}">
