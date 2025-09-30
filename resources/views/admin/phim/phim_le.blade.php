@@ -23,8 +23,8 @@
         <tr>
             <td> <img src="{{ asset($phim->anh_bia) }}" alt="{{ $phim->ten_phim }}" width="100"></td>
             <td>{{ $phim->ten_phim }}</td>
-            <td>{{ $phim->nam_phat_hanh }}</td>
-            <td>{{ $phim->thoi_luong }}</td>
+            <td class="text-center">{{ $phim->nam_phat_hanh }}</td>
+            <td class="text-center">{{ $phim->thoi_luong }}</td>
             <td>
                 @foreach($phim->theloais as $tl)
                 <span class="badge bg-primary text-white">{{ $tl->ten_the_loai }}</span>

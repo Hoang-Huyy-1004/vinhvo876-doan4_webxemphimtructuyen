@@ -49,9 +49,9 @@ class PhimController extends Controller
             'anh_bia' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'loai' => 'required|string|in:le,bo',
             'trailer' => 'nullable|mimes:mp4,mkv,avi,mov,flv|max:51200',
-            'video' => ($request->loai === 'phim_le' ? 'required' : 'nullable') . '|file|mimes:mp4,mov,ogg,qt|max:200000', // 200MB 
+            'video' => ($request->loai === 'le' ? 'required' : 'nullable') . '|file|mimes:mp4,mov,ogg,qt|max:200000', // 200MB 
             // Chỉ bắt buộc số tập nếu là phim bộ
-            'so_tap' => ($request->loai === 'phim_bo' ? 'required' : 'nullable') . '|integer|min:1',
+            'so_tap' => ($request->loai === 'bo' ? 'required' : 'nullable') . '|integer|min:1',
             'thoi_luong' => 'nullable|string|max:50',
             'trang_thai' => 'nullable|string|in:cong_khai,nhap',
             'theloai' => 'required|array',
@@ -132,7 +132,7 @@ class PhimController extends Controller
             'loai' => $loaiValue,
             'trailer' => $trailerDb,
             'video' => $videoDb,
-            'so_tap' => ($request->loai === 'phim_bo') ? $request->so_tap : null, // KIỂM TRA PHIM BỘ
+            'so_tap' => ($loaiValue === 'phim_bo') ? $request->so_tap : null,  // KIỂM TRA PHIM BỘ
             'thoi_luong' => $request->thoi_luong,
             'trang_thai' => $trangThaiValue,
             // Thêm trường 'duong_dan' với giá trị mặc định là null

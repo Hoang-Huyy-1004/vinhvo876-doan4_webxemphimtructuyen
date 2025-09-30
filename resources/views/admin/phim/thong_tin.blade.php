@@ -11,7 +11,7 @@
 
 <div class="row">
     {{-- Cột ảnh bìa --}}
-    <div class="col-md-4">
+    <div class="col-md-4 ">
         <div class="card shadow mb-4">
             <div class="card-header bg-dark text-white">Ảnh bìa</div>
             <div class="card-body p-2 text-center">
@@ -51,9 +51,9 @@
                         <td style="width: 150px;"><strong>Loại:</strong></td>
                         <td>
                             @if($phim->loai === 'phim_bo')
-                            <span class="badge bg-primary">Phim Bộ</span>
+                            <span class="badge bg-primary text-white">Phim Bộ</span>
                             @else
-                            <span class="badge bg-info">Phim Lẻ</span>
+                            <span class="badge bg-info text-white">Phim Lẻ</span>
                             @endif
                         </td>
                     </tr>
@@ -61,13 +61,13 @@
                         <td><strong>Thể loại:</strong></td>
                         <td>
                             @foreach($phim->theloais as $tl)
-                            <span class="badge bg-dark">{{ $tl->ten_the_loai }}</span>
+                            <span class="badge bg-dark text-white">{{ $tl->ten_the_loai }}</span>
                             @endforeach
                         </td>
                     </tr>
                     <tr>
                         <td><strong>Thời lượng:</strong></td>
-                        <td>{{ $phim->thoi_luong ?? 'Chưa rõ' }}</td>
+                        <td>{{ $phim->thoi_luong ?? 'Chưa rõ' }} phút</td>
                     </tr>
                     @if($phim->loai === 'phim_bo')
                     <tr>
@@ -79,30 +79,35 @@
                         <td><strong>Trạng thái:</strong></td>
                         <td>
                             @if($phim->trang_thai === 'cong_khai')
-                            <span class="badge bg-success">Công khai</span>
+                            <span class="badge bg-success text-white">Công khai</span>
                             @else
-                            <span class="badge bg-danger">Nháp</span>
+                            <span class="badge bg-danger text-white">Nháp</span>
                             @endif
                         </td>
                     </tr>
                     <tr>
                         <td><strong>Hiển thị:</strong></td>
                         <td>
-                            <span class="badge bg-warning text-dark">{{ ucfirst(str_replace('_', ' ', $phim->hien_thi)) }}</span>
+                            <span class="badge bg-warning text-white">{{ ucfirst(str_replace('_', ' ', $phim->hien_thi)) }}</span>
                         </td>
                     </tr>
 
+                    <tr>
+                        <td> <strong>Mô tả: </strong></td>
+                        <td>
+                            <span> {{ $phim->mo_ta }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td> <strong> Trailer:</strong></td>
+                        <td>
+                            <strong> @if($phim->trailer) <a href="{{ asset($phim->trailer) }}" target="_blank" class="btn btn-outline-danger btn-sm">Xem Trailer</a>
+                                @else
+                                <span class="text-muted small">Không có trailer</span>
+                                @endif </strong>
+                        </td>
+                    </tr>
                 </table>
-
-                <h6 class="mt-4 text-muted">Mô tả:</h6>
-                <p class="card-text">{{ $phim->mo_ta }}</p>
-
-                <h6 class="mt-4 text-muted">Trailer:</h6>
-                @if($phim->trailer)
-                <a href="{{ asset($phim->trailer) }}" target="_blank" class="btn btn-outline-danger btn-sm">Xem Trailer</a>
-                @else
-                <span class="text-muted small">Không có trailer</span>
-                @endif
 
                 @if($phim->loai === 'phim_le' && $phim->video)
                 <h6 class="mt-4 text-muted">Video chính:</h6>
@@ -119,18 +124,18 @@
     <table class="table table-bordered">
         <thead>
             <tr class="bg-primary text-white">
-                <th style="width: 5%;">Tập số</th>
+                <th style="width: 4%;">Tập</th>
                 <th style="width: 40%;">Tên tập (Mô tả)</th>
-                <th style="width: 25%;">Video</th>
-                <th style="width: 15%;">Trạng thái</th>
-                <th style="width: 15%;">Hành động</th>
+                <th style="width: 34%;">Video</th>
+                <th style="width: 10%;">Trạng thái</th>
+                <th style="width: 10%;">Hành động</th>
             </tr>
         </thead>
         <tbody>
             {{-- ĐÃ SỬA: Bảng hiển thị tập phim --}}
             @forelse($phim->taps as $tap)
             <tr>
-                <td>{{ $tap->tap }}</td>
+                <td class="text-center">{{ $tap->tap }}</td>
                 <td>{{ $tap->ten_phim }} - Tập {{ $tap->tap }}</td>
                 <td>
                     @if($tap->video)
@@ -141,9 +146,9 @@
                 </td>
                 <td>
                     @if($tap->trang_thai === 'cong_khai')
-                    <span class="badge bg-success">Công khai</span>
+                    <span class="badge bg-success text-white">Công khai</span>
                     @else
-                    <span class="badge bg-danger">Nháp</span>
+                    <span class="badge bg-danger text-white">Nháp</span>
                     @endif
                 </td>
                 <td>

@@ -10,12 +10,12 @@
 <table class="table table-bordered">
     <thead>
         <tr class="bg-primary text-white">
-            <th>Ảnh bìa</th>
-            <th>Tên phim</th>
-            <th>Năm phát hành</th>
-            <th>Số tập</th>
-            <th>Thể loại</th>
-            <th>Hành động</th>
+            <th style="width: 6%;">Ảnh bìa</th>
+            <th style="width: 30%;">Tên phim</th>
+            <th style="width: 8%;">Năm phát hành</th>
+            <th style="width: 5%;">Số tập</th>
+            <th style="width: 6%;">Thể loại</th>
+            <th style="width: 12%;">Hành động</th>
         </tr>
     </thead>
     <tbody>
@@ -23,8 +23,8 @@
         <tr>
             <td><img src="{{ asset($phim->anh_bia) }}" alt="{{ $phim->ten_phim }}" width="100"></td>
             <td>{{ $phim->ten_phim }}</td>
-            <td>{{ $phim->nam_phat_hanh }}</td>
-            <td>{{ $phim->so_tap }}</td>
+            <td class="text-center">{{ $phim->nam_phat_hanh }}</td>
+            <td class="text-center">{{ $phim->so_tap }}</td>
             <td>
                 @foreach($phim->theloais as $tl)
                 <span class="badge bg-primary text-white">{{ $tl->ten_the_loai }}</span>
@@ -41,7 +41,7 @@
                     <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
                 </form>
 
-                <a href="{{ route('phim.show', $phim->id) }}" class="btn btn-info btn-sm">thông tin</a>
+                <a href="{{ route('phim.show', $phim->id) }}" class="btn btn-info btn-sm">Thông tin</a>
             </td>
         </tr>
         @empty

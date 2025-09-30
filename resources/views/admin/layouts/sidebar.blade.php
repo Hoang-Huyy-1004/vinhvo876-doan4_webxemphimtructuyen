@@ -48,6 +48,7 @@
                 <a class="collapse-item" href="{{ route('phim.create') }}">Thêm phim</a>
                 <a class="collapse-item" href="{{ route('phim.phim_bo') }}">Phim bộ</a>
                 <a class="collapse-item" href="{{ route('phim.phim_le') }}">Phim lẻ</a>
+                <a class="collapse-item" href="{{ route('phim.index') }}">Tất cả phim</a>
             </div>
         </div>
     </li>
