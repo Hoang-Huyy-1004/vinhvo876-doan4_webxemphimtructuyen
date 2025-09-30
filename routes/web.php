@@ -96,4 +96,7 @@ Route::prefix('admin/phim')->name('phim.')->group(function () {
 
     // Lưu phim đã chỉnh sửa (Dùng phương thức PUT/PATCH)
     Route::put('/{phim}', [PhimController::class, 'update'])->name('update');
+
+    //thông tin chi tiết phim
+    Route::get('/{phim}', [PhimController::class, 'show'])->name('show');
 });

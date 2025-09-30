@@ -48,11 +48,11 @@
     <div class="mb-3">
         <label class="form-label d-block">Ảnh bìa hiện tại</label>
         @if ($phim->anh_bia)
-            <img src="{{ asset($phim->anh_bia) }}" alt="Ảnh bìa" style="max-width: 150px; height: auto; margin-bottom: 10px;">
+        <img src="{{ asset($phim->anh_bia) }}" alt="Ảnh bìa" style="max-width: 150px; height: auto; margin-bottom: 10px;">
         @else
-            <p>Chưa có ảnh bìa.</p>
+        <p>Chưa có ảnh bìa.</p>
         @endif
-        
+
         <label class="form-label">Cập nhật Ảnh bìa (Không bắt buộc)</label>
         <input type="file" name="anh_bia" class="form-control" accept="image/*">
     </div>
@@ -71,8 +71,8 @@
     <div class="mb-3">
         <label class="form-label">Thể loại phim</label>
         <?php
-            // Lấy ra mảng ID của các thể loại đã được chọn của phim này
-            $phimTheLoaiIds = $phim->theloais->pluck('id')->toArray();
+        // Lấy ra mảng ID của các thể loại đã được chọn của phim này
+        $phimTheLoaiIds = $phim->theloais->pluck('id')->toArray();
         ?>
         <div class="row">
             @foreach($theloais as $tl)
@@ -100,13 +100,25 @@
         <input type="file" name="trailer" class="form-control" accept="video/*">
     </div>
 
-    {{-- Video --}}
+    {{-- Khối điều kiện: Video cho Phim Lẻ, Số tập cho Phim Bộ --}}
+    @if ($phim->loai === 'phim_le')
+    {{-- Dành cho Phim Lẻ: Video --}}
     <div class="mb-3">
-        <label class="form-label">Video hiện tại:</label>
+        <label class="form-label">Video hiện tại (Phim Lẻ):</label>
         <p>{{ $phim->video ? basename($phim->video) : 'Chưa có video' }}</p>
         <label class="form-label">Cập nhật Video (Không bắt buộc)</label>
         <input type="file" name="video" class="form-control" accept="video/*">
     </div>
+    @elseif ($phim->loai === 'phim_bo')
+    {{-- Dành cho Phim Bộ: Số tập --}}
+    <div class="mb-3">
+        <label class="form-label">Số tập (Phim Bộ)</label>
+        {{-- Đảm bảo trường này được nhập nếu là phim bộ --}}
+        <input type="number" name="so_tap" class="form-control" value="{{ old('so_tap', $phim->so_tap) }}" min="1">
+        <div class="form-text">Số tập hiện tại: {{ $phim->so_tap ?? 'Chưa rõ' }}</div>
+    </div>
+    @endif
+    {{-- Hết khối điều kiện --}}
 
 
     {{-- Thời lượng --}}
