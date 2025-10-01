@@ -72,6 +72,9 @@ Route::prefix('admin')->group(function () {
     Route::delete('/danhmuc/{id}', [DanhMucController::class, 'destroy'])->name('danhmuc.destroy');
     Route::get('/ds_taikhoan', [AuthController::class, 'listUsers']) // Route hiển thị danh sách tài khoản
         ->name('admin.taikhoan.ds_taikhoan');
+    // ROUTE CHUYỂN ĐỔI TRẠNG THÁI TÀI KHOẢN (PUT)
+    Route::put('/taikhoan/toggle-status/{user_id}', [AuthController::class, 'toggleStatus'])
+        ->name('admin.taikhoan.toggle_status');
 });
 
 // Nhóm route cho phim

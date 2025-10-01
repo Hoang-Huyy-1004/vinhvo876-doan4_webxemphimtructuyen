@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,6 +18,7 @@
             --text-color: #333;
             --placeholder-color: #888;
         }
+
         body {
             font-family: 'Roboto', sans-serif;
             background-color: var(--background-color);
@@ -26,6 +28,7 @@
             min-height: 100vh;
             margin: 0;
         }
+
         .custom-card {
             max-width: 400px;
             width: 100%;
@@ -34,12 +37,14 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             padding: 3rem;
         }
+
         .card-title {
             color: var(--text-color);
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 2rem;
         }
+
         .form-control {
             border-radius: 8px;
             padding: 1rem 1.25rem;
@@ -47,14 +52,17 @@
             border: 1px solid #e0e0e0;
             transition: all 0.3s ease-in-out;
         }
+
         .form-control::placeholder {
             color: var(--placeholder-color);
             font-weight: 400;
         }
+
         .form-control:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.1);
         }
+
         .btn-custom {
             width: 100%;
             background-color: var(--primary-color);
@@ -66,11 +74,13 @@
             border-radius: 8px;
             transition: all 0.3s ease-in-out;
         }
+
         .btn-custom:hover {
             background-color: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 123, 255, 0.2);
         }
+
         .link-text {
             display: block;
             margin-top: 2rem;
@@ -78,12 +88,14 @@
             text-decoration: none;
             font-weight: 500;
         }
+
         .link-text:hover {
             text-decoration: underline;
             color: var(--primary-hover);
         }
     </style>
 </head>
+
 <body>
     <div class="card custom-card">
         <div class="card-body">
@@ -100,7 +112,13 @@
             </form>
             <a href="{{ route('dangky.form') }}" class="link-text text-center">Chưa có tài khoản? Đăng ký</a>
         </div>
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            {{ $errors->first() }}
+        </div>
+        @endif
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
+
 </html>

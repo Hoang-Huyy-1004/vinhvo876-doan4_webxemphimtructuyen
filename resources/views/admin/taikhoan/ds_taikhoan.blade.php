@@ -21,10 +21,30 @@
             <td>{{ $user->user_id }}</td>
             <td>{{ $user->name }}</td>
             <td>{{ $user->email }}</td>
-            <td>{{ $user->created_at->format('d/m/Y | H:i') }}</td>
+            <td>{{ $user->created_at->format('d/m/Y H:i') }}</td>
             <td>
-                <a href="#" class="btn btn-sm btn-info">Hoạt động</a>
-                {{-- Thêm nút xóa nếu cần --}}
+                {{-- Hiển thị trạng thái hiện tại --}}
+                @if ($user->status == 1)
+                <span class="badge bg-success">Hoạt động</span>
+                {{-- Nút chuyển trạng thái thành "Đã khóa" --}}
+                <form action="{{ route('admin.taikhoan.toggle_status', $user->user_id) }}" method="POST" style="display: inline-block;">
+                    @csrf
+                    @method('PUT')
+                    <button type="submit" class="btn btn-sm btn-warning" title="Khóa tài khoản">
+                        Khóa
+                    </button>
+                </form>
+                @else
+                <span class="badge bg-danger">Đã khóa</span>
+                {{-- Nút chuyển trạng thái thành "Hoạt động" --}}
+                <form action="{{ route('admin.taikhoan.toggle_status', $user->user_id) }}" method="POST" style="display: inline-block;">
+                    @csrf
+                    @method('PUT')
+                    <button type="submit" class="btn btn-sm btn-success" title="Mở khóa tài khoản">
+                        Mở khóa
+                    </button>
+                </form>
+                @endif
             </td>
         </tr>
         @endforeach

@@ -52,20 +52,27 @@ class AuthController extends Controller
     // Xử lý đăng nhập
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+            $user = Auth::user();
+
+            // Kiểm tra nếu tài khoản bị khóa
+            if ($user->status == 0) {
+                Auth::logout();
+                return redirect()->back()->withErrors([
+                    'email' => 'Tài khoản của bạn đã bị khóa.',
+                ]);
+            }
+
             return redirect('/')->with('success', 'Đăng nhập thành công');
         }
 
-        return back()->withErrors([
-            'email' => 'Email hoặc mật khẩu không đúng',
+        return redirect()->back()->withErrors([
+            'email' => 'Thông tin đăng nhập không chính xác.',
         ]);
     }
+
 
     // Đăng xuất
     public function logout(Request $request)
@@ -89,5 +96,22 @@ class AuthController extends Controller
     {
         $users = User::all();
         return view('admin.taikhoan.ds_taikhoan', compact('users'));
+    }
+
+    public function toggleStatus($user_id)
+    {
+        // Tìm người dùng bằng user_id
+        $user = User::where('user_id', $user_id)->firstOrFail();
+
+        // Chuyển đổi trạng thái: 1 thành 0, 0 thành 1
+        $newStatus = $user->status == 1 ? 0 : 1;
+        $user->status = $newStatus;
+        $user->save();
+
+        // Chuẩn bị thông báo
+        $message = $newStatus == 1 ? 'Tài khoản đã được MỞ KHÓA thành công.' : 'Tài khoản đã bị KHÓA thành công.';
+
+        // Quay về trang danh sách tài khoản
+        return back()->with('success', $message);
     }
 }
