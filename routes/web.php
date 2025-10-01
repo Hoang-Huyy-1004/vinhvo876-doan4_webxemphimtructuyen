@@ -47,7 +47,11 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// routes/web.php
 
+// Định nghĩa route cho việc xem một bộ phim
+Route::get('/xem-phim/{phim}', [HomeController::class, 'phuongThucXemPhim'])
+      ->name('xemphim'); // Đặt tên route là 'xemphim'
 
 
 
@@ -86,8 +90,6 @@ Route::prefix('admin/phim')->name('phim.')->group(function () {
 
     // Lưu phim mới
     Route::post('/them', [PhimController::class, 'store'])->name('store');
-
-
 
     // Thêm route xóa phim
     Route::delete('/{phim}', [PhimController::class, 'destroy'])->name('destroy');
