@@ -93,6 +93,11 @@
                     </tr>
 
                     <tr>
+                        <td><strong>Ngày đăng: </strong></td>
+                        <td> {{ $phim->created_at->format('d/m/Y') }} </td>
+                    </tr>
+
+                    <tr>
                         <td> <strong>Mô tả: </strong></td>
                         <td>
                             <span> {{ $phim->mo_ta }}</span>
@@ -109,10 +114,10 @@
                     </tr>
                 </table>
 
-                @if($phim->loai === 'phim_le' && $phim->video)
+                <!-- @if($phim->loai === 'phim_le' && $phim->video)
                 <h6 class="mt-4 text-muted">Video chính:</h6>
                 <a href="{{ asset($phim->video) }}" target="_blank" class="btn btn-outline-success btn-sm">Xem Video</a>
-                @endif
+                @endif -->
 
             </div>
         </div>
@@ -132,7 +137,9 @@
             </tr>
         </thead>
         <tbody>
-            {{-- ĐÃ SỬA: Bảng hiển thị tập phim --}}
+            {{-- Bảng hiển thị tập phim --}}
+            @if($phim->loai === 'phim_bo')
+            {{-- CASE 1: PHIM BỘ (LẶP QUA CÁC TẬP) --}}
             @forelse($phim->taps as $tap)
             <tr>
                 <td class="text-center">{{ $tap->tap }}</td>
@@ -152,14 +159,43 @@
                     @endif
                 </td>
                 <td>
-                    <a href="#" class="btn btn-info btn-sm">Sửa</a>
+                    {{-- Nút sửa tập phim. Cần tạo route cho TapPhimController --}}
+                    <a href="{{ route('phim.tapphim.edit', ['phim' => $phim->id, 'tapPhim' => $tap->id]) }}"
+                        class="btn btn-info btn-sm" title="Sửa tập phim">Sửa
+                    </a>
                 </td>
             </tr>
             @empty
             <tr>
-                <td colspan="5" class="text-center">Chưa có tập phim nào được tạo.</td>
+                <td colspan="5" class="text-center">Phim bộ này chưa có tập nào được tạo.</td>
             </tr>
             @endforelse
+
+            @else
+            {{-- CASE 2: PHIM LẺ (DÙNG THÔNG TIN BẢNG PHIM CHÍNH) --}}
+            <tr>
+                <td class="text-center">1</td> {{-- Phim lẻ chỉ có 1 tập --}}
+                <td>{{ $phim->ten_phim }}</td> {{-- Lấy tên phim --}}
+                <td>
+                    @if($phim->video)
+                    <a href="{{ asset($phim->video) }}" target="_blank" class="btn btn-sm btn-outline-success">Xem Video</a>
+                    @else
+                    <span class="text-muted small">Chưa có video</span>
+                    @endif
+                </td>
+                <td>
+                    @if($phim->trang_thai === 'cong_khai')
+                    <span class="badge bg-success text-white">Công khai</span>
+                    @else
+                    <span class="badge bg-danger text-white">Nháp</span>
+                    @endif
+                </td>
+                <td>
+                    {{-- Nút sửa phim. Dẫn về trang sửa phim chính. --}}
+                    <a href="{{ route('phim.edit', $phim->id) }}" class="btn btn-warning btn-sm" title="Sửa video phim lẻ">Sửa</a>
+                </td>
+            </tr>
+            @endif
         </tbody>
     </table>
 </div>

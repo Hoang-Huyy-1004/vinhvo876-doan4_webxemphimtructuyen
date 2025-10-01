@@ -63,7 +63,7 @@
 
     <!-- Nav Item - Pages -->
     <li class="nav-item">
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="{{ route('admin.taikhoan.ds_taikhoan') }}">
             <i class="fas fa-fw fa-users"></i>
             <span>Người dùng</span>
         </a>
