@@ -83,4 +83,19 @@ Route::prefix('admin/phim')->name('phim.')->group(function () {
 
     // Lưu phim mới
     Route::post('/them', [PhimController::class, 'store'])->name('store');
+<<<<<<< HEAD
+=======
+
+    // Thêm route xóa phim
+    Route::delete('/{phim}', [PhimController::class, 'destroy'])->name('destroy');
+
+        // Form chỉnh sửa phim
+    Route::get('/{phim}/chinh-sua', [PhimController::class, 'edit'])->name('edit');
+
+    // Lưu phim đã chỉnh sửa (Dùng phương thức PUT/PATCH)
+    Route::put('/{phim}', [PhimController::class, 'update'])->name('update');
+
+    //thông tin chi tiết phim
+    Route::get('/{phim}', [PhimController::class, 'show'])->name('show');
+>>>>>>> dc132b21bd6d68161a1c35263021c5c35c4af75e
 });

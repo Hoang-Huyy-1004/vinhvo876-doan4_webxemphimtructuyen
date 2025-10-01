@@ -3,9 +3,9 @@
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ url('/dashboard') }}">
         <div class="sidebar-brand-icon rotate-n-15">
-            <i class="fas fa-laugh-wink"></i>
+            <i class="fas fa-video" ></i>
         </div>
-        <div class="sidebar-brand-text mx-3">FILM Hay </div>
+        <div class="sidebar-brand-text mx-3">FILMHAY </div>
     </a>
 <!-- <sup>SB2</sup> -->
     <!-- Divider -->
@@ -48,6 +48,7 @@
                 <a class="collapse-item" href="{{ route('phim.create') }}">Thêm phim</a>
                 <a class="collapse-item" href="{{ route('phim.phim_bo') }}">Phim bộ</a>
                 <a class="collapse-item" href="{{ route('phim.phim_le') }}">Phim lẻ</a>
+                <a class="collapse-item" href="{{ route('phim.index') }}">Tất cả phim</a>
             </div>
         </div>
     </li>

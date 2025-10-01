@@ -37,7 +37,7 @@
 
     <div class="mb-3">
         <label class="form-label">Loại phim</label>
-        <select name="loai" class="form-select" required>
+        <select name="loai" id="loai_phim" class="form-select" required>
             <option value="le">Phim lẻ</option>
             <option value="bo">Phim bộ</option>
         </select>
@@ -65,9 +65,21 @@
         <input type="file" name="trailer" class="form-control" accept="video/*">
     </div>
 
-    <div class="mb-3">
+    <!-- <div class="mb-3">
         <label class="form-label">Video</label>
         <input type="file" name="video" class="form-control" accept="video/*">
+    </div> -->
+
+        {{-- 1. Cho Phim LẺ (video file) --}}
+    <div class="mb-3" id="field_video"> {{-- THÊM ID --}}
+        <label class="form-label">Video (Phim lẻ)</label>
+        <input type="file" name="video" class="form-control" accept="video/*">
+    </div>
+
+    {{-- 2. Cho Phim BỘ (số tập) --}}
+    <div class="mb-3" id="field_so_tap" style="display: none;"> {{-- THÊM ID và ẨN MẶC ĐỊNH --}}
+        <label class="form-label">Số tập (Phim bộ)</label>
+        <input type="number" name="so_tap" class="form-control" min="1" placeholder="Nhập tổng số tập">
     </div>
 
 
@@ -97,4 +109,39 @@
 
     <button type="submit" class="btn btn-primary">Lưu phim</button>
 </form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const loaiPhim = document.getElementById('loai_phim');
+        const fieldVideo = document.getElementById('field_video');
+        const fieldSoTap = document.getElementById('field_so_tap');
+        const inputVideo = fieldVideo.querySelector('input[name="video"]');
+        const inputSoTap = fieldSoTap.querySelector('input[name="so_tap"]');
+
+        function toggleFields() {
+            if (loaiPhim.value === 'bo') {
+                // Phim Bộ: Ẩn Video, Hiện Số tập
+                fieldVideo.style.display = 'none';
+                inputVideo.removeAttribute('required'); // Bỏ required cho input file video
+                
+                fieldSoTap.style.display = 'block';
+                inputSoTap.setAttribute('required', 'required'); // BẮT BUỘC nhập số tập
+            } else {
+                // Phim Lẻ: Hiện Video, Ẩn Số tập
+                fieldVideo.style.display = 'block';
+                inputVideo.setAttribute('required', 'required'); // BẮT BUỘC upload video phim lẻ
+                
+                fieldSoTap.style.display = 'none';
+                inputSoTap.removeAttribute('required'); // Bỏ required cho input số tập
+            }
+        }
+
+        // Chạy lần đầu tiên khi tải trang
+        toggleFields(); 
+
+        // Lắng nghe sự kiện thay đổi
+        loaiPhim.addEventListener('change', toggleFields);
+    });
+</script>
+
 @endsection
