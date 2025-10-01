@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DanhMucController;
 use App\Http\Controllers\PhimController;
+use App\Http\Controllers\TapPhimController;
 
 Route::get('/', function () {
     return view('home');  // tự động tìm home.blade.php trong resources/views
@@ -69,6 +70,8 @@ Route::prefix('admin')->group(function () {
     Route::post('/danhmuc', [DanhMucController::class, 'store'])->name('danhmuc.store');
     Route::put('/danhmuc/{id}', [DanhMucController::class, 'update'])->name('danhmuc.update');
     Route::delete('/danhmuc/{id}', [DanhMucController::class, 'destroy'])->name('danhmuc.destroy');
+    Route::get('/ds_taikhoan', [AuthController::class, 'listUsers']) // Route hiển thị danh sách tài khoản
+        ->name('admin.taikhoan.ds_taikhoan');
 });
 
 // Nhóm route cho phim
@@ -99,4 +102,9 @@ Route::prefix('admin/phim')->name('phim.')->group(function () {
 
     //thông tin chi tiết phim
     Route::get('/{phim}', [PhimController::class, 'show'])->name('show');
+    // Nhóm route cho Tập Phim
+    Route::prefix('{phim}/tapphim')->name('tapphim.')->group(function () {
+    Route::get('/{tapPhim}/chinh-sua', [TapPhimController::class, 'edit'])->name('edit');
+    Route::put('/{tapPhim}', [TapPhimController::class, 'update'])->name('update');
+});
 });

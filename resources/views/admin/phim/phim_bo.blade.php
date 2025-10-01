@@ -9,7 +9,7 @@
 
 <table class="table table-bordered">
     <thead>
-        <tr class="bg-primary text-white">
+        <tr class="bg-primary text-white text-center">
             <th style="width: 6%;">Ảnh bìa</th>
             <th style="width: 30%;">Tên phim</th>
             <th style="width: 8%;">Năm phát hành</th>
@@ -21,7 +21,7 @@
     <tbody>
         @forelse($phims as $phim)
         <tr>
-            <td><img src="{{ asset($phim->anh_bia) }}" alt="{{ $phim->ten_phim }}" width="100"></td>
+            <td class="text-center"><img src="{{ asset($phim->anh_bia) }}" alt="{{ $phim->ten_phim }}" width="100"></td>
             <td>{{ $phim->ten_phim }}</td>
             <td class="text-center">{{ $phim->nam_phat_hanh }}</td>
             <td class="text-center">{{ $phim->so_tap }}</td>

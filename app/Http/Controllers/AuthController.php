@@ -83,4 +83,11 @@ class AuthController extends Controller
         $user = Auth::user();
         return view('user.taikhoan', compact('user'));
     }
+
+    // Lấy tất cả người dùng từ bảng 'users'
+    public function listUsers()
+    {
+        $users = User::all();
+        return view('admin.taikhoan.ds_taikhoan', compact('users'));
+    }
 }
