@@ -11,7 +11,7 @@
             <th>Năm phát hành</th>
             <th>Loại phim</th>
             <th>Thể loại</th>
-            <th>Ngày đăng</th>
+            <th>Ngày phát sóng</th>
         </tr>
     </thead>
     <tbody>
@@ -31,7 +31,7 @@
                 @else
                 <span class="badge bg-info text-white">Phim Lẻ</span>
                 @endif
-            </td>   
+            </td>
             <td>{{ $phim->created_at->format('d/m/Y') }}</td>
         </tr>
         @empty

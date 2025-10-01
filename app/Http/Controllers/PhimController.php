@@ -11,6 +11,25 @@ use App\Models\TapPhim;
 
 class PhimController extends Controller
 {
+    public function showClient($id)
+    {
+        $phim = Phim::with(['theloais', 'taps'])->findOrFail($id);
+
+        // Nếu view ở ngoài resources/views
+        return view('xem_phim', compact('phim'));
+
+        // Nếu view trong resources/views/user/
+        // return view('user.xem_phim', compact('phim'));
+    }
+
+
+    // Hàm show gốc của bạn (cho admin) vẫn giữ nguyên
+    public function show(Phim $phim)
+    {
+        $phim->load('taps');
+        return view('admin.phim.thong_tin', compact('phim'));
+    }
+
     // Danh sách tất cả phim
     public function index()
     {
@@ -49,7 +68,7 @@ class PhimController extends Controller
             'anh_bia' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'loai' => 'required|string|in:le,bo',
             'trailer' => 'nullable|mimes:mp4,mkv,avi,mov,flv|max:51200',
-            'video' => ($request->loai === 'le' ? 'required' : 'nullable') . '|file|mimes:mp4,mov,ogg,qt|max:200000', // 200MB 
+            'video' => ($request->loai === 'le' ? 'required' : 'nullable') . '|file|mimes:mp4,mov,ogg,qt|max:200000', // 200MB
             // Chỉ bắt buộc số tập nếu là phim bộ
             'so_tap' => ($request->loai === 'bo' ? 'required' : 'nullable') . '|integer|min:1',
             'thoi_luong' => 'nullable|string|max:50',
@@ -336,15 +355,15 @@ class PhimController extends Controller
         $redirectRoute = ($phim->loai === 'phim_bo') ? 'phim.phim_bo' : 'phim.phim_le';
         return redirect()->route($redirectRoute)->with('success', 'Cập nhật phim thành công!');
     }
-    public function show(Phim $phim)
-    {
-        // TẢI THÊM MỐI QUAN HỆ 'taps' (danh sách tập phim)
-        // để đảm bảo nó không bị null khi truy cập trong view
-        $phim->load('taps');
+    // public function show(Phim $phim)
+    // {
+    //     // TẢI THÊM MỐI QUAN HỆ 'taps' (danh sách tập phim)
+    //     // để đảm bảo nó không bị null khi truy cập trong view
+    //     $phim->load('taps');
 
-        // Nếu bạn muốn lấy phim với các mối quan hệ khác nữa:
-        // $phim = Phim::with('theloais', 'taps')->findOrFail($phim->id); 
+    //     // Nếu bạn muốn lấy phim với các mối quan hệ khác nữa:
+    //     // $phim = Phim::with('theloais', 'taps')->findOrFail($phim->id);
 
-        return view('admin.phim.thong_tin', compact('phim'));
-    }
+    //     return view('admin.phim.thong_tin', compact('phim'));
+    // }
 }

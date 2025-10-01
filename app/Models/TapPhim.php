@@ -10,12 +10,12 @@ class TapPhim extends Model
     use HasFactory;
 
     // Tên bảng
-    protected $table = 'tap_phim'; 
+    protected $table = 'tap_phim';
 
     protected $fillable = [
         'phim_id',
         'ten_phim', // Tên phim (theo cấu trúc bảng của bạn)
-        'video', 
+        'video',
         'tap', // <--- ĐÃ ĐIỀU CHỈNH: Sử dụng tên cột 'tap'
         'trang_thai',
     ];

@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\VideoController;
+// use App\Http\Controllers\VideoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DanhMucController;
@@ -83,8 +83,7 @@ Route::prefix('admin/phim')->name('phim.')->group(function () {
 
     // Lưu phim mới
     Route::post('/them', [PhimController::class, 'store'])->name('store');
-<<<<<<< HEAD
-=======
+
 
     // Thêm route xóa phim
     Route::delete('/{phim}', [PhimController::class, 'destroy'])->name('destroy');
@@ -97,5 +96,13 @@ Route::prefix('admin/phim')->name('phim.')->group(function () {
 
     //thông tin chi tiết phim
     Route::get('/{phim}', [PhimController::class, 'show'])->name('show');
->>>>>>> dc132b21bd6d68161a1c35263021c5c35c4af75e
 });
+
+
+
+
+// Route cho admin (resource)
+Route::resource('phim', PhimController::class);
+
+// Route cho người dùng xem phim
+Route::get('/xem-phim/{id}', [PhimController::class, 'showClient'])->name('xemphim');
