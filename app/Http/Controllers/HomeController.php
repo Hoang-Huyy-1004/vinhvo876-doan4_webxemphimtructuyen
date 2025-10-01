@@ -6,7 +6,13 @@ use App\Models\Phim;
 
 class HomeController extends Controller
 {
-   
+
+    public function phuongThucXemPhim($id)
+    {
+        // xử lý logic lấy phim theo id
+        $phim = Phim::findOrFail($id);
+        return view('xem_phim', compact('phim'));
+    }
 
     public function index()
     {

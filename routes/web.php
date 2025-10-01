@@ -115,6 +115,9 @@ Route::prefix('admin/phim')->name('phim.')->group(function () {
 
 
 
+Route::get('/xem-phim/{id}', [HomeController::class, 'phuongThucXemPhim']);
+
+
 
 // Route cho admin (resource)
 Route::resource('phim', PhimController::class);
