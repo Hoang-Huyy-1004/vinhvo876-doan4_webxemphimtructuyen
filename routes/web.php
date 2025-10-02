@@ -132,3 +132,7 @@ Route::get('/xem-phim/{id}', [PhimController::class, 'showClient'])->name('xemph
 // Google Routes
 Route::get('/auth/google/redirect', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+
+Route::view('/user/dangnhap', 'user.dangnhap');
+Route::view('/user/dangky', 'user.dangky');
+Route::view('/user/taikhoan', 'user.taikhoan');
