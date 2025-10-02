@@ -10,12 +10,13 @@
 <table class="table table-bordered">
     <thead>
         <tr class="bg-primary text-white text-center">
-            <th>Ảnh bìa</th>
-            <th>Tên phim</th>
-            <th>Năm phát hành</th>
-            <th>Thời lượng</th>
-            <th>Thể loại</th>
-            <th>Hành động</th>
+            <th style="width: 5%;">Ảnh bìa</th>
+            <th style="width: 30%;">Tên phim</th>
+            <th style="width: 15%;">Năm phát hành</th>
+            <th style="width: 10%;">Thời lượng</th>
+            <th style="width: 10%;">Thể loại</th>
+            <th style="width: 10%;">Trạng thái</th>
+            <th style="width: 20%;">Hành động</th>
         </tr>
     </thead>
     <tbody>
@@ -30,7 +31,14 @@
                 <span class="badge bg-primary text-white">{{ $tl->ten_the_loai }}</span>
                 @endforeach
             </td>
-            <td>
+            <td class="text-center">
+                @if($phim->trang_thai === 'cong_khai')
+                <span class="badge bg-success text-white">Công khai</span>
+                @else
+                <span class="badge bg-danger text-white">Nháp</span>
+                @endif
+            </td>
+            <td class="text-center">
                 <a href="{{ route('phim.edit', $phim->id) }}" class="btn btn-warning btn-sm">Sửa</a>
                 <form action="{{ route('phim.destroy', $phim) }}" method="POST"
                     onsubmit="return confirm('Bạn có chắc chắn muốn xóa phim {{ $phim->ten_phim }}?');"

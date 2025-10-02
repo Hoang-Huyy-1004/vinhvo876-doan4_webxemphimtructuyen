@@ -7,17 +7,17 @@
 
 <table class="table table-bordered">
     <thead>
-        <tr class="bg-primary text-white">
-            <th>UID</th>
-            <th>Tên</th>
-            <th>Email</th>
-            <th>Ngày tạo</th>
-            <th>Hành động</th>
+        <tr class="bg-primary text-white text-center">
+            <th style="width: 5%;">UID</th>
+            <th style="width: 30%;">Tên</th>
+            <th style="width: 30%;">Email</th>
+            <th style="width: 20%;">Ngày tạo</th>
+            <th style="width: 15%;">Hành động</th>
         </tr>
     </thead>
     <tbody>
         @foreach ($users as $user)
-        <tr>
+        <tr class="text-center">
             <td>{{ $user->user_id }}</td>
             <td>{{ $user->name }}</td>
             <td>{{ $user->email }}</td>
@@ -25,7 +25,7 @@
             <td>
                 {{-- Hiển thị trạng thái hiện tại --}}
                 @if ($user->status == 1)
-                <span class="badge bg-success">Hoạt động</span>
+                <span class="badge bg-success text-white">Hoạt động</span>
                 {{-- Nút chuyển trạng thái thành "Đã khóa" --}}
                 <form action="{{ route('admin.taikhoan.toggle_status', $user->user_id) }}" method="POST" style="display: inline-block;">
                     @csrf
