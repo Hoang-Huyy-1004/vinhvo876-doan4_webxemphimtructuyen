@@ -11,12 +11,12 @@
         body {
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* luôn full chiều cao */
+            min-height: 100vh;
             background-color: #000; /* nền đen cho giống giao diện phim */
         }
 
         main {
-            flex: 1; /* đẩy footer xuống cuối */
+            flex: 1;
         }
 
         .navbar-nav .nav-link {
@@ -36,6 +36,22 @@
         .card:hover {
             transform: scale(1.05);
         }
+
+        /* ==== Khung ảnh poster chuẩn 2:3 ==== */
+        .poster-wrapper {
+            width: 100%;
+            aspect-ratio: 2 / 3; /* giữ tỉ lệ 2:3 */
+            overflow: hidden;
+            border-radius: 8px;
+            background: #111; /* nền tối nếu ảnh lỗi */
+        }
+
+        .poster-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* crop ảnh vừa khung */
+            border-radius: 8px;
+        }
     </style>
 </head>
 
@@ -51,8 +67,8 @@
             <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
                 <a href="{{ route('xemphim', $phim->id) }}" class="text-decoration-none text-white">
                     <div class="card bg-dark text-white border-0">
-                        <div class="position-relative">
-                            <img src="{{ asset($phim->anh_bia) }}" class="card-img-top rounded" alt="{{ $phim->ten_phim }}">
+                        <div class="position-relative poster-wrapper">
+                            <img src="{{ asset($phim->anh_bia) }}" alt="{{ $phim->ten_phim }}">
                             <span class="badge bg-primary position-absolute top-0 start-0 m-2">MỚI</span>
                         </div>
                         <div class="card-body p-2 text-center">
@@ -71,8 +87,8 @@
             <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
                 <a href="{{ route('xemphim', $phim->id) }}" class="text-decoration-none text-white">
                     <div class="card bg-dark text-white border-0">
-                        <div class="position-relative">
-                            <img src="{{ asset($phim->anh_bia) }}" class="card-img-top rounded" alt="{{ $phim->ten_phim }}">
+                        <div class="position-relative poster-wrapper">
+                            <img src="{{ asset($phim->anh_bia) }}" alt="{{ $phim->ten_phim }}">
                             <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">NỔI BẬT</span>
                         </div>
                         <div class="card-body p-2 text-center">
@@ -91,8 +107,8 @@
             <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
                 <a href="{{ route('xemphim', $phim->id) }}" class="text-decoration-none text-white">
                     <div class="card bg-dark text-white border-0">
-                        <div class="position-relative">
-                            <img src="{{ asset($phim->anh_bia) }}" class="card-img-top rounded" alt="{{ $phim->ten_phim }}">
+                        <div class="position-relative poster-wrapper">
+                            <img src="{{ asset($phim->anh_bia) }}" alt="{{ $phim->ten_phim }}">
                             <span class="badge bg-danger position-absolute top-0 start-0 m-2">HOT</span>
                         </div>
                         <div class="card-body p-2 text-center">
