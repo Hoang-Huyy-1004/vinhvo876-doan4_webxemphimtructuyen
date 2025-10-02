@@ -52,6 +52,7 @@
             object-fit: cover; /* crop ảnh vừa khung */
             border-radius: 8px;
         }
+        
     </style>
 </head>
 

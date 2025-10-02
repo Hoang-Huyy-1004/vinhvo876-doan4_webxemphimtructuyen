@@ -13,17 +13,53 @@
             color: #fff;
         }
 
-        .movie-info {
-            background: #111;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
+        .video-wrapper {
+            max-width: 100%;
         }
 
-        /* 👇 Khung video thu nhỏ và căn giữa khi là phim lẻ */
-        .video-wrapper {
-            max-width: 80%;
-            margin: 0 auto;
+        .episode-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            cursor: pointer;
+            background: #111;
+            border-bottom: 1px solid #222;
+            transition: background 0.3s;
+        }
+
+        .episode-item:hover {
+            background: #1a1a1a;
+        }
+
+        .episode-item .thumb {
+            position: relative;
+            width: 100px;
+            height: 56px;
+            flex-shrink: 0;
+        }
+
+        .episode-item .thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .episode-item .thumb .time {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2px 6px;
+            font-size: 12px;
+            border-radius: 4px;
+        }
+
+        .episode-item .info {
+            font-size: 15px;
+            color: #fff;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -34,7 +70,7 @@
     <main class="container my-4">
         <div class="row">
             <!-- Khung video -->
-            <div class="@if($phim->loai == 'phim_le') col-lg-12 @else col-lg-9 @endif">
+            <div class="col-lg-9">
                 <div class="video-wrapper">
                     <div class="ratio ratio-16x9 bg-dark rounded">
                         @if($phim->loai == 'phim_le')
@@ -68,26 +104,43 @@
                 </div>
             </div>
 
-            <!-- Danh sách tập (chỉ hiện với phim bộ) -->
-            @if($phim->loai == 'bo' && $phim->taps->count() > 0)
+            <!-- Danh sách tập / trailer -->
             <div class="col-lg-3">
                 <div class="card bg-dark text-light border-0">
-                    <div class="card-header">Danh sách tập</div>
-                    <ul class="list-group list-group-flush">
+                    <div class="card-header fw-bold">
+                        @if($phim->loai == 'phim_le')
+                            Trailer & Video
+                        @else
+                            Danh sách phát
+                        @endif
+                    </div>
+
+                    <div class="list-group list-group-flush">
+                        {{-- Trailer (nếu có) --}}
+                        @if($phim->trailer)
+                        <div class="episode-item" onclick="changeEpisode('{{ asset($phim->trailer) }}')">
+                            <div class="thumb">
+                                <img src="{{ asset($phim->anh_bia ?? 'default.jpg') }}" alt="Trailer">
+                                <span class="time">Trailer</span>
+                            </div>
+                            <div class="info">🎬 Trailer</div>
+                        </div>
+                        @endif
+
+                        {{-- Phim bộ hoặc phân đoạn --}}
                         @foreach($phim->taps as $tap)
-                        <li class="list-group-item bg-dark text-light">
-                            <button class="btn btn-link text-light text-decoration-none p-0 w-100 text-start"
-                                onclick="changeEpisode('{{ asset($tap->video) }}')">
-                                {{ $tap->ten_tap ?? 'Tập ' . $tap->tap }}
-                            </button>
-                        </li>
+                        <div class="episode-item" onclick="changeEpisode('{{ asset($tap->video) }}')">
+                            <div class="thumb">
+                                <img src="{{ asset($tap->thumbnail ?? $phim->anh_bia ?? 'default.jpg') }}" alt="Tập {{ $tap->tap }}">
+                                <span class="time">{{ $tap->thoi_luong ?? '24 phút' }}</span>
+                            </div>
+                            <div class="info">{{ $tap->ten_tap ?? 'Tập ' . $tap->tap }}</div>
+                        </div>
                         @endforeach
-                    </ul>
+                    </div>
                 </div>
             </div>
-            @endif
         </div>
-
     </main>
 
     @include('footer')
@@ -98,18 +151,8 @@
             let source = video.querySelector("source");
             source.src = link;
             video.load();
-            video.play(); // tự động phát khi đổi tập
+            video.play();
         }
-
-        // 👇 Nếu là phim bộ, tự động phát tập đầu khi load trang
-        document.addEventListener("DOMContentLoaded", function () {
-            let video = document.getElementById("videoPlayer");
-            if (video) {
-                video.play().catch(err => {
-                    console.log("Autoplay bị chặn bởi trình duyệt:", err);
-                });
-            }
-        });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
