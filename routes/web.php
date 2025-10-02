@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DanhMucController;
 use App\Http\Controllers\PhimController;
 use App\Http\Controllers\TapPhimController;
+use App\Http\Controllers\GoogleController;
 
 Route::get('/', function () {
     return view('home');  // tự động tìm home.blade.php trong resources/views
@@ -127,3 +128,7 @@ Route::resource('phim', PhimController::class);
 
 // Route cho người dùng xem phim
 Route::get('/xem-phim/{id}', [PhimController::class, 'showClient'])->name('xemphim');
+
+// Google Routes
+Route::get('/auth/google/redirect', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);

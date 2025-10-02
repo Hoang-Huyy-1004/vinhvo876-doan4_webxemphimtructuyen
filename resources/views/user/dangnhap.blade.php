@@ -111,6 +111,11 @@
                 <button type="submit" class="btn btn-custom">Đăng nhập</button>
             </form>
             <a href="{{ route('dangky.form') }}" class="link-text text-center">Chưa có tài khoản? Đăng ký</a>
+
+            <a href="{{ route('google.login') }}" class="btn btn-danger mt-3">
+                <i class="fab fa-google"></i> Đăng nhập bằng Google
+            </a>
+
         </div>
         @if ($errors->any())
         <div class="alert alert-danger">

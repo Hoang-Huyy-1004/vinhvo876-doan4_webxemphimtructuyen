@@ -55,7 +55,12 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
+
+            /** @var \App\Models\User $user */
             $user = Auth::user();
+
+            // Buộc tải trạng thái mới nhất từ DB để khắc phục lỗi cache
+            $user->refresh();
 
             // Kiểm tra nếu tài khoản bị khóa
             if ($user->status == 0) {
@@ -72,7 +77,6 @@ class AuthController extends Controller
             'email' => 'Thông tin đăng nhập không chính xác.',
         ]);
     }
-
 
     // Đăng xuất
     public function logout(Request $request)
@@ -107,6 +111,10 @@ class AuthController extends Controller
         $newStatus = $user->status == 1 ? 0 : 1;
         $user->status = $newStatus;
         $user->save();
+
+        // *** THÊM DÒNG NÀY ĐỂ BUỘC LÀM MỚI DỮ LIỆU TỪ DATABASE ***
+        $user->refresh();
+        // *******************************************************
 
         // Chuẩn bị thông báo
         $message = $newStatus == 1 ? 'Tài khoản đã được MỞ KHÓA thành công.' : 'Tài khoản đã bị KHÓA thành công.';
