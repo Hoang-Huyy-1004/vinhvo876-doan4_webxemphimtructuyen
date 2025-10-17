@@ -1,3 +1,7 @@
+@php
+use Illuminate\Support\Str;
+@endphp
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -69,33 +73,33 @@
 
     <main class="container my-4">
         <div class="row">
-            <!-- Khung video -->
             <div class="col-lg-9">
                 <div class="video-wrapper">
-                    <div class="ratio ratio-16x9 bg-dark rounded">
-                        @if($phim->loai == 'phim_le')
-                            @if($phim->video)
-                                <video id="videoPlayer" controls autoplay muted playsinline poster="{{ asset($phim->anh_bia ?? '') }}">
-                                    <source src="{{ asset($phim->video) }}" type="video/mp4">
-                                    Trình duyệt không hỗ trợ phát video.
-                                </video>
-                            @else
-                                <div class="text-center text-danger p-3">Chưa có video cho phim này.</div>
-                            @endif
+                    {{-- SỬA Ở ĐÂY: Thêm ID cho container để JS có thể tìm thấy --}}
+                    <div id="video-player-container" class="ratio ratio-16x9 bg-dark rounded">
+                        {{-- Logic hiển thị video ban đầu --}}
+                        @php
+                        $initialVideoSrc = '';
+                        if ($phim->loai == 'phim_le' && $phim->video) {
+                        $initialVideoSrc = asset($phim->video);
+                        } elseif ($phim->loai == 'phim_bo' && $phim->taps->count() > 0 && $phim->taps->first()->video) {
+                        $initialVideoSrc = asset($phim->taps->first()->video);
+                        }
+                        @endphp
+
+                        @if($initialVideoSrc)
+                        <video controls autoplay muted playsinline poster="{{ asset($phim->anh_bia ?? '') }}" style="width: 100%; height: 100%;">
+                            <source src="{{ $initialVideoSrc }}" type="video/mp4">
+                            Trình duyệt không hỗ trợ phát video.
+                        </video>
                         @else
-                            @if($phim->taps->count() > 0)
-                                <video id="videoPlayer" controls autoplay muted playsinline poster="{{ asset($phim->anh_bia ?? '') }}">
-                                    <source src="{{ asset($phim->taps[0]->video) }}" type="video/mp4">
-                                    Trình duyệt không hỗ trợ phát video.
-                                </video>
-                            @else
-                                <div class="text-center text-danger p-3">Chưa có tập phim nào.</div>
-                            @endif
+                        <div class="d-flex justify-content-center align-items-center h-100">
+                            <p class="text-danger">Chưa có video cho phim này.</p>
+                        </div>
                         @endif
                     </div>
                 </div>
 
-                <!-- Thông tin phim -->
                 <div class="card mt-3 bg-dark text-light border-0">
                     <div class="card-body">
                         <h4 class="card-title">{{ $phim->ten_phim }} ({{ $phim->nam_phat_hanh ?? '' }})</h4>
@@ -104,21 +108,24 @@
                 </div>
             </div>
 
-            <!-- Danh sách tập / trailer -->
             <div class="col-lg-3">
                 <div class="card bg-dark text-light border-0">
                     <div class="card-header fw-bold">
                         @if($phim->loai == 'phim_le')
-                            Trailer & Video
+                        Trailer & Video
                         @else
-                            Danh sách phát
+                        Danh sách phát
                         @endif
                     </div>
 
                     <div class="list-group list-group-flush">
                         {{-- Trailer (nếu có) --}}
                         @if($phim->trailer)
-                        <div class="episode-item" onclick="changeEpisode('{{ asset($phim->trailer) }}')">
+                        @php
+                        // Xử lý link trailer: Nếu là link ngoài thì giữ nguyên, nếu là file thì dùng asset()
+                        $trailerSrc = Str::startsWith($phim->trailer, ['http://', 'https://']) ? $phim->trailer : asset($phim->trailer);
+                        @endphp
+                        <div class="episode-item" onclick="changeEpisode('{{ $trailerSrc }}')">
                             <div class="thumb">
                                 <img src="{{ asset($phim->anh_bia ?? 'default.jpg') }}" alt="Trailer">
                                 <span class="time">Trailer</span>
@@ -127,8 +134,9 @@
                         </div>
                         @endif
 
-                        {{-- Phim bộ hoặc phân đoạn --}}
+                        {{-- Danh sách tập phim bộ --}}
                         @foreach($phim->taps as $tap)
+                        @if($tap->video) {{-- Chỉ hiển thị những tập đã có video --}}
                         <div class="episode-item" onclick="changeEpisode('{{ asset($tap->video) }}')">
                             <div class="thumb">
                                 <img src="{{ asset($tap->thumbnail ?? $phim->anh_bia ?? 'default.jpg') }}" alt="Tập {{ $tap->tap }}">
@@ -136,6 +144,7 @@
                             </div>
                             <div class="info">{{ $tap->ten_tap ?? 'Tập ' . $tap->tap }}</div>
                         </div>
+                        @endif
                         @endforeach
                     </div>
                 </div>
@@ -144,14 +153,53 @@
     </main>
 
     @include('footer')
-
+    {{-- XÓA HẾT CÁC THẺ SCRIPT CŨ VÀ THAY BẰNG ĐOẠN NÀY --}}
     <script>
-        function changeEpisode(link) {
-            let video = document.getElementById("videoPlayer");
-            let source = video.querySelector("source");
-            source.src = link;
-            video.load();
-            video.play();
+        function changeEpisode(url) {
+            const videoContainer = document.getElementById('video-player-container');
+            let playerHtml = '';
+
+            // Biểu thức chính quy để tìm ID video từ các nền tảng phổ biến
+            const youtubePattern = /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+            const vimeoPattern = /vimeo\.com\/(?:video\/)?([0-9]+)/;
+
+            const youtubeMatch = url.match(youtubePattern);
+            const vimeoMatch = url.match(vimeoPattern);
+
+            // Kiểm tra xem có phải link file video trực tiếp không (mp4, webm, ogg)
+            const isDirectVideoLink = url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.ogg');
+
+            if (youtubeMatch) {
+                // TRƯỜNG HỢP 1: LÀ LINK YOUTUBE
+                const videoId = youtubeMatch[1];
+                const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                playerHtml = `<iframe src="${embedUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width: 100%; height: 100%;"></iframe>`;
+
+            } else if (vimeoMatch) {
+                // TRƯỜNG HỢP 2: LÀ LINK VIMEO
+                const videoId = vimeoMatch[1];
+                const embedUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1`;
+                playerHtml = `<iframe src="${embedUrl}" title="Vimeo video player" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="width: 100%; height: 100%;"></iframe>`;
+
+            } else if (isDirectVideoLink) {
+                // TRƯỜNG HỢP 3: LÀ LINK FILE VIDEO TRỰC TIẾP (.MP4, .WEBM, ...)
+                playerHtml = `
+                <video controls autoplay muted playsinline poster="{{ asset($phim->anh_bia ?? '') }}" style="width: 100%; height: 100%;">
+                    <source src="${url}" type="video/mp4">
+                    Trình duyệt không hỗ trợ phát video.
+                </video>`;
+            } else {
+                // TRƯỜNG HỢP 4: LÀ FILE BẠN UPLOAD (không có http) hoặc một URL không xác định
+                // Đối với file upload, hàm asset() đã tạo ra đường dẫn đúng
+                playerHtml = `
+                <video controls autoplay muted playsinline poster="{{ asset($phim->anh_bia ?? '') }}" style="width: 100%; height: 100%;">
+                    <source src="${url}" type="video/mp4">
+                    Trình duyệt không hỗ trợ phát video.
+                </video>`;
+            }
+
+            // Thay thế nội dung của container bằng trình phát phù hợp
+            videoContainer.innerHTML = playerHtml;
         }
     </script>
 

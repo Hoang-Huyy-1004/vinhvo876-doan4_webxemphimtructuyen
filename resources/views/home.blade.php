@@ -12,7 +12,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background-color: #000; /* nền đen cho giống giao diện phim */
+            background-color: #ffffffff; /* nền đen cho giống giao diện phim */
         }
 
         main {

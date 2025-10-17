@@ -65,9 +65,13 @@ class PhimController extends Controller
             'ten_phim' => 'required|string|max:255',
             'mo_ta' => 'nullable|string',
             'nam_phat_hanh' => 'nullable|integer',
-            'anh_bia' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            // 'anh_bia' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'anh_bia' => 'nullable|image|max:2048',
             'loai' => 'required|string|in:le,bo',
-            'trailer' => 'nullable|mimes:mp4,mkv,avi,mov,flv|max:51200',
+            // 'trailer' => 'nullable|mimes:mp4,mkv,avi,mov,flv|max:51200',
+            'trailer_type' => 'required|in:file,url',
+            'trailer_file' => 'required_if:trailer_type,file|nullable|mimes:mp4,mkv,avi,mov,flv|max:51200',
+            'trailer_url' => 'required_if:trailer_type,url|nullable|url|max:255',
             'video' => ($request->loai === 'le' ? 'required' : 'nullable') . '|file|mimes:mp4,mov,ogg,qt|max:200000', // 200MB
             // Chỉ bắt buộc số tập nếu là phim bộ
             'so_tap' => ($request->loai === 'bo' ? 'required' : 'nullable') . '|integer|min:1',
@@ -129,10 +133,18 @@ class PhimController extends Controller
             $anhBiaDb = $dbPath . '/' . $fileName;
         }
 
-        if ($request->hasFile('trailer')) {
-            $fileName = time() . '_' . $request->file('trailer')->getClientOriginalName();
-            $request->file('trailer')->move($folder, $fileName);
+        // if ($request->hasFile('trailer')) {
+        //     $fileName = time() . '_' . $request->file('trailer')->getClientOriginalName();
+        //     $request->file('trailer')->move($folder, $fileName);
+        //     $trailerDb = $dbPath . '/' . $fileName;
+        // }
+
+        if ($request->trailer_type === 'file' && $request->hasFile('trailer_file')) {
+            $fileName = time() . '_' . $request->file('trailer_file')->getClientOriginalName();
+            $request->file('trailer_file')->move($folder, $fileName);
             $trailerDb = $dbPath . '/' . $fileName;
+        } elseif ($request->trailer_type === 'url') {
+            $trailerDb = $request->trailer_url;
         }
 
         // Chỉ upload video nếu là phim lẻ
@@ -240,7 +252,10 @@ class PhimController extends Controller
             // File ảnh/video là nullable, không bắt buộc upload lại
             'anh_bia' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'loai' => 'required|string|in:le,bo',
-            'trailer' => 'nullable|mimes:mp4,mkv,avi,mov,flv|max:51200',
+            // 'trailer' => 'nullable|mimes:mp4,mkv,avi,mov,flv|max:51200',
+            'trailer_type' => 'required|in:file,url', // Giả sử người dùng phải chọn lại
+            'trailer_file' => 'required_if:trailer_type,file|nullable|mimes:mp4,mkv,avi,mov,flv|max:51200',
+            'trailer_url' => 'required_if:trailer_type,url|nullable|url|max:255',
             // 'video' chỉ được gửi nếu là phim lẻ
             'video' => $phim->loai === 'phim_le' ? 'nullable|mimes:mp4,mov,ogg,qt|max:50000' : 'nullable',
             // 'so_tap' chỉ được gửi nếu là phim bộ
@@ -296,14 +311,39 @@ class PhimController extends Controller
             $anhBiaDb = $dbPath . '/' . $fileName;
         }
 
-        if ($request->hasFile('trailer')) {
-            if ($phim->trailer && \Illuminate\Support\Facades\File::exists(public_path($phim->trailer))) {
-                \Illuminate\Support\Facades\File::delete(public_path($phim->trailer));
+        // if ($request->hasFile('trailer')) {
+        //     if ($phim->trailer && \Illuminate\Support\Facades\File::exists(public_path($phim->trailer))) {
+        //         \Illuminate\Support\Facades\File::delete(public_path($phim->trailer));
+        //     }
+        //     $fileName = time() . '_' . $request->file('trailer')->getClientOriginalName();
+        //     $request->file('trailer')->move($folder, $fileName);
+        //     $trailerDb = $dbPath . '/' . $fileName;
+        // }
+        // *** BẮT ĐẦU CODE MỚI XỬ LÝ CẬP NHẬT TRAILER ***
+        $trailerDb = $phim->trailer; // Giữ giá trị cũ làm mặc định
+
+        // Hàm kiểm tra xem một chuỗi có phải là URL không
+        $isUrl = function ($string) {
+            return filter_var($string, FILTER_VALIDATE_URL) !== false;
+        };
+
+        if ($request->trailer_type === 'file' && $request->hasFile('trailer_file')) {
+            // Nếu trailer cũ là file (không phải URL), thì xóa nó đi
+            if ($phim->trailer && !$isUrl($phim->trailer) && File::exists(public_path($phim->trailer))) {
+                File::delete(public_path($phim->trailer));
             }
-            $fileName = time() . '_' . $request->file('trailer')->getClientOriginalName();
-            $request->file('trailer')->move($folder, $fileName);
+            // Upload file mới
+            $fileName = time() . '_' . $request->file('trailer_file')->getClientOriginalName();
+            $request->file('trailer_file')->move($folder, $fileName);
             $trailerDb = $dbPath . '/' . $fileName;
+        } elseif ($request->trailer_type === 'url' && $request->filled('trailer_url')) {
+            // Nếu trailer cũ là file, xóa nó đi trước khi lưu URL mới
+            if ($phim->trailer && !$isUrl($phim->trailer) && File::exists(public_path($phim->trailer))) {
+                File::delete(public_path($phim->trailer));
+            }
+            $trailerDb = $request->trailer_url;
         }
+        // *** KẾT THÚC CODE MỚI ***
 
         // *** ĐIỀU CHỈNH: Xử lý Video (Phim Lẻ) hoặc Số tập (Phim Bộ) ***
         if ($phim->loai === 'phim_le') {

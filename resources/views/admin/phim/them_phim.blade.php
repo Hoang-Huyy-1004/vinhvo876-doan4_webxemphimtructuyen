@@ -60,17 +60,61 @@
         </div>
     </div>
 
-    <div class="mb-3">
+    <!-- <div class="mb-3">
         <label class="form-label">Trailer</label>
         <input type="file" name="trailer" class="form-control" accept="video/*">
+    </div> -->
+    <div class="mb-3">
+        <label class="form-label">Trailer</label>
+
+        {{-- Lựa chọn loại trailer --}}
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="trailer_type" id="trailer_file_radio" value="file" checked>
+            <label class="form-check-label" for="trailer_file_radio">Upload File</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="trailer_type" id="trailer_url_radio" value="url">
+            <label class="form-check-label" for="trailer_url_radio">Nhập URL</label>
+        </div>
+
+        {{-- Input cho Upload File --}}
+        <div id="trailer_file_field" class="mt-2">
+            <input type="file" name="trailer_file" class="form-control" accept="video/*">
+        </div>
+
+        {{-- Input cho URL --}}
+        <div id="trailer_url_field" class="mt-2" style="display: none;">
+            <input type="url" name="trailer_url" class="form-control" placeholder="https://www.youtube.com/watch?v=...">
+        </div>
     </div>
+
+    {{-- Thêm script để xử lý ẩn/hiện --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const trailerTypeRadios = document.querySelectorAll('input[name="trailer_type"]');
+            const fileField = document.getElementById('trailer_file_field');
+            const urlField = document.getElementById('trailer_url_field');
+
+            trailerTypeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'file') {
+                        fileField.style.display = 'block';
+                        urlField.style.display = 'none';
+                    } else {
+                        fileField.style.display = 'none';
+                        urlField.style.display = 'block';
+                    }
+                });
+            });
+        });
+    </script>
 
     <!-- <div class="mb-3">
         <label class="form-label">Video</label>
         <input type="file" name="video" class="form-control" accept="video/*">
     </div> -->
 
-        {{-- 1. Cho Phim LẺ (video file) --}}
+    {{-- 1. Cho Phim LẺ (video file) --}}
     <div class="mb-3" id="field_video"> {{-- THÊM ID --}}
         <label class="form-label">Video (Phim lẻ)</label>
         <input type="file" name="video" class="form-control" accept="video/*">
@@ -111,7 +155,7 @@
 </form>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const loaiPhim = document.getElementById('loai_phim');
         const fieldVideo = document.getElementById('field_video');
         const fieldSoTap = document.getElementById('field_so_tap');
@@ -123,21 +167,21 @@
                 // Phim Bộ: Ẩn Video, Hiện Số tập
                 fieldVideo.style.display = 'none';
                 inputVideo.removeAttribute('required'); // Bỏ required cho input file video
-                
+
                 fieldSoTap.style.display = 'block';
                 inputSoTap.setAttribute('required', 'required'); // BẮT BUỘC nhập số tập
             } else {
                 // Phim Lẻ: Hiện Video, Ẩn Số tập
                 fieldVideo.style.display = 'block';
                 inputVideo.setAttribute('required', 'required'); // BẮT BUỘC upload video phim lẻ
-                
+
                 fieldSoTap.style.display = 'none';
                 inputSoTap.removeAttribute('required'); // Bỏ required cho input số tập
             }
         }
 
         // Chạy lần đầu tiên khi tải trang
-        toggleFields(); 
+        toggleFields();
 
         // Lắng nghe sự kiện thay đổi
         loaiPhim.addEventListener('change', toggleFields);
