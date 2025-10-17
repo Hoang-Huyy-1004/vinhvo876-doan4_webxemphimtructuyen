@@ -72,7 +72,10 @@ class PhimController extends Controller
             'trailer_type' => 'required|in:file,url',
             'trailer_file' => 'required_if:trailer_type,file|nullable|mimes:mp4,mkv,avi,mov,flv|max:51200',
             'trailer_url' => 'required_if:trailer_type,url|nullable|url|max:255',
-            'video' => ($request->loai === 'le' ? 'required' : 'nullable') . '|file|mimes:mp4,mov,ogg,qt|max:200000', // 200MB
+            // 'video' => ($request->loai === 'le' ? 'required' : 'nullable') . '|file|mimes:mp4,mov,ogg,qt|max:200000', // 200MB
+            'video_type' => ($request->loai === 'le' ? 'required' : 'nullable') . '|in:file,url',
+            'video_file' => ($request->loai === 'le' ? 'required_if:video_type,file' : 'nullable') . '|file|mimes:mp4,mov,ogg,qt|max:200000', // 200MB
+            'video_url' => ($request->loai === 'le' ? 'required_if:video_type,url' : 'nullable') . '|url|max:255',
             // Chỉ bắt buộc số tập nếu là phim bộ
             'so_tap' => ($request->loai === 'bo' ? 'required' : 'nullable') . '|integer|min:1',
             'thoi_luong' => 'nullable|string|max:50',
@@ -148,10 +151,14 @@ class PhimController extends Controller
         }
 
         // Chỉ upload video nếu là phim lẻ
-        if ($request->loai === 'le' && $request->hasFile('video')) {
-            $fileName = time() . '_' . $request->file('video')->getClientOriginalName();
-            $request->file('video')->move($folder, $fileName);
-            $videoDb = $dbPath . '/' . $fileName;
+        if ($request->loai === 'le') {
+            if ($request->video_type === 'file' && $request->hasFile('video_file')) {
+                $fileName = time() . '_' . $request->file('video_file')->getClientOriginalName();
+                $request->file('video_file')->move($folder, $fileName);
+                $videoDb = $dbPath . '/' . $fileName;
+            } elseif ($request->video_type === 'url' && $request->filled('video_url')) {
+                $videoDb = $request->video_url;
+            }
         }
 
         // Lưu phim
@@ -253,11 +260,14 @@ class PhimController extends Controller
             'anh_bia' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'loai' => 'required|string|in:le,bo',
             // 'trailer' => 'nullable|mimes:mp4,mkv,avi,mov,flv|max:51200',
-            'trailer_type' => 'required|in:file,url', // Giả sử người dùng phải chọn lại
+            'trailer_type' => 'nullable|mimes:mp4,mkv,avi,mov,flv|max:51200', // Giả sử người dùng phải chọn lại
             'trailer_file' => 'required_if:trailer_type,file|nullable|mimes:mp4,mkv,avi,mov,flv|max:51200',
             'trailer_url' => 'required_if:trailer_type,url|nullable|url|max:255',
             // 'video' chỉ được gửi nếu là phim lẻ
-            'video' => $phim->loai === 'phim_le' ? 'nullable|mimes:mp4,mov,ogg,qt|max:50000' : 'nullable',
+            // 'video' => $phim->loai === 'phim_le' ? 'nullable|mimes:mp4,mov,ogg,qt|max:50000' : 'nullable',
+            'video_type' => $phim->loai === 'phim_le' ? 'nullable|mimes:mp4,mov,ogg,qt|max:50000' : 'nullable',
+            'video_file' => ($phim->loai === 'phim_le' ? 'required_if:video_type,file' : 'nullable') . '|mimes:mp4,mov,ogg,qt|max:50000',
+            'video_url' => ($phim->loai === 'phim_le' ? 'required_if:video_type,url' : 'nullable') . '|url|max:255',
             // 'so_tap' chỉ được gửi nếu là phim bộ
             'so_tap' => $phim->loai === 'phim_bo' ? 'nullable|integer|min:1' : 'nullable',
             'thoi_luong' => 'nullable|string|max:50',
@@ -346,26 +356,31 @@ class PhimController extends Controller
         // *** KẾT THÚC CODE MỚI ***
 
         // *** ĐIỀU CHỈNH: Xử lý Video (Phim Lẻ) hoặc Số tập (Phim Bộ) ***
+        $videoDb = $phim->video; // Giữ giá trị cũ
+        $soTapValue = $phim->so_tap; // Giữ giá trị cũ
+
         if ($phim->loai === 'phim_le') {
-            // 2.1. Phim Lẻ: Xử lý Video
-            if ($request->hasFile('video')) {
-                // Xóa video cũ
-                if ($phim->video && File::exists(public_path($phim->video))) {
+            if ($request->video_type === 'file' && $request->hasFile('video_file')) {
+                // Xóa video cũ nếu nó là file
+                if ($phim->video && !$isUrl($phim->video) && File::exists(public_path($phim->video))) {
                     File::delete(public_path($phim->video));
                 }
                 // Tải video mới
-                $fileName = time() . '_' . $request->file('video')->getClientOriginalName();
-                $request->file('video')->move(public_path($folder), $fileName);
+                $fileName = time() . '_' . $request->file('video_file')->getClientOriginalName();
+                $request->file('video_file')->move($folder, $fileName);
                 $videoDb = $dbPath . '/' . $fileName;
+            } elseif ($request->video_type === 'url' && $request->filled('video_url')) {
+                // Xóa video cũ nếu nó là file
+                if ($phim->video && !$isUrl($phim->video) && File::exists(public_path($phim->video))) {
+                    File::delete(public_path($phim->video));
+                }
+                $videoDb = $request->video_url;
             }
-            // Đảm bảo trường so_tap được set là NULL
-            $soTapValue = null;
+            $soTapValue = null; // Phim lẻ không có số tập
         } elseif ($phim->loai === 'phim_bo') {
-            // 2.2. Phim Bộ: Cập nhật Số tập
             $soTapValue = $request->so_tap;
-
-            // Đảm bảo trường video được set là NULL (và xóa file nếu có)
-            if ($phim->video && File::exists(public_path($phim->video))) {
+            // Phim bộ không có video chính, xóa file nếu có
+            if ($phim->video && !$isUrl($phim->video) && File::exists(public_path($phim->video))) {
                 File::delete(public_path($phim->video));
             }
             $videoDb = null;

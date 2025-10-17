@@ -96,68 +96,9 @@
     <div class="mb-3">
         <label class="form-label">Trailer hiện tại:</label>
         <p>{{ $phim->trailer ? basename($phim->trailer) : 'Chưa có trailer' }}</p>
-        <hr>
-
-        <label class="form-label">Cập nhật Trailer mới (Không bắt buộc)</label>
-
-        {{-- Lựa chọn loại trailer --}}
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="trailer_type" id="trailer_none_radio" value="none" checked>
-            <label class="form-check-label" for="trailer_none_radio">Không thay đổi</label>
-        </div>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="trailer_type" id="trailer_file_radio" value="file">
-            <label class="form-check-label" for="trailer_file_radio">Upload File mới</label>
-        </div>
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="trailer_type" id="trailer_url_radio" value="url">
-            <label class="form-check-label" for="trailer_url_radio">Nhập URL mới</label>
-        </div>
-
-        {{-- Input cho Upload File (ẩn mặc định) --}}
-        <div id="trailer_file_field" class="mt-2" style="display: none;">
-            <input type="file" name="trailer_file" class="form-control" accept="video/*">
-        </div>
-
-        {{-- Input cho URL (ẩn mặc định) --}}
-        <div id="trailer_url_field" class="mt-2" style="display: none;">
-            <input type="url" name="trailer_url" class="form-control" placeholder="https://www.youtube.com/watch?v=...">
-        </div>
+        <label class="form-label">Cập nhật Trailer (Không bắt buộc)</label>
+        <input type="file" name="trailer" class="form-control" accept="video/*">
     </div>
-
-    {{-- SCRIPT ĐIỀU KHIỂN ẨN/HIỆN --}}
-    {{-- Đảm bảo chỉ có 1 script này ở cuối file blade của bạn --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Tìm các element liên quan đến trailer
-            const trailerTypeRadios = document.querySelectorAll('input[name="trailer_type"]');
-            const fileField = document.getElementById('trailer_file_field');
-            const urlField = document.getElementById('trailer_url_field');
-
-            function updateTrailerFields() {
-                const selectedValue = document.querySelector('input[name="trailer_type"]:checked').value;
-
-                if (selectedValue === 'file') {
-                    fileField.style.display = 'block';
-                    urlField.style.display = 'none';
-                } else if (selectedValue === 'url') {
-                    fileField.style.display = 'none';
-                    urlField.style.display = 'block';
-                } else { // 'none'
-                    fileField.style.display = 'none';
-                    urlField.style.display = 'none';
-                }
-            }
-
-            // Gắn sự kiện 'change' cho mỗi radio button
-            trailerTypeRadios.forEach(radio => {
-                radio.addEventListener('change', updateTrailerFields);
-            });
-
-            // Chạy lần đầu khi tải trang để ẩn các trường không cần thiết
-            updateTrailerFields();
-        });
-    </script>
 
     {{-- Khối điều kiện: Video cho Phim Lẻ, Số tập cho Phim Bộ --}}
     @if ($phim->loai === 'phim_le')

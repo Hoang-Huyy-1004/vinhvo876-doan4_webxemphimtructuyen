@@ -84,30 +84,9 @@
 
         {{-- Input cho URL --}}
         <div id="trailer_url_field" class="mt-2" style="display: none;">
-            <input type="url" name="trailer_url" class="form-control" placeholder="https://www.youtube.com/watch?v=...">
+            <input type="url" name="trailer_url" class="form-control" placeholder="https://...">
         </div>
     </div>
-
-    {{-- Thêm script để xử lý ẩn/hiện --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const trailerTypeRadios = document.querySelectorAll('input[name="trailer_type"]');
-            const fileField = document.getElementById('trailer_file_field');
-            const urlField = document.getElementById('trailer_url_field');
-
-            trailerTypeRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    if (this.value === 'file') {
-                        fileField.style.display = 'block';
-                        urlField.style.display = 'none';
-                    } else {
-                        fileField.style.display = 'none';
-                        urlField.style.display = 'block';
-                    }
-                });
-            });
-        });
-    </script>
 
     <!-- <div class="mb-3">
         <label class="form-label">Video</label>
@@ -115,11 +94,35 @@
     </div> -->
 
     {{-- 1. Cho Phim LẺ (video file) --}}
-    <div class="mb-3" id="field_video"> {{-- THÊM ID --}}
+    <!-- <div class="mb-3" id="field_video"> {{-- THÊM ID --}}
         <label class="form-label">Video (Phim lẻ)</label>
         <input type="file" name="video" class="form-control" accept="video/*">
-    </div>
+    </div> -->
+    {{-- Thay thế div này cho div#field_video cũ --}}
+    <div class="mb-3" id="field_video">
+        <label class="form-label">Video (Phim lẻ)</label>
 
+        {{-- Lựa chọn loại video --}}
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="video_type" id="video_file_radio" value="file" checked>
+            <label class="form-check-label" for="video_file_radio">Upload File</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="video_type" id="video_url_radio" value="url">
+            <label class="form-check-label" for="video_url_radio">Nhập URL</label>
+        </div>
+
+        {{-- Input cho Upload File --}}
+        <div id="video_file_field" class="mt-2">
+            <input type="file" name="video_file" class="form-control" accept="video/*">
+        </div>
+
+        {{-- Input cho URL --}}
+        <div id="video_url_field" class="mt-2" style="display: none;">
+            <input type="url" name="video_url" class="form-control" placeholder="https://...">
+        </div>
+    </div>
+    
     {{-- 2. Cho Phim BỘ (số tập) --}}
     <div class="mb-3" id="field_so_tap" style="display: none;"> {{-- THÊM ID và ẨN MẶC ĐỊNH --}}
         <label class="form-label">Số tập (Phim bộ)</label>
@@ -185,6 +188,93 @@
 
         // Lắng nghe sự kiện thay đổi
         loaiPhim.addEventListener('change', toggleFields);
+    });
+
+    // {{-- XÓA HẾT CÁC SCRIPT CŨ VÀ THAY BẰNG SCRIPT NÀY --}}
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- PHẦN 1: HÀM TÁI SỬ DỤNG ĐỂ ẨN/HIỆN CÁC TRƯỜNG FILE/URL ---
+        function setupToggleFields(config) {
+            const radioButtons = document.querySelectorAll(`input[name="${config.radioName}"]`);
+            const fileField = document.getElementById(config.fileFieldId);
+            const urlField = document.getElementById(config.urlFieldId);
+
+            // Nếu không tìm thấy các element thì không làm gì cả
+            if (!radioButtons.length || !fileField || !urlField) {
+                return;
+            }
+
+            function updateVisibility() {
+                const selectedValue = document.querySelector(`input[name="${config.radioName}"]:checked`).value;
+                fileField.style.display = (selectedValue === 'file') ? 'block' : 'none';
+                urlField.style.display = (selectedValue === 'url') ? 'block' : 'none';
+            }
+
+            radioButtons.forEach(radio => radio.addEventListener('change', updateVisibility));
+            updateVisibility(); // Chạy lần đầu để có trạng thái đúng
+        }
+
+        // Áp dụng hàm cho phần Trailer
+        setupToggleFields({
+            radioName: 'trailer_type',
+            fileFieldId: 'trailer_file_field',
+            urlFieldId: 'trailer_url_field'
+        });
+
+        // Áp dụng hàm cho phần Video
+        setupToggleFields({
+            radioName: 'video_type',
+            fileFieldId: 'video_file_field',
+            urlFieldId: 'video_url_field'
+        });
+
+
+        // --- PHẦN 2: LOGIC ẨN/HIỆN DỰA TRÊN LOẠI PHIM (LẺ/BỘ) ---
+        const loaiPhimSelect = document.getElementById('loai_phim');
+        const fieldVideo = document.getElementById('field_video');
+        const fieldSoTap = document.getElementById('field_so_tap');
+        
+        const inputVideoFile = document.querySelector('input[name="video_file"]');
+        const inputVideoUrl = document.querySelector('input[name="video_url"]');
+        const inputSoTap = document.querySelector('input[name="so_tap"]');
+
+        function updateFormLayout() {
+            if (loaiPhimSelect.value === 'bo') { // Nếu là Phim Bộ
+                fieldVideo.style.display = 'none';
+                fieldSoTap.style.display = 'block';
+
+                // Bỏ bắt buộc nhập video
+                inputVideoFile.removeAttribute('required');
+                inputVideoUrl.removeAttribute('required');
+                // Bắt buộc nhập số tập
+                inputSoTap.setAttribute('required', 'required');
+
+            } else { // Nếu là Phim Lẻ
+                fieldVideo.style.display = 'block';
+                fieldSoTap.style.display = 'none';
+                
+                // Bắt buộc nhập video (dựa theo lựa chọn file hoặc url)
+                const selectedVideoType = document.querySelector('input[name="video_type"]:checked').value;
+                if(selectedVideoType === 'file') {
+                    inputVideoFile.setAttribute('required', 'required');
+                    inputVideoUrl.removeAttribute('required');
+                } else { // url
+                    inputVideoFile.removeAttribute('required');
+                    inputVideoUrl.setAttribute('required', 'required');
+                }
+                
+                // Bỏ bắt buộc nhập số tập
+                inputSoTap.removeAttribute('required');
+            }
+        }
+        
+        // Lắng nghe sự kiện thay đổi của cả Loại Phim và Loại Video
+        loaiPhimSelect.addEventListener('change', updateFormLayout);
+        document.querySelectorAll('input[name="video_type"]').forEach(radio => {
+            radio.addEventListener('change', updateFormLayout);
+        });
+
+        // Chạy lần đầu khi tải trang
+        updateFormLayout();
     });
 </script>
 

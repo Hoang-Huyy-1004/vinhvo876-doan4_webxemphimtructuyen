@@ -75,27 +75,44 @@ use Illuminate\Support\Str;
         <div class="row">
             <div class="col-lg-9">
                 <div class="video-wrapper">
-                    {{-- SỬA Ở ĐÂY: Thêm ID cho container để JS có thể tìm thấy --}}
                     <div id="video-player-container" class="ratio ratio-16x9 bg-dark rounded">
-                        {{-- Logic hiển thị video ban đầu --}}
                         @php
                         $initialVideoSrc = '';
+                        $isUrl = false; // thêm biến kiểm tra URL
+
                         if ($phim->loai == 'phim_le' && $phim->video) {
-                        $initialVideoSrc = asset($phim->video);
+                            $initialVideoSrc = $phim->video;
                         } elseif ($phim->loai == 'phim_bo' && $phim->taps->count() > 0 && $phim->taps->first()->video) {
-                        $initialVideoSrc = asset($phim->taps->first()->video);
+                            $initialVideoSrc = $phim->taps->first()->video;
+                        }
+
+                        // Kiểm tra xem có phải là URL ngoài không
+                        if (Str::startsWith($initialVideoSrc, ['http://', 'https://'])) {
+                            $isUrl = true;
+                        } else {
+                            $initialVideoSrc = asset($initialVideoSrc); // nếu không phải URL ngoài → dùng asset()
                         }
                         @endphp
 
                         @if($initialVideoSrc)
-                        <video controls autoplay muted playsinline poster="{{ asset($phim->anh_bia ?? '') }}" style="width: 100%; height: 100%;">
-                            <source src="{{ $initialVideoSrc }}" type="video/mp4">
-                            Trình duyệt không hỗ trợ phát video.
-                        </video>
+                            @if($isUrl)
+                                {{-- Trường hợp là URL (YouTube, Drive, v.v.) --}}
+                                <iframe src="{{ $initialVideoSrc }}"
+                                    class="w-100 h-100 rounded border-0"
+                                    allowfullscreen></iframe>
+                            @else
+                                {{-- Trường hợp là file video trong hệ thống --}}
+                                <video controls autoplay muted playsinline
+                                    poster="{{ asset($phim->anh_bia ?? '') }}"
+                                    style="width: 100%; height: 100%;">
+                                    <source src="{{ $initialVideoSrc }}" type="video/mp4">
+                                    Trình duyệt không hỗ trợ phát video.
+                                </video>
+                            @endif
                         @else
-                        <div class="d-flex justify-content-center align-items-center h-100">
-                            <p class="text-danger">Chưa có video cho phim này.</p>
-                        </div>
+                            <div class="d-flex justify-content-center align-items-center h-100">
+                                <p class="text-danger">Chưa có video cho phim này.</p>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -121,49 +138,55 @@ use Illuminate\Support\Str;
                     <div class="list-group list-group-flush">
                         {{-- Trailer (nếu có) --}}
                         @if($phim->trailer)
-                        @php
-                        // Xử lý link trailer: Nếu là link ngoài thì giữ nguyên, nếu là file thì dùng asset()
-                        $trailerSrc = Str::startsWith($phim->trailer, ['http://', 'https://']) ? $phim->trailer : asset($phim->trailer);
-                        @endphp
-                        <div class="episode-item" onclick="changeEpisode('{{ $trailerSrc }}')">
-                            <div class="thumb">
-                                <img src="{{ asset($phim->anh_bia ?? 'default.jpg') }}" alt="Trailer">
-                                <span class="time">Trailer</span>
+                            @php
+                                // Xử lý link trailer: Nếu là link ngoài thì giữ nguyên, nếu là file thì dùng asset()
+                                $trailerSrc = Str::startsWith($phim->trailer, ['http://', 'https://']) ? $phim->trailer : asset($phim->trailer);
+                            @endphp
+                            <div class="episode-item" onclick="changeEpisode('{{ $trailerSrc }}')">
+                                <div class="thumb">
+                                    <img src="{{ asset($phim->anh_bia ?? 'default.jpg') }}" alt="Trailer">
+                                    <span class="time">Trailer</span>
+                                </div>
+                                <div class="info">🎬 Trailer</div>
                             </div>
-                            <div class="info">🎬 Trailer</div>
-                        </div>
                         @endif
 
-                        {{-- Danh sách tập phim bộ --}}
+                        {{-- Danh sách tập phim --}}
+                        @if($phim->loai == 'phim_bo' && $phim->taps->isNotEmpty())
+                            
+                            {{-- === XỬ LÝ CHO PHIM BỘ === --}}
+                            @foreach($phim->taps as $tap)
+                                @if($tap->video) {{-- Chỉ hiển thị những tập đã có video --}}
+                                    @php
+                                        // SỬA LỖI Ở ĐÂY: Kiểm tra link là URL ngoài hay file local
+                                        $videoSrc = Str::startsWith($tap->video, ['http://', 'https://']) ? $tap->video : asset($tap->video);
+                                    @endphp
+                                    <div class="episode-item" onclick="changeEpisode('{{ $videoSrc }}')">
+                                        <div class="thumb">
+                                            <img src="{{ asset($tap->thumbnail ?? $phim->anh_bia ?? 'default.jpg') }}" alt="Tập {{ $tap->tap }}">
+                                            <span class="time">{{ $tap->thoi_luong ?? '24 phút' }}</span>
+                                        </div>
+                                        <div class="info">{{ $tap->ten_tap ?? 'Tập ' . $tap->tap }}</div>
+                                    </div>
+                                @endif
+                            @endforeach
 
-                        {{-- Kiểm tra xem phim có nhiều hơn 1 tập và có danh sách tập không --}}
-                        @if(isset($phim->so_tap) && $phim->so_tap > 1 && $phim->taps->isNotEmpty())
+                        @elseif($phim->loai == 'phim_le')
 
-                        {{-- === XỬ LÝ CHO PHIM BỘ === --}}
-                        @foreach($phim->taps as $tap)
-                        @if($tap->video) {{-- Chỉ hiển thị những tập đã có video --}}
-                        <div class="episode-item" onclick="changeEpisode('{{ asset($tap->video) }}')">
-                            <div class="thumb">
-                                <img src="{{ asset($tap->thumbnail ?? $phim->anh_bia ?? 'default.jpg') }}" alt="Tập {{ $tap->tap }}">
-                                <span class="time">{{ $tap->thoi_luong ?? '24 phút' }}</span>
-                            </div>
-                            <div class="info">{{ $tap->ten_tap ?? 'Tập ' . $tap->tap }}</div>
-                        </div>
-                        @endif
-                        @endforeach
-
-                        @else
-
-                        {{-- === XỬ LÝ CHO PHIM LẺ === --}}
-                        @if($phim->video) {{-- Chỉ hiển thị nếu phim lẻ có video --}}
-                        <div class="episode-item active" onclick="changeEpisode('{{ asset($phim->video) }}')">
-                            <div class="thumb">
-                                <img src="{{ asset($phim->anh_bia ?? 'default.jpg') }}" alt="{{ $phim->ten_phim }}">
-                                <span class="time">{{ $phim->thoi_luong ?? '90 phút' }}</span>
-                            </div>
-                            <div class="info">Full </div>
-                        </div>
-                        @endif
+                            {{-- === XỬ LÝ CHO PHIM LẺ === --}}
+                            @if($phim->video) {{-- Chỉ hiển thị nếu phim lẻ có video --}}
+                                @php
+                                    // SỬA LỖI Ở ĐÂY: Kiểm tra link là URL ngoài hay file local
+                                    $videoSrc = Str::startsWith($phim->video, ['http://', 'https://']) ? $phim->video : asset($phim->video);
+                                @endphp
+                                <div class="episode-item active" onclick="changeEpisode('{{ $videoSrc }}')">
+                                    <div class="thumb">
+                                        <img src="{{ asset($phim->anh_bia ?? 'default.jpg') }}" alt="{{ $phim->ten_phim }}">
+                                        <span class="time">{{ $phim->thoi_luong ?? '90 phút' }}</span>
+                                    </div>
+                                    <div class="info">Full</div>
+                                </div>
+                            @endif
 
                         @endif
                     </div>
@@ -200,16 +223,26 @@ use Illuminate\Support\Str;
                 const embedUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1`;
                 playerHtml = `<iframe src="${embedUrl}" title="Vimeo video player" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="width: 100%; height: 100%;"></iframe>`;
 
-            } else if (isDirectVideoLink) {
-                // TRƯỜNG HỢP 3: LÀ LINK FILE VIDEO TRỰC TIẾP (.MP4, .WEBM, ...)
-                playerHtml = `
-                <video controls autoplay muted playsinline poster="{{ asset($phim->anh_bia ?? '') }}" style="width: 100%; height: 100%;">
-                    <source src="${url}" type="video/mp4">
-                    Trình duyệt không hỗ trợ phát video.
-                </video>`;
+            } else if (isDirectVideoLink || url.startsWith('http')) {
+                // TRƯỜNG HỢP 3: LÀ LINK FILE VIDEO TRỰC TIẾP hoặc URL nhúng iframe khác (Google Drive)
+                 if (url.includes("drive.google.com")) {
+                     // Xử lý link Google Drive để nhúng
+                     url = url.replace("/view", "/preview");
+                 }
+
+                // Nếu là URL trực tiếp, dùng iframe để tránh các vấn đề về CORS nếu có thể
+                if (!isDirectVideoLink && !url.endsWith('.m3u8')) {
+                     playerHtml = `<iframe src="${url}" frameborder="0" allowfullscreen style="width: 100%; height: 100%;"></iframe>`;
+                } else {
+                     // Nếu là link file video thì dùng thẻ <video>
+                     playerHtml = `
+                    <video controls autoplay muted playsinline poster="{{ asset($phim->anh_bia ?? '') }}" style="width: 100%; height: 100%;">
+                        <source src="${url}" type="video/mp4">
+                        Trình duyệt không hỗ trợ phát video.
+                    </video>`;
+                }
             } else {
-                // TRƯỜNG HỢP 4: LÀ FILE BẠN UPLOAD (không có http) hoặc một URL không xác định
-                // Đối với file upload, hàm asset() đã tạo ra đường dẫn đúng
+                // TRƯỜNG HỢP 4: LÀ FILE BẠN UPLOAD (đã được xử lý bởi hàm asset() trong Blade)
                 playerHtml = `
                 <video controls autoplay muted playsinline poster="{{ asset($phim->anh_bia ?? '') }}" style="width: 100%; height: 100%;">
                     <source src="${url}" type="video/mp4">

@@ -34,25 +34,71 @@
                     <div class="mb-3">
                         <label class="form-label">Video hiện tại</label>
                         @if($tapPhim->video)
-                            <div class="p-2">
-                               <a href="{{ asset($tapPhim->video) }}"></a>
-                            </div>
-                            <video controls style="max-width: 100%; max-height: 200px;">
-                                <source src="{{ asset($tapPhim->video) }}" type="video/mp4">
-                                Trình duyệt của bạn không hỗ trợ thẻ video.
-                            </video>
+                        <div class="p-2">
+                            <a href="{{ asset($tapPhim->video) }}"></a>
+                        </div>
+                        <video controls style="max-width: 100%; max-height: 200px;">
+                            <source src="{{ asset($tapPhim->video) }}" type="video/mp4">
+                            Trình duyệt của bạn không hỗ trợ thẻ video.
+                        </video>
                         @else
-                            <div class="alert alert-warning p-2">Chưa có video nào được upload cho tập này.</div>
+                        <div class="alert alert-warning p-2">Chưa có video nào được upload cho tập này.</div>
                         @endif
                     </div>
                 </div>
 
+                <!-- đổi tập -->
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label class="form-label">Upload Video mới (mp4, mov, ogg | Max 500MB)</label>
-                        <input type="file" name="video" class="form-control" accept="video/*">
-                        <small class="text-danger">Upload file mới sẽ thay thế file cũ (nếu có).</small>
+                        <label class="form-label">Chọn phương thức tải lên:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="uploadOption" id="uploadFile" value="file" checked>
+                            <label class="form-check-label" for="uploadFile">
+                                Tải video mới lên (mp4, mov, ogg | Tối đa 500MB)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="uploadOption" id="uploadUrl" value="url">
+                            <label class="form-check-label" for="uploadUrl">
+                                Sử dụng URL của video
+                            </label>
+                        </div>
                     </div>
+
+                    <div class="mb-3" id="fileInputContainer">
+                        <label class="form-label">Video mới</label>
+                        <input type="file" name="video" class="form-control" accept="video/*">
+                        <small class="text-danger">Tải lên tệp mới sẽ thay thế tệp cũ (nếu có).</small>
+                    </div>
+
+                    <div class="mb-3" id="urlInputContainer" style="display: none;">
+                        <label class="form-label">Video URL</label>
+                        <input type="url" name="video_url" class="form-control" placeholder="https://example.com/video.mp4">
+                        <small class="text-danger">Cung cấp URL mới sẽ thay thế tệp cũ (nếu có).</small>
+                    </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const uploadFileRadio = document.getElementById('uploadFile');
+                            const uploadUrlRadio = document.getElementById('uploadUrl');
+                            const fileInputContainer = document.getElementById('fileInputContainer');
+                            const urlInputContainer = document.getElementById('urlInputContainer');
+
+                            uploadFileRadio.addEventListener('change', function() {
+                                if (this.checked) {
+                                    fileInputContainer.style.display = 'block';
+                                    urlInputContainer.style.display = 'none';
+                                }
+                            });
+
+                            uploadUrlRadio.addEventListener('change', function() {
+                                if (this.checked) {
+                                    fileInputContainer.style.display = 'none';
+                                    urlInputContainer.style.display = 'block';
+                                }
+                            });
+                        });
+                    </script>
 
                     <div class="mb-3">
                         <label class="form-label">Trạng thái</label>
