@@ -135,6 +135,11 @@ use Illuminate\Support\Str;
                         @endif
 
                         {{-- Danh sách tập phim bộ --}}
+
+                        {{-- Kiểm tra xem phim có nhiều hơn 1 tập và có danh sách tập không --}}
+                        @if(isset($phim->so_tap) && $phim->so_tap > 1 && $phim->taps->isNotEmpty())
+
+                        {{-- === XỬ LÝ CHO PHIM BỘ === --}}
                         @foreach($phim->taps as $tap)
                         @if($tap->video) {{-- Chỉ hiển thị những tập đã có video --}}
                         <div class="episode-item" onclick="changeEpisode('{{ asset($tap->video) }}')">
@@ -146,6 +151,21 @@ use Illuminate\Support\Str;
                         </div>
                         @endif
                         @endforeach
+
+                        @else
+
+                        {{-- === XỬ LÝ CHO PHIM LẺ === --}}
+                        @if($phim->video) {{-- Chỉ hiển thị nếu phim lẻ có video --}}
+                        <div class="episode-item active" onclick="changeEpisode('{{ asset($phim->video) }}')">
+                            <div class="thumb">
+                                <img src="{{ asset($phim->anh_bia ?? 'default.jpg') }}" alt="{{ $phim->ten_phim }}">
+                                <span class="time">{{ $phim->thoi_luong ?? '90 phút' }}</span>
+                            </div>
+                            <div class="info">Full </div>
+                        </div>
+                        @endif
+
+                        @endif
                     </div>
                 </div>
             </div>
@@ -153,7 +173,6 @@ use Illuminate\Support\Str;
     </main>
 
     @include('footer')
-    {{-- XÓA HẾT CÁC THẺ SCRIPT CŨ VÀ THAY BẰNG ĐOẠN NÀY --}}
     <script>
         function changeEpisode(url) {
             const videoContainer = document.getElementById('video-player-container');
