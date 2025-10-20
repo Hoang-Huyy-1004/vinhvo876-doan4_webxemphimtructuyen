@@ -59,7 +59,7 @@
 <body>
     @include('header')
 
-    <main class="container my-4 text-white">
+    <main class="container my-4 text-black">
 
         <!-- Mới ra mắt -->
         <h4 class="mb-3">Mới ra mắt</h4>
