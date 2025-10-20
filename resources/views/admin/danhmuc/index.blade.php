@@ -29,7 +29,7 @@
 
         {{-- Form thêm mới --}}
         <div class="card mb-4">
-            <div class="card-header bg-primary text-white">Thêm thể loại mới</div>
+            <div class="card-header text-white" style="background-color: #000;">Thêm thể loại mới</div>
             <div class="card-body">
                 <form action="{{ route('danhmuc.store') }}" method="POST">
                     @csrf
@@ -37,14 +37,14 @@
                         <label for="ten_the_loai" class="form-label">Tên thể loại</label>
                         <input type="text" name="ten_the_loai" id="ten_the_loai" class="form-control" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Thêm</button>
+                    <button type="submit" class="btn btn-dark">Thêm</button>
                 </form>
             </div>
         </div>
 
         {{-- Danh sách danh mục --}}
         <div class="card">
-            <div class="card-header bg-primary text-white">Danh sách thể loại</div>
+            <div class="card-header text-white" style="background-color: #000;">Danh sách thể loại</div>
             <div class="card-body">
                 <table class="table table-bordered align-middle">
                     <thead>

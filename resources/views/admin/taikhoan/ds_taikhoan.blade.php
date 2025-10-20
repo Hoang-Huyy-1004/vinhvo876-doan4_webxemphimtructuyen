@@ -7,7 +7,7 @@
 
 <table class="table table-bordered">
     <thead>
-        <tr class="bg-primary text-white text-center">
+        <tr class="text-white text-center" style="background-color: #000;">
             <th style="width: 5%;">UID</th>
             <th style="width: 30%;">Tên</th>
             <th style="width: 30%;">Email</th>

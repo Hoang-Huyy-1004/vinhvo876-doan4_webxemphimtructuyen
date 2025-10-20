@@ -1,6 +1,6 @@
 <footer class="sticky-footer bg-white">
     <div class="container my-auto">
-        <div class="copyright text-center my-auto">
+        <div class="copyright text-center my-auto" style="font-weight: bold; color: #000;">
             <span>Bản quyền &copy; PHiM HAY {{ date('Y') }}</span>
         </div>
     </div>

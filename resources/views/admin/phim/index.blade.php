@@ -5,7 +5,7 @@
 
 <table class="table table-bordered">
     <thead>
-        <tr class="bg-primary text-white text-center">
+        <tr class="text-white text-center" style="background-color: #000;">
             <th>Ảnh bìa</th>
             <th>Tên phim</th>
             <th>Năm phát hành</th>

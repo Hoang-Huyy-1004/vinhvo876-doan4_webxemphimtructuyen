@@ -9,7 +9,7 @@
 
 <table class="table table-bordered">
     <thead>
-        <tr class="bg-primary text-white text-center">
+        <tr class="text-white text-center" style="background-color: #000;">
             <th style="width: 5%;">Ảnh bìa</th>
             <th style="width: 30%;">Tên phim</th>
             <th style="width: 15%;">Năm phát hành</th>
