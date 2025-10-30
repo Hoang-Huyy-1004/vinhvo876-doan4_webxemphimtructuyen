@@ -260,14 +260,14 @@ class PhimController extends Controller
             'anh_bia' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'loai' => 'required|string|in:le,bo',
             // 'trailer' => 'nullable|mimes:mp4,mkv,avi,mov,flv|max:51200',
-            'trailer_type' => 'nullable|mimes:mp4,mkv,avi,mov,flv|max:51200', // Giả sử người dùng phải chọn lại
-            'trailer_file' => 'required_if:trailer_type,file|nullable|mimes:mp4,mkv,avi,mov,flv|max:51200',
-            'trailer_url' => 'required_if:trailer_type,url|nullable|url|max:255',
+            'trailer_type' => 'required|in:file,url', // Giả sử người dùng phải chọn lại
+            'trailer_file' => 'nullable|mimes:mp4,mkv,avi,mov,flv|max:51200',
+            'trailer_url' => 'nullable|url|max:255',
             // 'video' chỉ được gửi nếu là phim lẻ
             // 'video' => $phim->loai === 'phim_le' ? 'nullable|mimes:mp4,mov,ogg,qt|max:50000' : 'nullable',
-            'video_type' => $phim->loai === 'phim_le' ? 'nullable|mimes:mp4,mov,ogg,qt|max:50000' : 'nullable',
-            'video_file' => ($phim->loai === 'phim_le' ? 'required_if:video_type,file' : 'nullable') . '|mimes:mp4,mov,ogg,qt|max:50000',
-            'video_url' => ($phim->loai === 'phim_le' ? 'required_if:video_type,url' : 'nullable') . '|url|max:255',
+            'video_type' => $phim->loai === 'phim_le' ? 'required|in:file,url' : 'nullable',
+            'video_file' => ($phim->loai === 'phim_le' ? 'nullable' : 'nullable') . '|mimes:mp4,mov,ogg,qt|max:50000', // max 50MB
+            'video_url' => ($phim->loai === 'phim_le' ? 'nullable|url|max:255' : 'nullable'),
             // 'so_tap' chỉ được gửi nếu là phim bộ
             'so_tap' => $phim->loai === 'phim_bo' ? 'nullable|integer|min:1' : 'nullable',
             'thoi_luong' => 'nullable|string|max:50',
@@ -347,7 +347,7 @@ class PhimController extends Controller
             $request->file('trailer_file')->move($folder, $fileName);
             $trailerDb = $dbPath . '/' . $fileName;
         } elseif ($request->trailer_type === 'url' && $request->filled('trailer_url')) {
-            // Nếu trailer cũ là file, xóa nó đi trước khi lưu URL mới
+            // Xóa trailer cũ nếu nó là file (không phải URL)
             if ($phim->trailer && !$isUrl($phim->trailer) && File::exists(public_path($phim->trailer))) {
                 File::delete(public_path($phim->trailer));
             }
@@ -394,8 +394,12 @@ class PhimController extends Controller
             'anh_bia' => $anhBiaDb,
             // KHÔNG CẬP NHẬT 'loai' ở đây để tránh lỗi đường dẫn thư mục phức tạp
             // Nếu bạn muốn update 'loai', bạn phải xử lý đổi tên và di chuyển thư mục
-            'trailer' => $trailerDb,
-            'video' => $videoDb,        // Dùng biến đã được xử lý có điều kiện
+            'trailer_type' => 'required|in:file,url',
+            'trailer_file' => 'nullable|mimes:mp4,mkv,avi,mov,flv|max:51200',
+            'trailer_url' => 'nullable|url|max:255',
+            'video_type' => $phim->loai === 'phim_le' ? 'required|in:file,url' : 'nullable',
+            'video_file' => 'nullable|mimes:mp4,mov,ogg,qt|max:50000',
+            'video_url' => $phim->loai === 'phim_le' ? 'nullable|url|max:255' : 'nullable',
             'so_tap' => $soTapValue,    // Cập nhật số tập
             'thoi_luong' => $request->thoi_luong,
             'trang_thai' => $trangThaiValue,

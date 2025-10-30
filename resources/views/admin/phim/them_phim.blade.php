@@ -25,9 +25,28 @@
         <textarea name="mo_ta" class="form-control"></textarea>
     </div>
 
-    <div class="mb-3">
+    <!-- <div class="mb-3">
         <label class="form-label">Năm phát hành</label>
         <input type="number" name="nam_phat_hanh" class="form-control">
+    </div> -->
+
+    <div class="mb-3">
+        <label class="form-label">Năm phát hành</label>
+        {{-- SỬ DỤNG SELECT để có giao diện input và chức năng cuộn/chọn năm --}}
+        <select name="nam_phat_hanh" class="form-control">
+            <option value="">-- Chọn năm --</option>
+            <?php 
+                $endYear = date('Y') + 1; // Ví dụ: 2026
+                $startYear = 2008;
+                
+                // Lặp từ năm mới nhất về năm cũ nhất
+                for ($year = $endYear; $year >= $startYear; $year--) {
+                    // Giữ lại giá trị old() nếu có lỗi validation
+                    $selected = (old('nam_phat_hanh') == $year) ? 'selected' : '';
+                    echo "<option value=\"{$year}\" {$selected}>{$year}</option>";
+                }
+            ?>
+        </select>
     </div>
 
     <div class="mb-3">
