@@ -91,6 +91,11 @@ class PhimController extends Controller
             ]);
         }
 
+        $slug = null;
+        if ($request->filled('duong_dan')) {
+            $slug = Str::afterLast(rtrim($request->duong_dan, '/'), '/');
+        }
+
         // Tạo thư mục theo loại và tên phim
         $tenThuMuc = Str::slug($request->ten_phim, '_');
         $basePath = public_path('img/ds_phim');
@@ -164,6 +169,7 @@ class PhimController extends Controller
         // Lưu phim
         $phim = Phim::create([
             'ten_phim' => $request->ten_phim,
+            'slug' => $slug,
             'mo_ta' => $request->mo_ta,
             'nam_phat_hanh' => $request->nam_phat_hanh,
             'anh_bia' => $anhBiaDb,
