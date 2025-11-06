@@ -34,6 +34,12 @@ class HomeController extends Controller
             ->take(10)
             ->get();
 
-        return view('home', compact('phimMoi', 'phimNoiBat', 'phimHot'));
+        $phimbinhthuong = Phim::where('hien_thi', 'binh_thuong')
+            ->where('trang_thai', 'cong_khai')
+            ->latest()
+            ->take(10)
+            ->get();
+
+        return view('home', compact('phimMoi', 'phimNoiBat', 'phimHot', 'phimbinhthuong'));
     }
 }

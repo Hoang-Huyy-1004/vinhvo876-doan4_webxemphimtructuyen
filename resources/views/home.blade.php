@@ -1,3 +1,7 @@
+@php
+use Illuminate\Support\Str;
+@endphp
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,7 +16,8 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background-color: #ffffffff; /* nền đen cho giống giao diện phim */
+            background-color: #ffffffff;
+            /* nền đen cho giống giao diện phim */
         }
 
         main {
@@ -40,19 +45,21 @@
         /* ==== Khung ảnh poster chuẩn 2:3 ==== */
         .poster-wrapper {
             width: 100%;
-            aspect-ratio: 2 / 3; /* giữ tỉ lệ 2:3 */
+            aspect-ratio: 2 / 3;
+            /* giữ tỉ lệ 2:3 */
             overflow: hidden;
             border-radius: 8px;
-            background: #111; /* nền tối nếu ảnh lỗi */
+            background: #111;
+            /* nền tối nếu ảnh lỗi */
         }
 
         .poster-wrapper img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* crop ảnh vừa khung */
+            object-fit: cover;
+            /* crop ảnh vừa khung */
             border-radius: 8px;
         }
-        
     </style>
 </head>
 
@@ -121,10 +128,39 @@
             @endforeach
         </div>
 
+        <!-- Phim bình thường -->
+        <h4 class="mb-3 mt-4">Phim </h4>
+        <div class="row flex-nowrap overflow-auto">
+            @foreach($phimbinhthuong as $phim)
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
+                <a href="{{ route('xemphim', $phim->id) }}" class="text-decoration-none text-white">
+                    <div class="card bg-dark text-white border-0">
+                        <div class="position-relative poster-wrapper">
+                            @php
+                            $anhBia = $phim->anh_bia;
+                            if (!Str::startsWith($anhBia, ['http://', 'https://'])) {
+                            $anhBia = asset($anhBia);
+                            }
+                            @endphp
+
+                            <img src="{{ $anhBia }}" alt="{{ $phim->ten_phim }}">
+
+                            <span class="badge bg-light text-dark position-absolute top-0 start-0 m-2">Phim</span>
+                        </div>
+                        <div class="card-body p-2 text-center">
+                            <h6 class="card-title text-truncate">{{ $phim->ten_phim }}</h6>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            @endforeach
+        </div>
+
     </main>
 
     @include('footer')
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

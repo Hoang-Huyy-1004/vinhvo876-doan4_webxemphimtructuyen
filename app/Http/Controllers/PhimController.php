@@ -67,6 +67,7 @@ class PhimController extends Controller
             'nam_phat_hanh' => 'nullable|integer',
             // 'anh_bia' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'anh_bia' => 'nullable|image|max:2048',
+            'anh_bia_url' => 'nullable|url|max:255', // ✅ thêm dòng này
             'loai' => 'required|string|in:le,bo',
             // 'trailer' => 'nullable|mimes:mp4,mkv,avi,mov,flv|max:51200',
             'trailer_type' => 'required|in:file,url',
@@ -139,6 +140,9 @@ class PhimController extends Controller
             $fileName = time() . '_' . $request->file('anh_bia')->getClientOriginalName();
             $request->file('anh_bia')->move($folder, $fileName);
             $anhBiaDb = $dbPath . '/' . $fileName;
+        } elseif ($request->filled('anh_bia_url')) {
+            // Nếu nhập URL
+            $anhBiaDb = $request->anh_bia_url;
         }
 
         // if ($request->hasFile('trailer')) {

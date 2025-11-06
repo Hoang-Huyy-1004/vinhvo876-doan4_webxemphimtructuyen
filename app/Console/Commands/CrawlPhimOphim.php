@@ -18,15 +18,15 @@ class CrawlPhimOphim extends Command
 
     public function handle()
     {
-        $this->info('🚀 Đang crawl dữ liệu phim từ ophim1.com ...');
+        $this->info(' Đang crawl dữ liệu phim từ ophim1.com ...');
 
-        // ✅ Dùng domain mới hoạt động
+        //  Dùng domain mới hoạt động
         $url = 'https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=1';
 
         $response = Http::withoutVerifying()->get($url);
 
         if (!$response->ok()) {
-            $this->error('❌ Không thể lấy dữ liệu từ ophim1.com');
+            $this->error(' Không thể lấy dữ liệu từ ophim1.com');
             return;
         }
 
@@ -34,7 +34,7 @@ class CrawlPhimOphim extends Command
         $phimList = $data['items'] ?? [];
 
         if (empty($phimList)) {
-            $this->warn('⚠️ Không có dữ liệu phim nào được trả về!');
+            $this->warn(' Không có dữ liệu phim nào được trả về!');
             return;
         }
 
@@ -42,10 +42,10 @@ class CrawlPhimOphim extends Command
             $this->savePhim($phimData);
         }
 
-        $this->info('🎬 Hoàn tất cập nhật!');
+        $this->info(' Hoàn tất cập nhật!');
     }
 
-    // 🧱 HÀM LƯU PHIM
+    //  HÀM LƯU PHIM
     protected function savePhim($phimData)
     {
         $slug = $phimData['slug'] ?? null;
@@ -56,10 +56,23 @@ class CrawlPhimOphim extends Command
         $tenPhim = $phimData['name'] ?? 'Không rõ';
         $moTa = $phimData['content'] ?? '';
         $nam = $phimData['year'] ?? null;
-        $anhBia = $phimData['poster_url'] ?? '';
+        $poster = $phimData['poster_url'] ?? '';
+if ($poster) {
+    // Nếu không có http thì thêm prefix domain gốc
+    if (!str_starts_with($poster, 'http')) {
+        $poster = 'https://img.ophim.live' . $poster;
+    }
+    // Chuyển về dạng CDN Ophim18
+    $encodedUrl = urlencode($poster);
+    $poster = "https://ophim18.cc/_next/image?url={$encodedUrl}&w=1920&q=75";
+}
+$anhBia = $poster;
+
+
         $trailer = $phimData['trailer_url'] ?? null;
-        $loai = $phimData['type'] ?? 'phim-le';
-        $trangThai = $phimData['status'] ?? 'Đang cập nhật';
+        $type = $phimData['type'] ?? 'single';
+        $loai = ($type === 'single') ? 'phim_le' : 'phim_bo';
+        $trangThai = 'cong_khai';
 
         if (!$phim) {
             $phim = Phim::create([
@@ -120,13 +133,22 @@ class CrawlPhimOphim extends Command
         }
 
         foreach ($episodes as $ep) {
+            $tapSo = trim($ep['name'] ?? '');
+            $linkVideo = trim($ep['link_embed'] ?? '');
+
+            // Nếu thiếu dữ liệu thì bỏ qua tập đó
+            if ($tapSo === '' || $linkVideo === '') {
+                $this->warn("⚠️ Bỏ qua tập lỗi của phim {$phim->ten_phim}");
+                continue;
+            }
+
             TapPhim::updateOrCreate(
                 [
                     'phim_id' => $phim->id,
-                    'tap' => $ep['name'],
+                    'tap' => (int) $tapSo, // ép kiểu int
                 ],
                 [
-                    'video' => $ep['link_embed'],
+                    'video' => $linkVideo,
                     'trang_thai' => 'cong_khai',
                 ]
             );
