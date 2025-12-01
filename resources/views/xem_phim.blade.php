@@ -65,6 +65,106 @@ use Illuminate\Support\Str;
             color: #fff;
             font-weight: 500;
         }
+
+        /* Tùy chỉnh thanh cuộn ngang */
+        .movie-scroll-container {
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            /* Ẩn thanh cuộn trên Firefox */
+            scrollbar-width: none;
+        }
+
+        /* Ẩn thanh cuộn trên Chrome/Safari/Edge */
+        .movie-scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Style cho Card phim */
+        .movie-card {
+            min-width: 260px;
+            /* Chiều rộng cố định cho mỗi item */
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .movie-card:hover {
+            transform: scale(1.05);
+            /* Hiệu ứng phóng to nhẹ khi di chuột */
+            z-index: 10;
+        }
+
+        .movie-thumbnail {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            aspect-ratio: 16/9;
+            /* Tỷ lệ khung hình giống video */
+        }
+
+        .movie-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Icon viên đá quý (VIP/Premium) */
+        .vip-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            /* Nền mờ nhẹ */
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .bi-gem {
+            color: #ff3d00;
+            /* Màu cam đỏ giống trong ảnh */
+            text-shadow: 0 0 5px #ff3d00;
+        }
+
+        /* Nút mũi tên điều hướng */
+        .scroll-btn {
+            background: rgba(20, 20, 20, 0.8);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .scroll-btn:hover {
+            background: rgba(50, 50, 50, 0.9);
+        }
+
+        /* Gradient mờ bên phải để tạo cảm giác list còn dài */
+        /* fade overlays (left + right) */
+        .fade-right,
+        .fade-left {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100px;
+            pointer-events: none;
+            z-index: 2;
+            transition: opacity .18s ease;
+            opacity: 0;
+        }
+
+        .fade-right {
+            right: 0;
+            background: linear-gradient(to right, transparent, #121212);
+        }
+
+        .fade-left {
+            left: 0;
+            background: linear-gradient(to left, transparent, #121212);
+        }
     </style>
 </head>
 
@@ -81,38 +181,38 @@ use Illuminate\Support\Str;
                         $isUrl = false; // thêm biến kiểm tra URL
 
                         if ($phim->loai == 'phim_le' && $phim->video) {
-                            $initialVideoSrc = $phim->video;
+                        $initialVideoSrc = $phim->video;
                         } elseif ($phim->loai == 'phim_bo' && $phim->taps->count() > 0 && $phim->taps->first()->video) {
-                            $initialVideoSrc = $phim->taps->first()->video;
+                        $initialVideoSrc = $phim->taps->first()->video;
                         }
 
                         // Kiểm tra xem có phải là URL ngoài không
                         if (Str::startsWith($initialVideoSrc, ['http://', 'https://'])) {
-                            $isUrl = true;
+                        $isUrl = true;
                         } else {
-                            $initialVideoSrc = asset($initialVideoSrc); // nếu không phải URL ngoài → dùng asset()
+                        $initialVideoSrc = asset($initialVideoSrc); // nếu không phải URL ngoài → dùng asset()
                         }
                         @endphp
 
                         @if($initialVideoSrc)
-                            @if($isUrl)
-                                {{-- Trường hợp là URL (YouTube, Drive, v.v.) --}}
-                                <iframe src="{{ $initialVideoSrc }}"
-                                    class="w-100 h-100 rounded border-0"
-                                    allowfullscreen></iframe>
-                            @else
-                                {{-- Trường hợp là file video trong hệ thống --}}
-                                <video controls autoplay muted playsinline
-                                    poster="{{ asset($phim->anh_bia ?? '') }}"
-                                    style="width: 100%; height: 100%;">
-                                    <source src="{{ $initialVideoSrc }}" type="video/mp4">
-                                    Trình duyệt không hỗ trợ phát video.
-                                </video>
-                            @endif
+                        @if($isUrl)
+                        {{-- Trường hợp là URL (YouTube, Drive, v.v.) --}}
+                        <iframe src="{{ $initialVideoSrc }}"
+                            class="w-100 h-100 rounded border-0"
+                            allowfullscreen></iframe>
                         @else
-                            <div class="d-flex justify-content-center align-items-center h-100">
-                                <p class="text-danger">Chưa có video cho phim này.</p>
-                            </div>
+                        {{-- Trường hợp là file video trong hệ thống --}}
+                        <video controls autoplay muted playsinline
+                            poster="{{ asset($phim->anh_bia ?? '') }}"
+                            style="width: 100%; height: 100%;">
+                            <source src="{{ $initialVideoSrc }}" type="video/mp4">
+                            Trình duyệt không hỗ trợ phát video.
+                        </video>
+                        @endif
+                        @else
+                        <div class="d-flex justify-content-center align-items-center h-100">
+                            <p class="text-danger">Chưa có video cho phim này.</p>
+                        </div>
                         @endif
                     </div>
                 </div>
@@ -123,6 +223,93 @@ use Illuminate\Support\Str;
                         <p class="card-text">{!! nl2br(e($phim->mo_ta)) !!}</p>
                     </div>
                 </div>
+
+                <div class="container-fluid py-4">
+                    <h4 class="mb-3 fw-bold">Nội dung liên quan</h4>
+
+                    <div class="position-relative group-slider">
+
+                        <!-- left arrow -->
+                        <button class="scroll-btn position-absolute start-0 top-50 translate-middle-y z-3 rounded-end"
+                            onclick="scrollList(-1)" type="button">
+                            <i class="bi bi-chevron-left fs-4"></i>
+                        </button>
+
+                        <!-- scroll list -->
+                        <div class="d-flex flex-nowrap gap-3 movie-scroll-container py-2" id="movieList">
+                            <!-- Example items - đổi src theo asset() nếu dùng Laravel -->
+                            <div class="movie-card" title="Thanh Gươm Diệt Quỷ (Phần 1)">
+                                <div class="movie-thumbnail">
+                                    <img src="{{ asset('img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp') }}" alt="Kimetsu no Yaiba">
+                                    <div class="vip-badge"><i class="bi bi-gem"></i></div>
+                                    <div class="progress position-absolute bottom-0 w-100" style="height:3px;">
+                                        <div class="progress-bar bg-danger" style="width:40%"></div>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <h6 class="mb-0 text-white fw-bold">Thanh Gươm Diệt Quỷ (Phần 1)</h6>
+                                </div>
+                            </div>
+
+                            <div class="movie-card" title="Chuyển Sinh Thành Kiếm">
+                                <div class="movie-thumbnail">
+                                    <img src="{{ asset('img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp') }}" alt="Reincarnated as a Sword">
+                                </div>
+                                <div class="mt-2">
+                                    <h6 class="mb-0 text-white fw-bold">Chuyển Sinh Thành Kiếm</h6>
+                                </div>
+                            </div>
+
+                            <div class="movie-card" title="Thanh Gươm Diệt Quỷ (Phần 4)">
+                                <div class="movie-thumbnail">
+                                    <img src="{{ asset('img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp') }}" alt="Kimetsu 4">
+                                </div>
+                                <div class="mt-2">
+                                    <h6 class="mb-0 text-white fw-bold">Thanh Gươm Diệt Quỷ (Phần 4): Làng Rèn...</h6>
+                                </div>
+                            </div>
+
+                            <div class="movie-card" title="The New Gate">
+                                <div class="movie-thumbnail">
+                                    <img src="{{ asset('img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp') }}" alt="The New Gate">
+                                </div>
+                                <div class="mt-2">
+                                    <h6 class="mb-0 text-white fw-bold">The New Gate</h6>
+                                </div>
+                            </div>
+
+                            <div class="movie-card" title="Fire Force">
+                                <div class="movie-thumbnail">
+                                    <img src="{{ asset('img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp') }}" alt="Fire Force">
+                                </div>
+                                <div class="mt-2">
+                                    <h6 class="mb-0 text-white fw-bold">Fire Force: Biệt Đội Cứu Hỏa</h6>
+                                </div>
+                            </div>
+
+                            <div class="movie-card">
+                                <div class="movie-thumbnail">
+                                    <img src="https://image.tmdb.org/t/p/w500/q719jXXEzOoYaps6babgKnONONX.jpg" alt="Your Name">
+                                </div>
+                                <div class="mt-2">
+                                    <h6 class="mb-0 text-white fw-bold">Your Name</h6>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- fades -->
+                        <div class="fade-left"></div>
+                        <div class="fade-right"></div>
+
+                        <!-- right arrow -->
+                        <button class="scroll-btn position-absolute end-0 top-50 translate-middle-y z-3 rounded-start"
+                            onclick="scrollList(1)">
+                            <i class="bi bi-chevron-right fs-4"></i>
+                        </button>
+
+                    </div>
+                </div>
+
             </div>
 
             <div class="col-lg-3">
@@ -138,55 +325,55 @@ use Illuminate\Support\Str;
                     <div class="list-group list-group-flush">
                         {{-- Trailer (nếu có) --}}
                         @if($phim->trailer)
-                            @php
-                                // Xử lý link trailer: Nếu là link ngoài thì giữ nguyên, nếu là file thì dùng asset()
-                                $trailerSrc = Str::startsWith($phim->trailer, ['http://', 'https://']) ? $phim->trailer : asset($phim->trailer);
-                            @endphp
-                            <div class="episode-item" onclick="changeEpisode('{{ $trailerSrc }}')">
-                                <div class="thumb">
-                                    <img src="{{ asset($phim->anh_bia ?? 'default.jpg') }}" alt="Trailer">
-                                    <span class="time">Trailer</span>
-                                </div>
-                                <div class="info">🎬 Trailer</div>
+                        @php
+                        // Xử lý link trailer: Nếu là link ngoài thì giữ nguyên, nếu là file thì dùng asset()
+                        $trailerSrc = Str::startsWith($phim->trailer, ['http://', 'https://']) ? $phim->trailer : asset($phim->trailer);
+                        @endphp
+                        <div class="episode-item" onclick="changeEpisode('{{ $trailerSrc }}')">
+                            <div class="thumb">
+                                <img src="{{ asset($phim->anh_bia ?? 'default.jpg') }}" alt="Trailer">
+                                <span class="time">Trailer</span>
                             </div>
+                            <div class="info">🎬 Trailer</div>
+                        </div>
                         @endif
 
                         {{-- Danh sách tập phim --}}
                         @if($phim->loai == 'phim_bo' && $phim->taps->isNotEmpty())
-                            
-                            {{-- === XỬ LÝ CHO PHIM BỘ === --}}
-                            @foreach($phim->taps as $tap)
-                                @if($tap->video) {{-- Chỉ hiển thị những tập đã có video --}}
-                                    @php
-                                        // SỬA LỖI Ở ĐÂY: Kiểm tra link là URL ngoài hay file local
-                                        $videoSrc = Str::startsWith($tap->video, ['http://', 'https://']) ? $tap->video : asset($tap->video);
-                                    @endphp
-                                    <div class="episode-item" onclick="changeEpisode('{{ $videoSrc }}')">
-                                        <div class="thumb">
-                                            <img src="{{ asset($tap->thumbnail ?? $phim->anh_bia ?? 'default.jpg') }}" alt="Tập {{ $tap->tap }}">
-                                            <span class="time">{{ $tap->thoi_luong ?? '24 phút' }}</span>
-                                        </div>
-                                        <div class="info">{{ $tap->ten_tap ?? 'Tập ' . $tap->tap }}</div>
-                                    </div>
-                                @endif
-                            @endforeach
+
+                        {{-- === XỬ LÝ CHO PHIM BỘ === --}}
+                        @foreach($phim->taps as $tap)
+                        @if($tap->video) {{-- Chỉ hiển thị những tập đã có video --}}
+                        @php
+                        // SỬA LỖI Ở ĐÂY: Kiểm tra link là URL ngoài hay file local
+                        $videoSrc = Str::startsWith($tap->video, ['http://', 'https://']) ? $tap->video : asset($tap->video);
+                        @endphp
+                        <div class="episode-item" onclick="changeEpisode('{{ $videoSrc }}')">
+                            <div class="thumb">
+                                <img src="{{ asset($tap->thumbnail ?? $phim->anh_bia ?? 'default.jpg') }}" alt="Tập {{ $tap->tap }}">
+                                <span class="time">{{ $tap->thoi_luong ?? '24 phút' }}</span>
+                            </div>
+                            <div class="info">{{ $tap->ten_tap ?? 'Tập ' . $tap->tap }}</div>
+                        </div>
+                        @endif
+                        @endforeach
 
                         @elseif($phim->loai == 'phim_le')
 
-                            {{-- === XỬ LÝ CHO PHIM LẺ === --}}
-                            @if($phim->video) {{-- Chỉ hiển thị nếu phim lẻ có video --}}
-                                @php
-                                    // SỬA LỖI Ở ĐÂY: Kiểm tra link là URL ngoài hay file local
-                                    $videoSrc = Str::startsWith($phim->video, ['http://', 'https://']) ? $phim->video : asset($phim->video);
-                                @endphp
-                                <div class="episode-item active" onclick="changeEpisode('{{ $videoSrc }}')">
-                                    <div class="thumb">
-                                        <img src="{{ asset($phim->anh_bia ?? 'default.jpg') }}" alt="{{ $phim->ten_phim }}">
-                                        <span class="time">{{ $phim->thoi_luong ?? '90 phút' }}</span>
-                                    </div>
-                                    <div class="info">Full</div>
-                                </div>
-                            @endif
+                        {{-- === XỬ LÝ CHO PHIM LẺ === --}}
+                        @if($phim->video) {{-- Chỉ hiển thị nếu phim lẻ có video --}}
+                        @php
+                        // SỬA LỖI Ở ĐÂY: Kiểm tra link là URL ngoài hay file local
+                        $videoSrc = Str::startsWith($phim->video, ['http://', 'https://']) ? $phim->video : asset($phim->video);
+                        @endphp
+                        <div class="episode-item active" onclick="changeEpisode('{{ $videoSrc }}')">
+                            <div class="thumb">
+                                <img src="{{ asset($phim->anh_bia ?? 'default.jpg') }}" alt="{{ $phim->ten_phim }}">
+                                <span class="time">{{ $phim->thoi_luong ?? '90 phút' }}</span>
+                            </div>
+                            <div class="info">Full</div>
+                        </div>
+                        @endif
 
                         @endif
                     </div>
@@ -225,17 +412,17 @@ use Illuminate\Support\Str;
 
             } else if (isDirectVideoLink || url.startsWith('http')) {
                 // TRƯỜNG HỢP 3: LÀ LINK FILE VIDEO TRỰC TIẾP hoặc URL nhúng iframe khác (Google Drive)
-                 if (url.includes("drive.google.com")) {
-                     // Xử lý link Google Drive để nhúng
-                     url = url.replace("/view", "/preview");
-                 }
+                if (url.includes("drive.google.com")) {
+                    // Xử lý link Google Drive để nhúng
+                    url = url.replace("/view", "/preview");
+                }
 
                 // Nếu là URL trực tiếp, dùng iframe để tránh các vấn đề về CORS nếu có thể
                 if (!isDirectVideoLink && !url.endsWith('.m3u8')) {
-                     playerHtml = `<iframe src="${url}" frameborder="0" allowfullscreen style="width: 100%; height: 100%;"></iframe>`;
+                    playerHtml = `<iframe src="${url}" frameborder="0" allowfullscreen style="width: 100%; height: 100%;"></iframe>`;
                 } else {
-                     // Nếu là link file video thì dùng thẻ <video>
-                     playerHtml = `
+                    // Nếu là link file video thì dùng thẻ <video>
+                    playerHtml = `
                     <video controls autoplay muted playsinline poster="{{ asset($phim->anh_bia ?? '') }}" style="width: 100%; height: 100%;">
                         <source src="${url}" type="video/mp4">
                         Trình duyệt không hỗ trợ phát video.
@@ -256,6 +443,45 @@ use Illuminate\Support\Str;
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function scrollList(direction) {
+            const container = document.getElementById('movieList');
+            const scrollAmount = 300;
+            if (!container) return;
+            container.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
+            setTimeout(updateFades, 220); // cập nhật sau khi animation smooth kết thúc
+        }
+
+        function updateFades() {
+            const container = document.getElementById('movieList');
+            const fadeLeft = document.querySelector('.fade-left');
+            const fadeRight = document.querySelector('.fade-right');
+            if (!container || !fadeLeft || !fadeRight) return;
+
+            const maxScrollLeft = container.scrollWidth - container.clientWidth;
+            const current = container.scrollLeft;
+
+            fadeLeft.style.opacity = (current > 10) ? '1' : '0';
+            fadeRight.style.opacity = (current < maxScrollLeft - 10) ? '1' : '0';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('movieList');
+            if (!container) return;
+            updateFades(); // lúc load
+            container.addEventListener('scroll', updateFades, {
+                passive: true
+            });
+            window.addEventListener('resize', () => {
+                clearTimeout(window._r);
+                window._r = setTimeout(updateFades, 120);
+            });
+        });
+    </script>
 </body>
 
 </html>
