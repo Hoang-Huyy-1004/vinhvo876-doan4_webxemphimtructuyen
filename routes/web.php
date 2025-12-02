@@ -21,6 +21,7 @@ Route::get('/admin', function () {
 // Route::get('/search', [VideoController::class, 'search'])->name('search');
 
 
+
 Route::middleware('auth')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('notifications.show');
@@ -47,12 +48,16 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/tat-ca-phim-le', [HomeController::class, 'showPhimLe'])->name('show.phimle');
+Route::get('/tat-ca-phim-bo', [HomeController::class, 'showPhimBo'])->name('show.phimbo');
+Route::get('/the-loai/tinh-cam', [HomeController::class, 'showPhimTinhCam'])->name('show.tinhcam');
+Route::get('/the-loai/hoat-hinh', [HomeController::class, 'showPhimHoatHinh'])->name('show.hoathinh');
 
 // routes/web.php
 
 // Định nghĩa route cho việc xem một bộ phim
 Route::get('/xem-phim/{phim}', [HomeController::class, 'phuongThucXemPhim'])
-      ->name('xemphim'); // Đặt tên route là 'xemphim'
+    ->name('xemphim'); // Đặt tên route là 'xemphim'
 
 
 
@@ -114,7 +119,6 @@ Route::prefix('admin/phim')->name('phim.')->group(function () {
         Route::get('/{tapPhim}/chinh-sua', [TapPhimController::class, 'edit'])->name('edit');
         Route::put('/{tapPhim}', [TapPhimController::class, 'update'])->name('update');
     });
-
 });
 
 

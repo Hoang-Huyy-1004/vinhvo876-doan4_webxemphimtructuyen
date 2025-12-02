@@ -19,10 +19,10 @@
           <a class="nav-link text-white fw-bold" href="{{ url('/') }}">TRANG CHỦ</a>
         </li>
 
-        <li class="nav-item"><a class="nav-link text-white" href="#">PHIM LẺ</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="#">PHIM BỘ</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="#">ANIME</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="#">PHIM HOẠT HÌNH</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ route('show.phimle') }}">PHIM LẺ</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ route('show.phimbo') }}">PHIM BỘ</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ route('show.tinhcam') }}">TÌNH CẢM</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ route('show.hoathinh') }}">PHIM HOẠT HÌNH</a></li>
 
         {{-- XEM THÊM dropdown (chuẩn bootstrap) --}}
         <li class="nav-item dropdown">
