@@ -10,6 +10,7 @@ use App\Http\Controllers\PhimController;
 use App\Http\Controllers\TapPhimController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ViewController;
 
 Route::get('/', function () {
     return view('home');  // tự động tìm home.blade.php trong resources/views
@@ -143,3 +144,24 @@ Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallba
 Route::view('/user/dangnhap', 'user.dangnhap');
 Route::view('/user/dangky', 'user.dangky');
 Route::view('/user/taikhoan', 'user.taikhoan');
+
+// Admin ViewController routes
+Route::prefix('admin')->group(function () {
+
+    // Route danh sách view
+    Route::get('/views', [ViewController::class, 'index'])->name('views.index');
+
+    // Route form sửa view
+    Route::get('/views/{id}/edit', [ViewController::class, 'edit'])->name('views.edit');
+
+    // Route xử lý update view
+    Route::put('/views/{id}', [ViewController::class, 'update'])->name('views.update');
+
+    // --- Route cho Phim Lẻ ---
+    Route::get('/views/{id}/edit', [ViewController::class, 'edit'])->name('views.edit');
+    Route::put('/views/{id}', [ViewController::class, 'update'])->name('views.update');
+
+    // --- Route cho Phim Bộ (Tập phim) ---
+    Route::get('/views/tap/{id}/edit', [ViewController::class, 'editTap'])->name('views.tap.edit');
+    Route::put('/views/tap/{id}', [ViewController::class, 'updateTap'])->name('views.tap.update');
+});

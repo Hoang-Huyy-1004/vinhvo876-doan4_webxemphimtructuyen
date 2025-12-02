@@ -130,10 +130,11 @@
         <thead>
             <tr class="bg-primary text-white">
                 <th style="width: 4%;">Tập</th>
-                <th style="width: 40%;">Tên tập (Mô tả)</th>
-                <th style="width: 34%;">Video</th>
+                <th style="width: 35%;">Tên tập (Mô tả)</th>
+                <th style="width: 17%;">Video</th>
+                <th style="width: 17%;">Lượt xem</th>
                 <th style="width: 10%;">Trạng thái</th>
-                <th style="width: 10%;">Hành động</th>
+                <th style="width: 15%;">Hành động</th>
             </tr>
         </thead>
         <tbody>
@@ -151,6 +152,9 @@
                     <span class="text-muted small">Chưa có video</span>
                     @endif
                 </td>
+                <td class="fw-bold">
+                    {{ number_format($tap->view_tap) }}
+                </td>
                 <td>
                     @if($tap->trang_thai === 'cong_khai')
                     <span class="badge bg-success text-white">Công khai</span>
@@ -162,6 +166,12 @@
                     {{-- Nút sửa tập phim. Cần tạo route cho TapPhimController --}}
                     <a href="{{ route('phim.tapphim.edit', ['phim' => $phim->id, 'tapPhim' => $tap->id]) }}"
                         class="btn btn-info btn-sm" title="Sửa tập phim">Sửa
+                    </a>
+                    {{-- Nút sửa cho Tập Phim Bộ --}}
+                    <a href="{{ route('views.tap.edit', $tap->id) }}"
+                        class="btn btn-outline-info btn-sm"
+                        title="Sửa lượt xem tập này">
+                        <i class="fas fa-eye"></i> Sửa View
                     </a>
                 </td>
             </tr>
@@ -183,6 +193,9 @@
                     <span class="text-muted small">Chưa có video</span>
                     @endif
                 </td>
+                <td class="fw-bold">
+                    {{ number_format($phim->views->tong_views ?? 0) }}
+                </td>
                 <td>
                     @if($phim->trang_thai === 'cong_khai')
                     <span class="badge bg-success text-white">Công khai</span>
@@ -193,6 +206,15 @@
                 <td>
                     {{-- Nút sửa phim. Dẫn về trang sửa phim chính. --}}
                     <a href="{{ route('phim.edit', $phim->id) }}" class="btn btn-warning btn-sm" title="Sửa video phim lẻ">Sửa</a>
+                    {{-- Nút sửa cho Phim Lẻ --}}
+                    {{-- Kiểm tra xem phim đã có view trong bảng views chưa, nếu chưa có thì không hiện nút hoặc báo lỗi --}}
+                    @if($phim->views)
+                    <a href="{{ route('views.edit', $phim->views->id) }}"
+                        class="btn btn-outline-primary btn-sm"
+                        title="Sửa lượt xem phim lẻ">
+                        <i class="fas fa-eye"></i> Sửa View Tổng
+                    </a>
+                    @endif
                 </td>
             </tr>
             @endif

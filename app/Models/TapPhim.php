@@ -18,6 +18,7 @@ class TapPhim extends Model
         'video',
         'tap', // <--- ĐÃ ĐIỀU CHỈNH: Sử dụng tên cột 'tap'
         'trang_thai',
+        'view_tap',
     ];
 
     /**
@@ -25,6 +26,6 @@ class TapPhim extends Model
      */
     public function phim()
     {
-        return $this->belongsTo(Phim::class, 'phim_id');
+        return $this->belongsTo(Phim::class, 'phim_id', 'id');
     }
 }
