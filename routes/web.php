@@ -9,6 +9,7 @@ use App\Http\Controllers\DanhMucController;
 use App\Http\Controllers\PhimController;
 use App\Http\Controllers\TapPhimController;
 use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\AdminController;
 
 Route::get('/', function () {
     return view('home');  // tự động tìm home.blade.php trong resources/views
@@ -17,6 +18,8 @@ Route::get('/', function () {
 Route::get('/admin', function () {
     return view('admin.dashboard');
 })->name('admin.dashboard');
+
+Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
 
 // Route::get('/search', [VideoController::class, 'search'])->name('search');
 
