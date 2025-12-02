@@ -78,6 +78,11 @@ use Illuminate\Support\Str;
                         <div class="position-relative poster-wrapper">
                             <img src="{{ asset($phim->anh_bia) }}" alt="{{ $phim->ten_phim }}">
                             <span class="badge bg-primary position-absolute top-0 start-0 m-2">MỚI</span>
+                            @if($phim->loai == 'phim_bo')
+                            <span class="badge bg-dark position-absolute bottom-0 end-0 m-2 opacity-75">
+                                {{ $phim->so_tap }} Tập
+                            </span>
+                            @endif
                         </div>
                         <div class="card-body p-2 text-center">
                             <h6 class="card-title text-truncate">{{ $phim->ten_phim }}</h6>
@@ -98,6 +103,11 @@ use Illuminate\Support\Str;
                         <div class="position-relative poster-wrapper">
                             <img src="{{ asset($phim->anh_bia) }}" alt="{{ $phim->ten_phim }}">
                             <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">NỔI BẬT</span>
+                            @if($phim->loai == 'phim_bo')
+                            <span class="badge bg-dark position-absolute bottom-0 end-0 m-2 opacity-75">
+                                {{ $phim->so_tap }} Tập
+                            </span>
+                            @endif
                         </div>
                         <div class="card-body p-2 text-center">
                             <h6 class="card-title text-truncate">{{ $phim->ten_phim }}</h6>
@@ -118,6 +128,11 @@ use Illuminate\Support\Str;
                         <div class="position-relative poster-wrapper">
                             <img src="{{ asset($phim->anh_bia) }}" alt="{{ $phim->ten_phim }}">
                             <span class="badge bg-danger position-absolute top-0 start-0 m-2">HOT</span>
+                            @if($phim->loai == 'phim_bo')
+                            <span class="badge bg-dark position-absolute bottom-0 end-0 m-2 opacity-75">
+                                {{ $phim->so_tap }} Tập
+                            </span>
+                            @endif
                         </div>
                         <div class="card-body p-2 text-center">
                             <h6 class="card-title text-truncate">{{ $phim->ten_phim }}</h6>
@@ -146,6 +161,11 @@ use Illuminate\Support\Str;
                             <img src="{{ $anhBia }}" alt="{{ $phim->ten_phim }}">
 
                             <span class="badge bg-light text-dark position-absolute top-0 start-0 m-2">Phim</span>
+                            @if($phim->loai == 'phim_bo')
+                            <span class="badge bg-dark position-absolute bottom-0 end-0 m-2 opacity-75">
+                                {{ $phim->so_tap }} Tập
+                            </span>
+                            @endif
                         </div>
                         <div class="card-body p-2 text-center">
                             <h6 class="card-title text-truncate">{{ $phim->ten_phim }}</h6>

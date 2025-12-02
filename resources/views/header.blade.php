@@ -95,7 +95,7 @@
           @else
             <a class="dropdown-item text-white" href="{{ route('thongtintaikhoan') }}">Tài khoản của tôi</a>
             <hr class="dropdown-divider">
-            <form action="{{ url('user/dangxuat') }}" method="POST" class="m-0">
+            <form action="{{ route('dangxuat') }}" method="POST" class="m-0">
               @csrf
               <button type="submit" class="dropdown-item text-white">Đăng xuất</button>
             </form>

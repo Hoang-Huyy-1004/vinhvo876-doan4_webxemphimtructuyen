@@ -4,6 +4,7 @@ use Illuminate\Support\Str;
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,31 +16,50 @@ use Illuminate\Support\Str;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background-color: #fff;
+            background-color: #ffffffff;
+            /* nền đen cho giống giao diện phim */
         }
-        main { flex: 1; }
-        .card { cursor: pointer; transition: transform 0.2s; }
-        .card:hover { transform: scale(1.05); }
+
+        main {
+            flex: 1;
+        }
+
+        .navbar-nav .nav-link {
+            font-size: 15px;
+            margin-right: 10px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #ff6600 !important;
+        }
+
+        .card {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        /* ==== Khung ảnh poster chuẩn 2:3 ==== */
         .poster-wrapper {
             width: 100%;
             aspect-ratio: 2 / 3;
+            /* giữ tỉ lệ 2:3 */
             overflow: hidden;
             border-radius: 8px;
             background: #111;
+            /* nền tối nếu ảnh lỗi */
         }
+
         .poster-wrapper img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            /* crop ảnh vừa khung */
+            border-radius: 8px;
         }
-        /* Style phân trang riêng cho Hoạt hình */
-        .page-item.active .page-link {
-            background-color: #ff9800; /* Màu cam vàng */
-            border-color: #ff9800;
-            color: white;
-        }
-        .page-link { color: #333; }
-        .page-link:hover { color: #ff9800; }
     </style>
 </head>
 
@@ -49,26 +69,31 @@ use Illuminate\Support\Str;
     <main class="container my-4 text-black">
 
         <h4 class="mb-3">🧸 Phim Hoạt Hình</h4>
-        
+
         <div class="row g-3">
             @if($danhSachPhim->count() > 0)
-                @foreach($danhSachPhim as $phim)
-                <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                    <a href="{{ route('xemphim', $phim->id) }}" class="text-decoration-none">
-                        <div class="card bg-dark text-white border-0 h-100">
-                            <div class="position-relative poster-wrapper">
-                                <img src="{{ asset($phim->anh_bia) }}" alt="{{ $phim->ten_phim }}">
-                                <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">Hoạt Hình</span>
-                            </div>
-                            <div class="card-body p-2 text-center">
-                                <h6 class="card-title text-truncate" >{{ $phim->ten_phim }}</h6>
-                            </div>
+            @foreach($danhSachPhim as $phim)
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                <a href="{{ route('xemphim', $phim->id) }}" class="text-decoration-none">
+                    <div class="card bg-dark text-white border-0 h-100">
+                        <div class="position-relative poster-wrapper">
+                            <img src="{{ asset($phim->anh_bia) }}" alt="{{ $phim->ten_phim }}">
+                            <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">Hoạt Hình</span>
+                            @if($phim->loai == 'phim_bo')
+                            <span class="badge bg-dark position-absolute bottom-0 end-0 m-2 opacity-75">
+                                {{ $phim->so_tap }} Tập
+                            </span>
+                            @endif
                         </div>
-                    </a>
-                </div>
-                @endforeach
+                        <div class="card-body p-2 text-center">
+                            <h6 class="card-title text-truncate">{{ $phim->ten_phim }}</h6>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            @endforeach
             @else
-                <p class="text-center">Chưa có phim hoạt hình nào được cập nhật.</p>
+            <p class="text-center">Chưa có phim hoạt hình nào được cập nhật.</p>
             @endif
         </div>
 
@@ -76,14 +101,14 @@ use Illuminate\Support\Str;
         <div class="d-flex justify-content-center mt-5">
             <nav>
                 <ul class="pagination">
-                    
+
                     {{-- Nút Trước --}}
                     @if ($danhSachPhim->onFirstPage())
-                        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                    <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
                     @else
-                        <li class="page-item">
-                            <a class="page-link" href="{{ $danhSachPhim->previousPageUrl() }}">&laquo;</a>
-                        </li>
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $danhSachPhim->previousPageUrl() }}">&laquo;</a>
+                    </li>
                     @endif
 
                     {{-- Vòng lặp trang --}}
@@ -91,17 +116,17 @@ use Illuminate\Support\Str;
                         <li class="page-item {{ ($danhSachPhim->currentPage() == $i) ? 'active' : '' }}">
                             <a class="page-link" href="{{ $danhSachPhim->url($i) }}">{{ $i }}</a>
                         </li>
-                    @endfor
+                        @endfor
 
-                    {{-- Nút Sau --}}
-                    @if ($danhSachPhim->hasMorePages())
+                        {{-- Nút Sau --}}
+                        @if ($danhSachPhim->hasMorePages())
                         <li class="page-item">
                             <a class="page-link" href="{{ $danhSachPhim->nextPageUrl() }}">&raquo;</a>
                         </li>
-                    @else
+                        @else
                         <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
-                    @endif
-                    
+                        @endif
+
                 </ul>
             </nav>
         </div>
@@ -112,4 +137,5 @@ use Illuminate\Support\Str;
     @include('footer')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
