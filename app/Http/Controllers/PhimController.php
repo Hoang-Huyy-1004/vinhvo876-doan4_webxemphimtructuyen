@@ -47,7 +47,13 @@ class PhimController extends Controller
     // Danh sách phim bộ
     public function phimBo()
     {
-        $phims = Phim::with('theloais')->where('loai', 'phim_bo')->get();
+        // CŨ: $phims = Phim::with('theloais')->where('loai', 'phim_bo')->get();
+
+        // MỚI: Thêm 'taps' vào with() để load trước các tập phim
+        $phims = Phim::with(['theloais', 'taps'])
+            ->where('loai', 'phim_bo')
+            ->get();
+
         return view('admin.phim.phim_bo', compact('phims'));
     }
 

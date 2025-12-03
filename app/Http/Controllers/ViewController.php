@@ -65,6 +65,7 @@ class ViewController extends Controller
 
     public function updateTap(Request $request, $id)
     {
+        
         $request->validate([
             'view_tap' => 'required|integer|min:0'
         ]);

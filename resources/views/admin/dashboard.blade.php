@@ -62,7 +62,9 @@
                             </div>
                             <div class="row no-gutters align-items-center">
                                 <div class="col-auto">
-                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">12,430</div>
+                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
+                                        {{ number_format($tongLuotXem) }}
+                                    </div>
                                 </div>
                                 <!-- <div class="col">
                                     <div class="progress progress-sm mr-2">

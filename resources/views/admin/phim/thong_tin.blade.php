@@ -210,9 +210,9 @@
                     {{-- Kiểm tra xem phim đã có view trong bảng views chưa, nếu chưa có thì không hiện nút hoặc báo lỗi --}}
                     @if($phim->views)
                     <a href="{{ route('views.edit', $phim->views->id) }}"
-                        class="btn btn-outline-primary btn-sm"
+                        class="btn btn-outline-info btn-sm"
                         title="Sửa lượt xem phim lẻ">
-                        <i class="fas fa-eye"></i> Sửa View Tổng
+                        <i class="fas fa-eye"></i> Sửa View
                     </a>
                     @endif
                 </td>

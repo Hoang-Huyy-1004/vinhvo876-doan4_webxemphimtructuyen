@@ -11,9 +11,10 @@
     <thead>
         <tr class="text-white text-center" style="background-color: #000;">
             <th style="width: 5%;">Ảnh bìa</th>
-            <th style="width: 30%;">Tên phim</th>
+            <th style="width: 20%;">Tên phim</th>
             <th style="width: 15%;">Năm phát hành</th>
             <th style="width: 10%;">Số tập</th>
+            <th style="width: 10%;">Lượt xem</th>
             <th style="width: 10%;">Thể loại</th>
             <th style="width: 10%;">Trạng thái</th>
             <th style="width: 20%;">Hành động</th>
@@ -26,6 +27,7 @@
             <td>{{ $phim->ten_phim }}</td>
             <td class="text-center">{{ $phim->nam_phat_hanh }}</td>
             <td class="text-center">{{ $phim->so_tap }}</td>
+            <td class="text-center">{{ number_format($phim->taps->sum('view_tap')) }}</td>
             <td>
                 @foreach($phim->theloais as $tl)
                 <span class="badge bg-primary text-white">{{ $tl->ten_the_loai }}</span>

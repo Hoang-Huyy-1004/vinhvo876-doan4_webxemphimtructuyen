@@ -148,20 +148,14 @@ Route::view('/user/taikhoan', 'user.taikhoan');
 // Admin ViewController routes
 Route::prefix('admin')->group(function () {
 
-    // Route danh sách view
+    // 1. Xem danh sách view (nếu cần)
     Route::get('/views', [ViewController::class, 'index'])->name('views.index');
 
-    // Route form sửa view
-    Route::get('/views/{id}/edit', [ViewController::class, 'edit'])->name('views.edit');
-
-    // Route xử lý update view
-    Route::put('/views/{id}', [ViewController::class, 'update'])->name('views.update');
-
-    // --- Route cho Phim Lẻ ---
+    // 2. Route cho Phim Lẻ (Bảng views)
     Route::get('/views/{id}/edit', [ViewController::class, 'edit'])->name('views.edit');
     Route::put('/views/{id}', [ViewController::class, 'update'])->name('views.update');
 
-    // --- Route cho Phim Bộ (Tập phim) ---
+    // 3. Route cho Phim Bộ (Bảng tap_phim)
     Route::get('/views/tap/{id}/edit', [ViewController::class, 'editTap'])->name('views.tap.edit');
     Route::put('/views/tap/{id}', [ViewController::class, 'updateTap'])->name('views.tap.update');
 });

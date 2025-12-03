@@ -6,12 +6,13 @@
 <table class="table table-bordered">
     <thead>
         <tr class="text-white text-center" style="background-color: #000;">
-            <th>Ảnh bìa</th>
-            <th>Tên phim</th>
-            <th>Năm phát hành</th>
-            <th>Loại phim</th>
-            <th>Thể loại</th>
-            <th>Ngày phát sóng</th>
+            <th style="width: 5%;">Ảnh bìa</th>
+            <th style="width: 20%;">Tên phim</th>
+            <th style="width: 15%;">Năm phát hành</th>
+            <th style="width: 10%;">Lượt xem</th>
+            <th style="width: 15%;">Loại phim</th>
+            <th style="width: 5%;">Thể loại</th>
+            <th style="width: 15%;">Ngày phát sóng</th>
         </tr>
     </thead>
     <tbody>
@@ -20,6 +21,13 @@
             <td><img src="{{ asset($phim->anh_bia) }}" alt="{{ $phim->ten_phim }}" width="100"></td>
             <td>{{ $phim->ten_phim }}</td>
             <td class="text-center">{{ $phim->nam_phat_hanh }}</td>
+            <td class="text-center">
+                @if($phim->loai === 'phim_bo')
+                {{ number_format($phim->taps->sum('view_tap')) }}
+                @else
+                {{ number_format($phim->views->tong_views ?? 0) }}
+                @endif
+            </td>
             <td>
                 @foreach($phim->theloais as $tl)
                 <span class="badge bg-primary text-white">{{ $tl->ten_the_loai }}</span>
@@ -32,7 +40,7 @@
                 <span class="badge bg-info text-white">Phim Lẻ</span>
                 @endif
             </td>
-            <td>{{ $phim->created_at->format('d/m/Y') }}</td>
+            <td class="text-center">{{ $phim->created_at->format('d/m/Y') }}</td>
         </tr>
         @empty
         <tr>
