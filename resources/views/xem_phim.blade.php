@@ -81,10 +81,11 @@ use Illuminate\Support\Str;
 
         /* Style cho Card phim */
         .movie-card {
-            min-width: 260px;
-            /* Chiều rộng cố định cho mỗi item */
-            transition: transform 0.3s ease;
+            width: 260px;
+            flex: 0 0 auto;
             cursor: pointer;
+            transition: transform 0.3s ease;
+            margin-right: 15px;
         }
 
         .movie-card:hover {
@@ -98,7 +99,8 @@ use Illuminate\Support\Str;
             overflow: hidden;
             border-radius: 8px;
             aspect-ratio: 16/9;
-            /* Tỷ lệ khung hình giống video */
+            width: 100%;
+            background: #222;
         }
 
         .movie-thumbnail img {
@@ -224,84 +226,52 @@ use Illuminate\Support\Str;
                     </div>
                 </div>
 
+                <!-- nội dung liên quan  -->
                 <div class="container-fluid py-4">
                     <h4 class="mb-3 fw-bold">Nội dung liên quan</h4>
 
                     <div class="position-relative group-slider">
 
-                        <!-- left arrow -->
                         <button class="scroll-btn position-absolute start-0 top-50 translate-middle-y z-3 rounded-end"
                             onclick="scrollList(-1)" type="button">
                             <i class="bi bi-chevron-left fs-4"></i>
                         </button>
 
-                        <!-- scroll list -->
+                        {{-- SỬA LẠI: Chỉ giữ 1 thẻ div có id="movieList" ở đây --}}
                         <div class="d-flex flex-nowrap gap-3 movie-scroll-container py-2" id="movieList">
-                            <!-- Example items - đổi src theo asset() nếu dùng Laravel -->
-                            <div class="movie-card" title="Thanh Gươm Diệt Quỷ (Phần 1)">
-                                <div class="movie-thumbnail">
-                                    <img src="{{ asset('img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp') }}" alt="Kimetsu no Yaiba">
-                                    <div class="vip-badge"><i class="bi bi-gem"></i></div>
-                                    <div class="progress position-absolute bottom-0 w-100" style="height:3px;">
-                                        <div class="progress-bar bg-danger" style="width:40%"></div>
+
+                            @if(isset($phimLienQuan) && count($phimLienQuan) > 0)
+                            @foreach($phimLienQuan as $item)
+                            <a href="{{ route('xemphim', $item->id) }}" class="text-decoration-none">
+
+                                <div class="movie-card" title="{{ $item->ten_phim }}">
+                                    <div class="movie-thumbnail">
+                                        <img src="{{ asset($item->anh_bia) }}"
+                                            alt="{{ $item->ten_phim }}"
+                                            onerror="this.src='https://placehold.co/300x170?text=No+Image'">
+
+                                        {{-- @if($item->vip) <div class="vip-badge"><i class="bi bi-gem"></i></div> @endif --}}
+                                    </div>
+
+                                    <div class="mt-2">
+                                        <h6 class="mb-0 text-white fw-bold text-truncate" style="max-width: 260px;">
+                                            {{ $item->ten_phim }}
+                                        </h6>
                                     </div>
                                 </div>
-                                <div class="mt-2">
-                                    <h6 class="mb-0 text-white fw-bold">Thanh Gươm Diệt Quỷ (Phần 1)</h6>
-                                </div>
-                            </div>
 
-                            <div class="movie-card" title="Chuyển Sinh Thành Kiếm">
-                                <div class="movie-thumbnail">
-                                    <img src="{{ asset('img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp') }}" alt="Reincarnated as a Sword">
-                                </div>
-                                <div class="mt-2">
-                                    <h6 class="mb-0 text-white fw-bold">Chuyển Sinh Thành Kiếm</h6>
-                                </div>
-                            </div>
+                            </a>
+                            @endforeach
+                            @else
+                            <div class="text-white-50 p-3">Chưa có phim cùng thể loại.</div>
+                            @endif
 
-                            <div class="movie-card" title="Thanh Gươm Diệt Quỷ (Phần 4)">
-                                <div class="movie-thumbnail">
-                                    <img src="{{ asset('img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp') }}" alt="Kimetsu 4">
-                                </div>
-                                <div class="mt-2">
-                                    <h6 class="mb-0 text-white fw-bold">Thanh Gươm Diệt Quỷ (Phần 4): Làng Rèn...</h6>
-                                </div>
-                            </div>
-
-                            <div class="movie-card" title="The New Gate">
-                                <div class="movie-thumbnail">
-                                    <img src="{{ asset('img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp') }}" alt="The New Gate">
-                                </div>
-                                <div class="mt-2">
-                                    <h6 class="mb-0 text-white fw-bold">The New Gate</h6>
-                                </div>
-                            </div>
-
-                            <div class="movie-card" title="Fire Force">
-                                <div class="movie-thumbnail">
-                                    <img src="{{ asset('img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp') }}" alt="Fire Force">
-                                </div>
-                                <div class="mt-2">
-                                    <h6 class="mb-0 text-white fw-bold">Fire Force: Biệt Đội Cứu Hỏa</h6>
-                                </div>
-                            </div>
-
-                            <div class="movie-card">
-                                <div class="movie-thumbnail">
-                                    <img src="https://image.tmdb.org/t/p/w500/q719jXXEzOoYaps6babgKnONONX.jpg" alt="Your Name">
-                                </div>
-                                <div class="mt-2">
-                                    <h6 class="mb-0 text-white fw-bold">Your Name</h6>
-                                </div>
-                            </div>
                         </div>
+                        {{-- Kết thúc thẻ div #movieList --}}
 
-                        <!-- fades -->
                         <div class="fade-left"></div>
                         <div class="fade-right"></div>
 
-                        <!-- right arrow -->
                         <button class="scroll-btn position-absolute end-0 top-50 translate-middle-y z-3 rounded-start"
                             onclick="scrollList(1)">
                             <i class="bi bi-chevron-right fs-4"></i>

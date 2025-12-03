@@ -441,4 +441,26 @@ class PhimController extends Controller
 
     //     return view('admin.phim.thong_tin', compact('phim'));
     // }
+
+    // gợi ý 
+    public function xemPhim($id)
+    {
+        // 1. Lấy thông tin phim hiện tại (kèm các thể loại của nó)
+        $phim = Phim::with('the_loais')->findOrFail($id);
+
+        // 2. Lấy danh sách ID các thể loại của phim này
+        $theLoaiIds = $phim->the_loais->pluck('id'); // Lấy mảng [1, 2, 5...]
+
+        // 3. Truy vấn các phim khác có cùng thể loại
+        $phimLienQuan = Phim::whereHas('the_loais', function ($q) use ($theLoaiIds) {
+            $q->whereIn('the_loai.id', $theLoaiIds);
+        })
+            ->where('id', '!=', $id) // Loại trừ chính phim đang xem
+            ->inRandomOrder()        // Lấy ngẫu nhiên
+            ->limit(10)              // Chỉ lấy 10 phim
+            ->get();
+
+        // 4. QUAN TRỌNG: Phải truyền biến $phimLienQuan vào view qua compact()
+        return view('xem_phim', compact('phim', 'phimLienQuan'));
+    }
 }

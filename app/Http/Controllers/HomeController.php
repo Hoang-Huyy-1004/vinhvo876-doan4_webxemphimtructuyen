@@ -7,11 +7,43 @@ use App\Models\Phim;
 class HomeController extends Controller
 {
 
+    // public function phuongThucXemPhim($id)
+    // {
+    //     // xử lý logic lấy phim theo id
+    //     $phim = Phim::findOrFail($id);
+    //     return view('xem_phim', compact('phim'));
+    // }
+
     public function phuongThucXemPhim($id)
     {
-        // xử lý logic lấy phim theo id
-        $phim = Phim::findOrFail($id);
-        return view('xem_phim', compact('phim'));
+        // 1. Load phim kèm thể loại (Chú ý: dùng 'theloais' viết liền giống trong Model vừa sửa)
+        $phim = Phim::with('theloais')->findOrFail($id);
+
+        // 2. Lấy ID thể loại
+        $theLoaiIds = $phim->theloais->pluck('id');
+
+        // --- KIỂM TRA NHANH (DEBUG) ---
+        // Nếu dòng dưới in ra mảng rỗng [] -> Phim này chưa được gán thể loại nào trong DB.
+        // Nếu in ra [1, 3] -> Phim đã có thể loại, lỗi do truy vấn tìm phim khác.
+        // dd($theLoaiIds->toArray()); 
+        // (Bỏ comment dòng trên để test, test xong nhớ xóa đi)
+
+        // 3. Nếu phim này không có thể loại nào, trả về danh sách rỗng luôn
+        if ($theLoaiIds->isEmpty()) {
+            $phimLienQuan = collect(); // Trả về bộ sưu tập rỗng
+        } else {
+            // 4. Tìm phim khác
+            $phimLienQuan = Phim::whereHas('theloais', function ($query) use ($theLoaiIds) {
+                $query->whereIn('the_loai.id', $theLoaiIds);
+            })
+                ->where('id', '!=', $id)
+                ->where('trang_thai', 'cong_khai') // Đảm bảo phim kia cũng đang công khai
+                ->inRandomOrder()
+                ->take(10)
+                ->get();
+        }
+
+        return view('xem_phim', compact('phim', 'phimLienQuan'));
     }
 
     public function index()

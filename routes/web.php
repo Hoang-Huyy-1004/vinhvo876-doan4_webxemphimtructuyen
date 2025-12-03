@@ -61,7 +61,8 @@ Route::get('/the-loai/hoat-hinh', [HomeController::class, 'showPhimHoatHinh'])->
 
 // Định nghĩa route cho việc xem một bộ phim
 Route::get('/xem-phim/{phim}', [HomeController::class, 'phuongThucXemPhim'])
-    ->name('xemphim'); // Đặt tên route là 'xemphim'
+    ->name('xemphim'); 
+    // Đặt tên route là 'xemphim'
 
 
 
