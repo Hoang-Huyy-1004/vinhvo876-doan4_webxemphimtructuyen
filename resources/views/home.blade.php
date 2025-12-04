@@ -108,12 +108,15 @@ use Illuminate\Support\Str;
                                 <div class="top10-rank" data-rank="{{ $rank }}">{{ $rank }}</div>
 
                                 {{-- Tên phim --}}
-                                <div class="top10-title">{{ $view->phim->ten_phim }}</div>
+                                <div class="top10-title text-truncate">{{ $view->phim->ten_phim }}</div>
 
-                                <!-- {{-- Badge TOP 1 --}}
-                                @if($rank == 1)
-                                <span class="badge bg-danger position-absolute top-0 end-0 m-2">TOP 1</span>
-                                @endif -->
+                                {{-- === ĐOẠN CODE SỬA THEO YÊU CẦU === --}}
+                                @if($view->phim->loai == 'phim_bo')
+                                <span class="badge bg-success position-absolute top-0 end-0 m-2">PHIM BỘ</span>
+                                @elseif($view->phim->loai == 'phim_le')
+                                <span class="badge bg-light btn btn-outline-info border-2 text-dark position-absolute top-0 end-0 m-2">PHIM LẺ</span>
+                                @endif
+                                {{-- ================================= --}}
                             </a>
                         </div>
                         @endforeach
@@ -234,7 +237,7 @@ use Illuminate\Support\Str;
                                 @endphp
 
                                 <img src="{{ $anhBia }}" alt="{{ $phim->ten_phim }}">
-                                <span class="badge bg-light text-dark position-absolute top-0 start-0 m-2">Phim</span>
+                                <span class="badge bg-light text-dark position-absolute top-0 start-0 m-2">PHIM</span>
                                 @if($phim->loai == 'phim_bo')
                                 <span class="badge bg-dark position-absolute bottom-0 end-0 m-2 opacity-75">{{ $phim->so_tap }} Tập</span>
                                 @endif
