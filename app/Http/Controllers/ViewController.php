@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Views;
 use App\Models\TapPhim;
+use App\Models\LichSuView; // <--- Thêm Model này
 use Illuminate\Http\Request;
 
 class ViewController extends Controller
@@ -15,7 +16,7 @@ class ViewController extends Controller
 
     public function index()
     {
-        // Hiển thị danh sách view (nếu cần)
+        // Hiển thị danh sách view
         $views = Views::with('phim')->orderBy('tong_views', 'desc')->paginate(10);
         
         return view('admin.phim.views.index', compact('views'));
@@ -37,14 +38,25 @@ class ViewController extends Controller
         
         $view = Views::findOrFail($id);
         
-        // Cập nhật số view mới
+        // 1. Cập nhật số view tổng mới vào bảng views
         $view->update([
             'tong_views' => $request->tong_views
         ]);
+
+        // 2. [MỚI] Đồng bộ sang bảng lịch sử (lich_su_views) ngay lập tức
+        // Logic: Tìm dòng lịch sử của phim này trong HÔM NAY. Nếu có thì update, chưa có thì tạo mới.
+        LichSuView::updateOrCreate(
+            [
+                'phim_id' => $view->phim_id,
+                'ngay' => now()->toDateString() // Ngày hiện tại (YYYY-MM-DD)
+            ],
+            [
+                'view_ngay' => $request->tong_views // Lưu tổng view mới nhất vào lịch sử
+            ]
+        );
         
-        // Quay lại trang chi tiết phim lẻ sau khi lưu
         return redirect()->route('phim.show', $view->phim_id)
-                         ->with('success', 'Cập nhật view phim lẻ thành công!');
+                         ->with('success', 'Cập nhật view phim lẻ và đồng bộ lịch sử thành công!');
     }
 
     // ==============================================================
@@ -53,9 +65,7 @@ class ViewController extends Controller
 
     public function editTap($id)
     {
-        // Lấy dữ liệu từ bảng 'tap_phim'
         $tap = TapPhim::with('phim')->findOrFail($id);
-        
         return view('admin.phim.views.edit_tap', compact('tap'));
     }
 
@@ -69,24 +79,32 @@ class ViewController extends Controller
         // Tìm tập phim hiện tại
         $tap = TapPhim::findOrFail($id);
         
-        // BƯỚC 1: Cập nhật view cho tập phim này (view_tap vẫn là view riêng)
+        // BƯỚC 1: Cập nhật view cho tập phim này
         $tap->update([
             'view_tap' => $request->view_tap
         ]);
 
         // BƯỚC 2: Tính tổng view của TẤT CẢ các tập thuộc phim này
-        // (Lấy những dòng có cùng phim_id và cộng cột view_tap lại)
         $totalViews = TapPhim::where('phim_id', $tap->phim_id)->sum('view_tap');
 
-        // BƯỚC 3: Cập nhật (hoặc tạo mới) vào bảng 'views' cột 'tong_views'
-        // updateOrCreate: Tìm record theo phim_id, nếu thấy thì update, chưa thấy thì create
+        // BƯỚC 3: Cập nhật vào bảng 'views' tổng
         Views::updateOrCreate(
-            ['phim_id' => $tap->phim_id], // Điều kiện tìm kiếm
-            ['tong_views' => $totalViews] // Dữ liệu cần cập nhật
+            ['phim_id' => $tap->phim_id],
+            ['tong_views' => $totalViews]
         );
 
-        // Quay lại trang chi tiết bộ phim sau khi lưu
+        // BƯỚC 4: [MỚI] Đồng bộ sang bảng lịch sử (lich_su_views)
+        LichSuView::updateOrCreate(
+            [
+                'phim_id' => $tap->phim_id,
+                'ngay' => now()->toDateString() // Ngày hiện tại
+            ],
+            [
+                'view_ngay' => $totalViews // Đồng bộ số tổng mới nhất
+            ]
+        );
+
         return redirect()->route('phim.show', $tap->phim_id)
-                         ->with('success', 'Đã cập nhật view tập và đồng bộ tổng view phim!');
+                         ->with('success', 'Đã cập nhật view tập và đồng bộ lịch sử hiển thị!');
     }
 }

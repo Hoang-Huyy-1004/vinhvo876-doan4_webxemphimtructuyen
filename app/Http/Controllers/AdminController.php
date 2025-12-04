@@ -4,36 +4,56 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Phim;
-use App\Models\User;     // Model User mặc định của Laravel
-use App\Models\Views;   // Model Views (Phim lẻ)
-use App\Models\TapPhim; // Model TapPhim (Phim bộ)
-use App\Models\BinhLuan; // Bạn cần tạo Model này nếu chưa có
-use Carbon\Carbon;       // Để xử lý ngày tháng (cho lượt xem hôm nay)
+use App\Models\User;
+use App\Models\Views;
+use App\Models\LichSuView; 
+use App\Models\TapPhim; 
+use App\Models\BinhLuan; 
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
     public function index()
     {
-        // 1. Đếm tổng số phim
+        // --- PHẦN 1: THỐNG KÊ SỐ LIỆU (Giữ nguyên của bạn) ---
         $tongPhim = Phim::count();
-
-        // 2. Đếm tổng số người dùng (User)
         $tongUser = User::count();
-
-        // 3. TÍNH TỔNG LƯỢT XEM (Phim Lẻ + Phim Bộ)
-        // Tổng view phim lẻ (bảng views, cột tong_views)
         $viewPhimLe = Views::sum('tong_views');
+        $tongLuotXem = $viewPhimLe;
+
+
+        // --- PHẦN 2: XỬ LÝ BIỂU ĐỒ (Lấy từ hàm showChart bỏ sang đây) ---
         
-        // Tổng view phim bộ (bảng tap_phim, cột view)
-        // $viewPhimBo = TapPhim::sum('view_tap');
+        // Lấy tháng năm hiện tại
+        $month = Carbon::now()->month;
+        $year = Carbon::now()->year;
+        $daysInMonth = Carbon::now()->daysInMonth;
 
-        // Tổng cộng
-        $tongLuotXem = $viewPhimLe ;
+        // Lấy dữ liệu view
+        $viewsData = LichSuView::whereMonth('ngay', $month)
+            ->whereYear('ngay', $year)
+            ->get()
+            ->groupBy(function ($date) {
+                return Carbon::parse($date->ngay)->format('j');
+            });
 
-        // 4. Đếm tổng số bình luận
-        // $tongBinhLuan = BinhLuan::count();
+        $labels = []; 
+        $dataViews = []; 
 
-        // Truyền hết dữ liệu sang View
-        return view('admin.dashboard', compact('tongPhim', 'tongUser', 'tongLuotXem' ));
+        // Vòng lặp tạo dữ liệu đầy đủ cho các ngày trong tháng
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $labels[] = "Ngày " . $day;
+
+            if (isset($viewsData[$day])) {
+                $totalView = $viewsData[$day]->sum('view_ngay');
+                $dataViews[] = $totalView;
+            } else {
+                $dataViews[] = 0;
+            }
+        }
+
+        // --- PHẦN 3: TRẢ VỀ VIEW VỚI TẤT CẢ DỮ LIỆU ---
+        // Lưu ý: Phải có đủ labels và dataViews thì view mới không lỗi
+        return view('admin.dashboard', compact('tongPhim', 'tongUser', 'tongLuotXem', 'labels', 'dataViews'));
     }
 }

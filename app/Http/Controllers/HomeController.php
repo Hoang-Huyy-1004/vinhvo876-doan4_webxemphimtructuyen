@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Phim;
 use App\Models\Views; // <--- 1. THÊM DÒNG NÀY ĐỂ SỬ DỤNG MODEL VIEWS
+use App\Models\LichSuView;
 
 class HomeController extends Controller
 {
@@ -19,6 +20,23 @@ class HomeController extends Controller
     {
         // 1. Load phim kèm thể loại (Chú ý: dùng 'theloais' viết liền giống trong Model vừa sửa)
         $phim = Phim::with('theloais')->findOrFail($id);
+
+        $viewTong = Views::firstOrCreate(
+            ['phim_id' => $id], 
+            ['tong_views' => 0]
+        );
+        $viewTong->increment('tong_views');
+
+        // B. Tăng view ngày (Bảng 'lich_su_views' mới - dùng cho Biểu đồ)
+        // Tìm xem HÔM NAY phim này đã có dòng lịch sử nào chưa
+        $viewNgay = LichSuView::firstOrCreate(
+            [
+                'phim_id' => $id, 
+                'ngay' => now()->toDateString() // Lấy ngày hiện tại YYYY-MM-DD
+            ],
+            ['view_ngay' => 0]
+        );
+        $viewNgay->increment('view_ngay');
 
         // 2. Lấy ID thể loại
         $theLoaiIds = $phim->theloais->pluck('id');

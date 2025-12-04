@@ -41,7 +41,7 @@
                     {{-- Lưu ý: value dùng $tap->view theo đúng database --}}
                     <input type="number" name="view_tap" id="view_tap" 
                            class="form-control form-control-lg font-weight-bold text-info" 
-                           value="{{ old('view_tap', $tap->view) }}" min="0" required>
+                           value="{{ old('view_tap', $tap->view_tap) }}" min="0" required>
                     <small class="text-muted">Nhập số lượt xem hiển thị cho tập {{ $tap->tap }}.</small>
                 </div>
 
