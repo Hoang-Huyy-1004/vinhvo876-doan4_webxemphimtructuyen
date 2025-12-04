@@ -25,10 +25,10 @@ class AdminController extends Controller
         $viewPhimLe = Views::sum('tong_views');
         
         // Tổng view phim bộ (bảng tap_phim, cột view)
-        $viewPhimBo = TapPhim::sum('view_tap');
+        // $viewPhimBo = TapPhim::sum('view_tap');
 
         // Tổng cộng
-        $tongLuotXem = $viewPhimLe + $viewPhimBo;
+        $tongLuotXem = $viewPhimLe ;
 
         // 4. Đếm tổng số bình luận
         // $tongBinhLuan = BinhLuan::count();

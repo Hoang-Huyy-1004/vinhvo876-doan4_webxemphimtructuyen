@@ -18,8 +18,6 @@ class ViewController extends Controller
         // Hiển thị danh sách view (nếu cần)
         $views = Views::with('phim')->orderBy('tong_views', 'desc')->paginate(10);
         
-        // Trỏ đúng vào file: resources/views/admin/phim/views/index.blade.php
-        // (Nếu bạn chưa có file này thì hàm này sẽ lỗi, nhưng hiện tại chưa quan trọng)
         return view('admin.phim.views.index', compact('views'));
     }
 
@@ -28,7 +26,6 @@ class ViewController extends Controller
         // Lấy dữ liệu từ bảng 'views'
         $view = Views::with('phim')->findOrFail($id);
         
-        // Trỏ đúng vào file: resources/views/admin/phim/views/edit.blade.php
         return view('admin.phim.views.edit', compact('view'));
     }
 
@@ -59,26 +56,37 @@ class ViewController extends Controller
         // Lấy dữ liệu từ bảng 'tap_phim'
         $tap = TapPhim::with('phim')->findOrFail($id);
         
-        // Trỏ đúng vào file: resources/views/admin/phim/views/edit_tap.blade.php
         return view('admin.phim.views.edit_tap', compact('tap'));
     }
 
     public function updateTap(Request $request, $id)
     {
-        
+        // Validate dữ liệu đầu vào
         $request->validate([
             'view_tap' => 'required|integer|min:0'
         ]);
         
+        // Tìm tập phim hiện tại
         $tap = TapPhim::findOrFail($id);
         
-        // Cập nhật cột view_tap
+        // BƯỚC 1: Cập nhật view cho tập phim này (view_tap vẫn là view riêng)
         $tap->update([
             'view_tap' => $request->view_tap
         ]);
 
+        // BƯỚC 2: Tính tổng view của TẤT CẢ các tập thuộc phim này
+        // (Lấy những dòng có cùng phim_id và cộng cột view_tap lại)
+        $totalViews = TapPhim::where('phim_id', $tap->phim_id)->sum('view_tap');
+
+        // BƯỚC 3: Cập nhật (hoặc tạo mới) vào bảng 'views' cột 'tong_views'
+        // updateOrCreate: Tìm record theo phim_id, nếu thấy thì update, chưa thấy thì create
+        Views::updateOrCreate(
+            ['phim_id' => $tap->phim_id], // Điều kiện tìm kiếm
+            ['tong_views' => $totalViews] // Dữ liệu cần cập nhật
+        );
+
         // Quay lại trang chi tiết bộ phim sau khi lưu
         return redirect()->route('phim.show', $tap->phim_id)
-                         ->with('success', 'Đã cập nhật view tập phim!');
+                         ->with('success', 'Đã cập nhật view tập và đồng bộ tổng view phim!');
     }
 }

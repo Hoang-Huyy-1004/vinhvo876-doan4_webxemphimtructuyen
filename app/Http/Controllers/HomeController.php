@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Phim;
+use App\Models\Views; // <--- 1. THÊM DÒNG NÀY ĐỂ SỬ DỤNG MODEL VIEWS
 
 class HomeController extends Controller
 {
@@ -48,6 +49,13 @@ class HomeController extends Controller
 
     public function index()
     {
+        // --- 2. THÊM ĐOẠN NÀY: Lấy top 10 phim có tong_views cao nhất ---
+        $top10 = Views::with('phim') // Load kèm thông tin phim để hiển thị ảnh, tên...
+            ->orderBy('tong_views', 'desc') // Sắp xếp view giảm dần
+            ->take(10) // Lấy 10 phim
+            ->get();
+        // ----------------------------------------------------------------
+
         $phimMoi = Phim::where('hien_thi', 'moi')
             ->where('trang_thai', 'cong_khai')
             ->latest()
@@ -72,7 +80,8 @@ class HomeController extends Controller
             ->take(10)
             ->get();
 
-        return view('home', compact('phimMoi', 'phimNoiBat', 'phimHot', 'phimbinhthuong'));
+        // --- 3. NHỚ TRUYỀN BIẾN $top10 VÀO VIEW ---
+        return view('home', compact('phimMoi', 'phimNoiBat', 'phimHot', 'phimbinhthuong', 'top10'));
     }
 
     public function showPhimLe()

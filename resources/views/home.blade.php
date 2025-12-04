@@ -76,68 +76,52 @@ use Illuminate\Support\Str;
                     <button class="nav-btn nav-left" onclick="scrollAny('top10List', 'left')"><i class="bi bi-chevron-left"></i></button>
 
                     <div class="slider-list" id="top10List">
+                        {{-- BẮT ĐẦU VÒNG LẶP TOP 10 --}}
+                        @if(isset($top10) && $top10->count() > 0)
+                        @foreach($top10 as $index => $view)
+                        @php
+                        // Kiểm tra xem phim có tồn tại không (đề phòng xóa phim nhưng chưa xóa view)
+                        if (!$view->phim) continue;
+
+                        // Xử lý ảnh bìa
+                        $anhBia = $view->phim->anh_bia;
+                        if (!Str::startsWith($anhBia, ['http://', 'https://'])) {
+                        $anhBia = asset($anhBia);
+                        }
+
+                        // Tính toán class màu gradient (0 -> 4 rồi lặp lại)
+                        $gradClass = 't-grad-' . ($index % 5);
+
+                        // Số thứ tự (index bắt đầu từ 0 nên +1)
+                        $rank = $index + 1;
+                        @endphp
+
                         <div class="top10-item">
-                            <img src="img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp" class="top10-poster" alt="Phim 1">
-                            <div class="top10-overlay t-grad-0"></div>
-                            <div class="top10-rank" data-rank="1">1</div>
-                            <div class="top10-title">Ám Hà Truyện</div>
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">TOP 1</span>
+                            {{-- Link đến chi tiết phim --}}
+                            <a href="{{ route('xemphim', $view->phim->id) }}" class="text-white text-decoration-none">
+                                <img src="{{ $anhBia }}" class="top10-poster" alt="{{ $view->phim->ten_phim }}">
+
+                                {{-- Lớp phủ màu theo thứ tự --}}
+                                <div class="top10-overlay {{ $gradClass }}"></div>
+
+                                {{-- Số thứ tự to --}}
+                                <div class="top10-rank" data-rank="{{ $rank }}">{{ $rank }}</div>
+
+                                {{-- Tên phim --}}
+                                <div class="top10-title">{{ $view->phim->ten_phim }}</div>
+
+                                <!-- {{-- Badge TOP 1 --}}
+                                @if($rank == 1)
+                                <span class="badge bg-danger position-absolute top-0 end-0 m-2">TOP 1</span>
+                                @endif -->
+                            </a>
                         </div>
-                        <div class="top10-item">
-                            <img src="img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp" class="top10-poster" alt="Phim 2">
-                            <div class="top10-overlay t-grad-1"></div>
-                            <div class="top10-rank" data-rank="2">2</div>
-                            <div class="top10-title">Thiên Địa Kiểm Tâm</div>
-                        </div>
-                        <div class="top10-item">
-                            <img src="img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp" class="top10-poster" alt="Phim 3">
-                            <div class="top10-overlay t-grad-2"></div>
-                            <div class="top10-rank" data-rank="3">3</div>
-                            <div class="top10-title">Bác Sĩ Nhi Khoa</div>
-                        </div>
-                        <div class="top10-item">
-                            <img src="img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp" class="top10-poster" alt="Phim 4">
-                            <div class="top10-overlay t-grad-3"></div>
-                            <div class="top10-rank" data-rank="4">4</div>
-                            <div class="top10-title">Ẩn Danh 3</div>
-                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">HOT</span>
-                        </div>
-                        <div class="top10-item">
-                            <img src="img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp" class="top10-poster" alt="Phim 5">
-                            <div class="top10-overlay t-grad-4"></div>
-                            <div class="top10-rank" data-rank="5">5</div>
-                            <div class="top10-title">Những Ngôi Nhà</div>
-                        </div>
-                        <div class="top10-item">
-                            <img src="img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp" class="top10-poster" alt="Phim 6">
-                            <div class="top10-overlay t-grad-0"></div>
-                            <div class="top10-rank" data-rank="6">6</div>
-                            <div class="top10-title">Kiếm Lai</div>
-                        </div>
-                        <div class="top10-item">
-                            <img src="img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp" class="top10-poster" alt="Phim 7">
-                            <div class="top10-overlay t-grad-1"></div>
-                            <div class="top10-rank" data-rank="7">7</div>
-                            <div class="top10-title">Vân Chi Vũ</div>
-                        </div>
-                        <div class="top10-item">
-                            <img src="img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp" class="top10-poster" alt="Phim 8">
-                            <div class="top10-overlay t-grad-2"></div>
-                            <div class="top10-rank" data-rank="8">8</div>
-                            <div class="top10-title">Ninh An Như Mộng</div>
-                        </div>
-                        <div class="top10-item">
-                            <img src="img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp" class="top10-poster" alt="Phim 8">
-                            <div class="top10-overlay t-grad-3"></div>
-                            <div class="top10-rank" data-rank="9">9</div>
-                            <div class="top10-title">Ninh An Như Mộng</div>
-                        </div>
-                        <div class="top10-item">
-                            <img src="img/dBUXPSHXjtxvuxxkjzwK9tccEeC.webp" class="top10-poster" alt="Phim 8">
-                            <div class="top10-overlay t-grad-4"></div>
-                            <div class="top10-rank" data-rank="10">10</div>
-                            <div class="top10-title">Ninh An Như Mộng</div>
-                        </div>
+                        @endforeach
+                        @else
+                        {{-- Hiển thị thông báo hoặc placeholder nếu chưa có dữ liệu --}}
+                        <p class="text-muted ms-3">Đang cập nhật bảng xếp hạng...</p>
+                        @endif
+                        {{-- KẾT THÚC VÒNG LẶP --}}
                     </div>
 
                     <button class="nav-btn nav-right" onclick="scrollAny('top10List', 'right')"><i class="bi bi-chevron-right"></i></button>
