@@ -56,13 +56,14 @@ Route::get('/tat-ca-phim-le', [HomeController::class, 'showPhimLe'])->name('show
 Route::get('/tat-ca-phim-bo', [HomeController::class, 'showPhimBo'])->name('show.phimbo');
 Route::get('/the-loai/tinh-cam', [HomeController::class, 'showPhimTinhCam'])->name('show.tinhcam');
 Route::get('/the-loai/hoat-hinh', [HomeController::class, 'showPhimHoatHinh'])->name('show.hoathinh');
+Route::get('/tim-kiem', [HomeController::class, 'showSearchPage'])->name('page.timkiem');
 
 // routes/web.php
 
 // Định nghĩa route cho việc xem một bộ phim
 Route::get('/xem-phim/{phim}', [HomeController::class, 'phuongThucXemPhim'])
-    ->name('xemphim'); 
-    // Đặt tên route là 'xemphim'
+    ->name('xemphim');
+// Đặt tên route là 'xemphim'
 
 
 

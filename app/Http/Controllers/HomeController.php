@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Phim;
 use App\Models\Views; // <--- 1. THÊM DÒNG NÀY ĐỂ SỬ DỤNG MODEL VIEWS
 use App\Models\LichSuView;
+use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
@@ -151,5 +152,20 @@ class HomeController extends Controller
             ->paginate(12);
 
         return view('header_phimhoathinh', compact('danhSachPhim'));
+    }
+
+    public function showSearchPage(Request $request)
+    {
+        // Bạn cũng cần lấy Top 10 ở đây để hiển thị bên trang tìm kiếm
+        $top10 = Views::with('phim')
+            ->orderBy('tong_views', 'desc')
+            ->take(10)
+            ->get();
+
+        // Xử lý tìm kiếm (nếu người dùng đã nhập từ khóa)
+        // Code tìm kiếm của bạn sẽ nằm ở đây...
+        
+        // CHỈ TRẢ VỀ VIEW 'tim_kiem'
+        return view('tim_kiem', compact('top10'));
     }
 }

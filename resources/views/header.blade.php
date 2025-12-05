@@ -27,7 +27,7 @@
         {{-- XEM THÊM dropdown (chuẩn bootstrap) --}}
         <li class="nav-item dropdown">
           <a class="nav-link text-white dropdown-toggle" href="#" id="xemThemDropdown" role="button"
-             data-bs-toggle="dropdown" aria-expanded="false">
+            data-bs-toggle="dropdown" aria-expanded="false">
             XEM THÊM
           </a>
           <div class="dropdown-menu dropdown-menu-dark p-3" aria-labelledby="xemThemDropdown" style="min-width:200px;">
@@ -46,12 +46,15 @@
 
       {{-- Search --}}
       <form action="" method="GET" class="d-flex align-items-center">
-        <input type="text" name="q"
+        <!-- <input type="text" name="q"
                class="form-control form-control-sm bg-dark text-white border-0"
-               placeholder="Tìm phim..." value="{{ request('q') }}">
-        <button type="submit" class="border-0 bg-transparent ms-2">
+               placeholder="Tìm phim..." value="{{ request('q') }}"> -->
+        <!-- <button type="submit" class="border-0 bg-transparent ms-2">
           <i class="bi bi-search text-white"></i>
-        </button>
+        </button> -->
+        <a href="{{ route('page.timkiem') }}" class="border-0 bg-transparent ms-2 text-decoration-none">
+          <i class="bi bi-search text-white"></i>
+        </a>
       </form>
 
       {{-- Notification --}}
@@ -59,21 +62,21 @@
         <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="bi bi-bell text-white fs-5"></i>
           @if(isset($notifications) && $notifications->where('is_read', false)->count() > 0)
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-              {{ $notifications->where('is_read', false)->count() }}
-            </span>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            {{ $notifications->where('is_read', false)->count() }}
+          </span>
           @endif
         </a>
         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark p-2" aria-labelledby="notificationDropdown" style="width: 300px; max-height: 400px; overflow-y: auto;">
           @forelse($notifications ?? [] as $notification)
-            <li>
-              <a href="{{ route('notifications.show', $notification->id) }}" class="dropdown-item {{ $notification->is_read ? 'text-muted' : 'fw-bold' }}">
-                {{ $notification->message }}
-                <small class="d-block text-secondary">{{ $notification->created_at->diffForHumans() }}</small>
-              </a>
-            </li>
+          <li>
+            <a href="{{ route('notifications.show', $notification->id) }}" class="dropdown-item {{ $notification->is_read ? 'text-muted' : 'fw-bold' }}">
+              {{ $notification->message }}
+              <small class="d-block text-secondary">{{ $notification->created_at->diffForHumans() }}</small>
+            </a>
+          </li>
           @empty
-            <li><span class="dropdown-item text-center text-muted">Không có thông báo</span></li>
+          <li><span class="dropdown-item text-center text-muted">Không có thông báo</span></li>
           @endforelse
         </ul>
       </div>
@@ -90,15 +93,15 @@
         <div class="dropdown-menu dropdown-menu-dark p-3 dropdown-menu-end" aria-labelledby="userDropdown" style="min-width:180px;">
           {{-- Nếu dùng Laravel Auth, bạn có thể đổi @guest/@auth --}}
           @guest
-            <a class="dropdown-item text-white" href="{{ url('user/dangnhap') }}">Đăng nhập</a>
-            <a class="dropdown-item text-white" href="{{ url('user/dangky') }}">Đăng ký</a>
+          <a class="dropdown-item text-white" href="{{ url('user/dangnhap') }}">Đăng nhập</a>
+          <a class="dropdown-item text-white" href="{{ url('user/dangky') }}">Đăng ký</a>
           @else
-            <a class="dropdown-item text-white" href="{{ route('thongtintaikhoan') }}">Tài khoản của tôi</a>
-            <hr class="dropdown-divider">
-            <form action="{{ route('dangxuat') }}" method="POST" class="m-0">
-              @csrf
-              <button type="submit" class="dropdown-item text-white">Đăng xuất</button>
-            </form>
+          <a class="dropdown-item text-white" href="{{ route('thongtintaikhoan') }}">Tài khoản của tôi</a>
+          <hr class="dropdown-divider">
+          <form action="{{ route('dangxuat') }}" method="POST" class="m-0">
+            @csrf
+            <button type="submit" class="dropdown-item text-white">Đăng xuất</button>
+          </form>
           @endguest
         </div>
       </div>
@@ -109,18 +112,18 @@
 
 <!-- Thêm CSS nhẹ (đặt dưới nav, trong header.blade.php) -->
 <style>
-/* animation: fade + slide */
-.dropdown-menu {
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(8px);
-  transition: opacity .2s ease, transform .2s ease;
-}
+  /* animation: fade + slide */
+  .dropdown-menu {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity .2s ease, transform .2s ease;
+  }
 
-.dropdown.show > .dropdown-menu,
-.dropdown-menu.show {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
+  .dropdown.show>.dropdown-menu,
+  .dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
 </style>
