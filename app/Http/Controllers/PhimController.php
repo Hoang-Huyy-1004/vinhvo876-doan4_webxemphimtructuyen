@@ -410,12 +410,8 @@ class PhimController extends Controller
             'anh_bia' => $anhBiaDb,
             // KHÔNG CẬP NHẬT 'loai' ở đây để tránh lỗi đường dẫn thư mục phức tạp
             // Nếu bạn muốn update 'loai', bạn phải xử lý đổi tên và di chuyển thư mục
-            'trailer_type' => 'required|in:file,url',
-            'trailer_file' => 'nullable|mimes:mp4,mkv,avi,mov,flv|max:51200',
-            'trailer_url' => 'nullable|url|max:255',
-            'video_type' => $phim->loai === 'phim_le' ? 'required|in:file,url' : 'nullable',
-            'video_file' => 'nullable|mimes:mp4,mov,ogg,qt|max:50000',
-            'video_url' => $phim->loai === 'phim_le' ? 'nullable|url|max:255' : 'nullable',
+            'trailer' => $trailerDb,
+            'video' => $videoDb,
             'so_tap' => $soTapValue,    // Cập nhật số tập
             'thoi_luong' => $request->thoi_luong,
             'trang_thai' => $trangThaiValue,

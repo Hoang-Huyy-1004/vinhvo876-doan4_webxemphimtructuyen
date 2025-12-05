@@ -13,18 +13,88 @@
             </button>
 
             <!-- Topbar Search -->
-            <form
-                class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+            <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search position-relative">
                 <div class="input-group">
-                    <input type="text" class="form-control bg-light border-0 small" placeholder="Tìm kiếm..."
-                        aria-label="Search" aria-describedby="basic-addon2">
+                    <input type="text"
+                        id="header-search-input"
+                        class="form-control bg-light border-0 small"
+                        placeholder="Tìm phim nhanh..."
+                        aria-label="Search"
+                        aria-describedby="basic-addon2"
+                        autocomplete="off">
+
                     <div class="input-group-append">
                         <button class="btn btn-dark" type="button">
                             <i class="fas fa-search fa-sm"></i>
                         </button>
                     </div>
                 </div>
+
+                <div id="header-search-results" class="shadow rounded">
+                </div>
             </form>
+
+            <style>
+                /* Định vị khung kết quả nằm ngay dưới ô input */
+                .navbar-search {
+                    position: relative;
+                }
+
+                /* Để khung con absolute theo khung cha */
+
+                #header-search-results {
+                    position: absolute;
+                    top: 100%;
+                    /* Đẩy xuống đáy ô input */
+                    left: 0;
+                    width: 100%;
+                    /* Rộng bằng ô input */
+                    background-color: #1a1a1a;
+                    /* Nền tối */
+                    z-index: 1000;
+                    /* Nằm đè lên các nội dung khác */
+                    display: none;
+                    /* Mặc định ẩn */
+                    margin-top: 5px;
+                    overflow: hidden;
+                    border: 1px solid #333;
+                }
+
+                /* CSS cho từng dòng phim trong danh sách (Copy từ tim_kiem qua nhưng thu nhỏ lại) */
+                .h-result-item {
+                    display: flex;
+                    padding: 8px 10px;
+                    border-bottom: 1px solid #333;
+                    text-decoration: none;
+                    transition: background 0.2s;
+                    color: #fff;
+                }
+
+                .h-result-item:hover {
+                    background-color: #333;
+                    text-decoration: none;
+                    color: #ff6600;
+                }
+
+                .h-res-img {
+                    width: 40px;
+                    height: 60px;
+                    object-fit: cover;
+                    border-radius: 4px;
+                    margin-right: 10px;
+                }
+
+                .h-res-info h6 {
+                    font-size: 14px;
+                    margin: 0;
+                    font-weight: bold;
+                }
+
+                .h-res-info small {
+                    font-size: 11px;
+                    color: #aaa;
+                }
+            </style>
 
             <!-- Topbar Navbar -->
             <ul class="navbar-nav ml-auto">
@@ -112,7 +182,7 @@
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fas fa-envelope fa-2x fa-fw"></i>
                         <!-- Counter - Messages -->
-                        <span class="badge badge-danger badge-counter" style="font-size: 1rem;" >7</span>
+                        <span class="badge badge-danger badge-counter" style="font-size: 1rem;">7</span>
                     </a>
                     <!-- Dropdown - Messages -->
                     <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"

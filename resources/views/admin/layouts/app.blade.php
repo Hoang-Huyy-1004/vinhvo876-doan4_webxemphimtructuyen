@@ -78,6 +78,7 @@
     </div>
 
     <!-- Scripts -->
+    <!-- CHÚ Ý: Đã dùng jquery trong vendor thì KHÔNG nạp thêm jquery CDN nữa để tránh xung đột -->
     <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
@@ -90,6 +91,85 @@
     <script src="{{ asset('js/demo/chart-area-demo.js') }}"></script>
     <script src="{{ asset('js/demo/chart-pie-demo.js') }}"></script>
 
+    <!-- Đã xóa dòng nạp jQuery CDN thừa ở đây -->
+
+    <script>
+        $(document).ready(function() {
+            let adminTimer;
+
+            // ĐÃ SỬA: Đổi #admin-search-input thành #header-search-input cho khớp với navbar
+            $('#header-search-input').on('keyup', function() {
+                let query = $(this).val().trim();
+
+                clearTimeout(adminTimer);
+
+                // ĐÃ SỬA: Đổi #admin-search-results thành #header-search-results
+                if (query.length === 0) {
+                    $('#header-search-results').hide();
+                    return;
+                }
+
+                // Debounce 300ms (đợi ngừng gõ mới tìm)
+                adminTimer = setTimeout(function() {
+                    $.ajax({
+                        url: "{{ route('ajax.search') }}",
+                        method: "GET",
+                        data: {
+                            keyword: query
+                        },
+                        success: function(response) {
+                            let html = '';
+
+                            if (response.count > 0) {
+                                response.data.forEach(movie => {
+
+                                    let adminLink = "{{ url('/admin/phim') }}/" + movie.id;
+
+                                    // Lưu ý: Class CSS ở đây (h-result-item...) phải khớp với CSS bạn đã định nghĩa trong navbar
+                                    // Trong navbar bạn dùng class: h-result-item, h-res-img, h-res-info
+                                    // Nên mình sửa lại class ở đây cho khớp luôn để nó ăn Style
+
+                                    html += `
+                                        <a href="${adminLink}" class="h-result-item">
+                                            <img src="${movie.anh_bia}" class="h-res-img" onerror="this.src='https://via.placeholder.com/40x60'">
+                                            <div class="h-res-info">
+                                                <h6>${movie.ten_phim}</h6>
+                                                <span>
+                                                    ${movie.nam_san_xuat} 
+                                                    <span class="badge badge-info">${movie.chat_luong || 'HD'}</span>
+                                                </span>
+                                            </div>
+                                        </a>
+                                    `;
+                                });
+
+                                html += `
+                                    <a href="{{ route('phim.index') }}" class="h-result-item justify-content-center py-2">
+                                        <span style="font-size: 12px; color: #aaa;">Xem tất cả kết quả...</span>
+                                    </a>
+                                `;
+
+                                $('#header-search-results').html(html).fadeIn();
+                            } else {
+                                $('#header-search-results').html('<div class="p-3 text-center text-muted small" style="color:#aaa;">Không tìm thấy phim phù hợp.</div>').fadeIn();
+                            }
+                        },
+                        error: function() {
+                            console.log('Lỗi Ajax tìm kiếm Admin');
+                        }
+                    });
+                }, 300);
+            });
+
+            // Ẩn bảng kết quả khi click ra ngoài
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.navbar-search').length) {
+                    $('#header-search-results').fadeOut();
+                }
+            });
+        });
+    </script>
 
 </body>
+
 </html>
