@@ -6,6 +6,7 @@ use App\Models\Phim;
 use App\Models\Views; // <--- 1. THÊM DÒNG NÀY ĐỂ SỬ DỤNG MODEL VIEWS
 use App\Models\LichSuView;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class HomeController extends Controller
 {
@@ -23,7 +24,7 @@ class HomeController extends Controller
         $phim = Phim::with('theloais')->findOrFail($id);
 
         $viewTong = Views::firstOrCreate(
-            ['phim_id' => $id], 
+            ['phim_id' => $id],
             ['tong_views' => 0]
         );
         $viewTong->increment('tong_views');
@@ -32,7 +33,7 @@ class HomeController extends Controller
         // Tìm xem HÔM NAY phim này đã có dòng lịch sử nào chưa
         $viewNgay = LichSuView::firstOrCreate(
             [
-                'phim_id' => $id, 
+                'phim_id' => $id,
                 'ngay' => now()->toDateString() // Lấy ngày hiện tại YYYY-MM-DD
             ],
             ['view_ngay' => 0]
@@ -164,8 +165,50 @@ class HomeController extends Controller
 
         // Xử lý tìm kiếm (nếu người dùng đã nhập từ khóa)
         // Code tìm kiếm của bạn sẽ nằm ở đây...
-        
+
         // CHỈ TRẢ VỀ VIEW 'tim_kiem'
         return view('tim_kiem', compact('top10'));
+    }
+    public function ajaxSearch(Request $request)
+    {
+        $query = $request->get('keyword');
+
+        // Nếu từ khóa quá ngắn thì không tìm
+        if (strlen($query) < 1) {
+            return response()->json([]);
+        }
+
+        // Tìm kiếm phim (giới hạn 10 kết quả để demo, bạn có thể tăng lên)
+        $movies = Phim::where('ten_phim', 'LIKE', "%{$query}%")
+            ->where('trang_thai', 'cong_khai') // Chỉ lấy phim công khai
+            ->orderBy('created_at', 'desc')
+            ->take(20) // Lấy khoảng 20 phim để hiện thanh cuộn scrollbar
+            ->get();
+
+        // Format dữ liệu trả về cho đẹp
+        $results = $movies->map(function ($movie) {
+            // Xử lý ảnh bìa
+            $anhBia = $movie->anh_bia;
+            if (!\Illuminate\Support\Str::startsWith($anhBia, ['http://', 'https://'])) {
+                $anhBia = asset($anhBia);
+            }
+
+            return [
+                'id' => $movie->id,
+                'ten_phim' => $movie->ten_phim,
+                'anh_bia' => $anhBia,
+                'nam_san_xuat' => $movie->nam_san_xuat ?? '2024', // Nếu DB bạn có cột năm thì thay vào
+                'chat_luong' => 'HD', // Hoặc lấy từ DB: $movie->chat_luong
+                'trang_thai_text' => 'Hoàn Tất', // Hoặc: $movie->trang_thai
+                'tap_hien_tai' => $movie->so_tap_hien_tai ?? 'Full', // Ví dụ: 20/20
+                'url' => route('xemphim', $movie->id)
+            ];
+        });
+
+        return response()->json([
+            'count' => $movies->count(), // Số lượng tìm thấy
+            'total' => Phim::count(), // Tổng số phim trong kho (để hiện dòng "Hiển thị X / Y kết quả")
+            'data' => $results
+        ]);
     }
 }

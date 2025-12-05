@@ -57,6 +57,7 @@ Route::get('/tat-ca-phim-bo', [HomeController::class, 'showPhimBo'])->name('show
 Route::get('/the-loai/tinh-cam', [HomeController::class, 'showPhimTinhCam'])->name('show.tinhcam');
 Route::get('/the-loai/hoat-hinh', [HomeController::class, 'showPhimHoatHinh'])->name('show.hoathinh');
 Route::get('/tim-kiem', [HomeController::class, 'showSearchPage'])->name('page.timkiem');
+Route::get('/ajax-search', [HomeController::class, 'ajaxSearch'])->name('ajax.search');
 
 // routes/web.php
 
