@@ -1,7 +1,35 @@
 @extends('admin.layouts.app')
 
 @section('content')
-<h2 class="mb-4">Danh sách phim bộ</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-4">Danh sách phim bộ</h2>
+    <div class="dropdown">
+        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownFilter" data-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-filter"></i> Lọc phim
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownFilter">
+            <li>
+                <h6 class="dropdown-header">Sắp xếp theo</h6>
+            </li>
+            <li><a class="dropdown-item {{ request('sort') == 'newest' ? 'active' : '' }}" href="{{ route('phim.phim_bo', ['sort' => 'newest']) }}">Mới nhất (Mặc định)</a></li>
+            <li><a class="dropdown-item {{ request('sort') == 'oldest' ? 'active' : '' }}" href="{{ route('phim.phim_bo', ['sort' => 'oldest']) }}">Cũ nhất</a></li>
+
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+
+            <li><a class="dropdown-item {{ request('sort') == 'year_desc' ? 'active' : '' }}" href="{{ route('phim.phim_bo', ['sort' => 'year_desc']) }}">Năm phát hành (Mới -> Cũ)</a></li>
+            <li><a class="dropdown-item {{ request('sort') == 'year_asc' ? 'active' : '' }}" href="{{ route('phim.phim_bo', ['sort' => 'year_asc']) }}">Năm phát hành (Cũ -> Mới)</a></li>
+
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+
+            <li><a class="dropdown-item {{ request('sort') == 'view_desc' ? 'active' : '' }}" href="{{ route('phim.phim_bo', ['sort' => 'view_desc']) }}">Lượt xem cao nhất</a></li>
+            <li><a class="dropdown-item {{ request('sort') == 'view_asc' ? 'active' : '' }}" href="{{ route('phim.phim_bo', ['sort' => 'view_asc']) }}">Lượt xem thấp nhất</a></li>
+        </ul>
+    </div>
+</div>
 
 @if(session('success'))
 <div class="alert alert-success">{{ session('success') }}</div>

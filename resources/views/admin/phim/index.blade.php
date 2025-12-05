@@ -1,7 +1,36 @@
 @extends('admin.layouts.app')
 
 @section('content')
-<h2 class="mb-4">Danh sách tất cả phim</h2>
+{{-- Bọc tiêu đề và nút lọc trong d-flex để chia sang 2 bên --}}
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    {{-- Bên trái: Tiêu đề (thêm mb-0 để căn giữa đẹp hơn) --}}
+    <h2 class="mb-0">Danh sách tất cả phim</h2>
+
+    {{-- Bên phải: Nút lọc --}}
+    <div class="dropdown">
+        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownFilter" data-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-filter"></i> Lọc phim
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownFilter">
+            <li>
+                <h6 class="dropdown-header">Sắp xếp theo</h6>
+            </li>
+            <li><a class="dropdown-item {{ request('sort') == 'newest' ? 'active' : '' }}" href="{{ route('phim.index', ['sort' => 'newest']) }}">Mới nhất (Mặc định)</a></li>
+            <li><a class="dropdown-item {{ request('sort') == 'oldest' ? 'active' : '' }}" href="{{ route('phim.index', ['sort' => 'oldest']) }}">Cũ nhất</a></li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item {{ request('sort') == 'year_desc' ? 'active' : '' }}" href="{{ route('phim.index', ['sort' => 'year_desc']) }}">Năm phát hành (Mới -> Cũ)</a></li>
+            <li><a class="dropdown-item {{ request('sort') == 'year_asc' ? 'active' : '' }}" href="{{ route('phim.index', ['sort' => 'year_asc']) }}">Năm phát hành (Cũ -> Mới)</a></li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item {{ request('sort') == 'view_desc' ? 'active' : '' }}" href="{{ route('phim.index', ['sort' => 'view_desc']) }}">Lượt xem cao nhất</a></li>
+            <li><a class="dropdown-item {{ request('sort') == 'view_asc' ? 'active' : '' }}" href="{{ route('phim.index', ['sort' => 'view_asc']) }}">Lượt xem thấp nhất</a></li>
+        </ul>
+    </div>
+</div>
 
 <table class="table table-bordered">
     <thead>

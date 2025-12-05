@@ -31,28 +31,161 @@ class PhimController extends Controller
     }
 
     // Danh sách tất cả phim
-    public function index()
+    // public function index()
+    // {
+    //     $phims = Phim::with('theloais')->get();
+    //     return view('admin.phim.index', compact('phims'));
+    // }
+    public function index(Request $request)
     {
-        $phims = Phim::with('theloais')->get();
+        // 1. Load thêm quan hệ 'taps' và 'views' để có dữ liệu tính toán và sắp xếp
+        $query = Phim::with(['theloais', 'taps', 'views']);
+
+        // 2. Xử lý sắp xếp cơ bản (DB Query)
+        $sort = $request->query('sort', 'newest'); // Mặc định là mới nhất
+
+        switch ($sort) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'year_desc':
+                $query->orderBy('nam_phat_hanh', 'desc');
+                break;
+            case 'year_asc':
+                $query->orderBy('nam_phat_hanh', 'asc');
+                break;
+            // Các trường hợp view sẽ xử lý sau khi get()
+            case 'newest':
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+
+        // 3. Lấy dữ liệu từ DB
+        $phims = $query->get();
+
+        // 4. Xử lý sắp xếp theo View (Collection Sort)
+        // Vì view nằm ở 2 bảng khác nhau nên xử lý trên Collection dễ hơn Query
+        if ($sort === 'view_desc') {
+            $phims = $phims->sortByDesc(function ($phim) {
+                if ($phim->loai === 'phim_bo') {
+                    return $phim->taps->sum('view_tap');
+                }
+                return $phim->views->tong_views ?? 0;
+            });
+        } elseif ($sort === 'view_asc') {
+            $phims = $phims->sortBy(function ($phim) {
+                if ($phim->loai === 'phim_bo') {
+                    return $phim->taps->sum('view_tap');
+                }
+                return $phim->views->tong_views ?? 0;
+            });
+        }
+
         return view('admin.phim.index', compact('phims'));
     }
 
     // Danh sách phim lẻ
-    public function phimLe()
+    // public function phimLe()
+    // {
+    //     $phims = Phim::with('theloais')->where('loai', 'phim_le')->get();
+    //     return view('admin.phim.phim_le', compact('phims'));
+    // }
+    // Danh sách phim lẻ (Có chức năng lọc)
+    public function phimLe(Request $request)
     {
-        $phims = Phim::with('theloais')->where('loai', 'phim_le')->get();
+        // 1. Load quan hệ 'views' để lấy số lượt xem
+        $query = Phim::with(['theloais', 'views'])
+            ->where('loai', 'phim_le'); // QUAN TRỌNG: Chỉ lấy phim lẻ
+
+        // 2. Lấy tham số sort
+        $sort = $request->query('sort', 'newest');
+
+        // 3. Sắp xếp cơ bản (DB Query)
+        switch ($sort) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'year_desc':
+                $query->orderBy('nam_phat_hanh', 'desc');
+                break;
+            case 'year_asc':
+                $query->orderBy('nam_phat_hanh', 'asc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+
+        // 4. Lấy dữ liệu
+        $phims = $query->get();
+
+        // 5. Sắp xếp theo View (Collection Sort)
+        // Phim lẻ lấy view từ quan hệ 'views' -> cột 'tong_views'
+        if ($sort === 'view_desc') {
+            $phims = $phims->sortByDesc(function ($phim) {
+                return $phim->views->tong_views ?? 0;
+            });
+        } elseif ($sort === 'view_asc') {
+            $phims = $phims->sortBy(function ($phim) {
+                return $phim->views->tong_views ?? 0;
+            });
+        }
+
         return view('admin.phim.phim_le', compact('phims'));
     }
 
     // Danh sách phim bộ
-    public function phimBo()
-    {
-        // CŨ: $phims = Phim::with('theloais')->where('loai', 'phim_bo')->get();
+    // public function phimBo()
+    // {
+    //     $phims = Phim::with(['theloais', 'taps'])
+    //         ->where('loai', 'phim_bo')
+    //         ->get();
 
-        // MỚI: Thêm 'taps' vào with() để load trước các tập phim
-        $phims = Phim::with(['theloais', 'taps'])
-            ->where('loai', 'phim_bo')
-            ->get();
+    //     return view('admin.phim.phim_bo', compact('phims'));
+    // }
+
+    public function phimBo(Request $request) // Nhớ thêm Request $request vào đây
+    {
+        // 1. Khởi tạo query: Lấy phim bộ và load sẵn các tập để tính view
+        $query = Phim::with(['theloais', 'taps'])
+            ->where('loai', 'phim_bo'); // QUAN TRỌNG: Chỉ lấy phim bộ
+
+        // 2. Lấy tham số sort từ URL
+        $sort = $request->query('sort', 'newest');
+
+        // 3. Xử lý sắp xếp cấp Database (Ngày tạo, Năm phát hành)
+        switch ($sort) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'year_desc':
+                $query->orderBy('nam_phat_hanh', 'desc');
+                break;
+            case 'year_asc':
+                $query->orderBy('nam_phat_hanh', 'asc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+
+        // 4. Lấy dữ liệu về
+        $phims = $query->get();
+
+        // 5. Xử lý sắp xếp theo View (Collection Sort)
+        // Phim bộ tính view bằng tổng view của tất cả các tập (table tap_phim)
+        if ($sort === 'view_desc') {
+            $phims = $phims->sortByDesc(function ($phim) {
+                return $phim->taps->sum('view_tap');
+            });
+        } elseif ($sort === 'view_asc') {
+            $phims = $phims->sortBy(function ($phim) {
+                return $phim->taps->sum('view_tap');
+            });
+        }
 
         return view('admin.phim.phim_bo', compact('phims'));
     }
