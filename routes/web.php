@@ -9,6 +9,8 @@ use App\Http\Controllers\DanhMucController;
 use App\Http\Controllers\PhimController;
 use App\Http\Controllers\TapPhimController;
 use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ViewController;
 
 Route::get('/', function () {
     return view('home');  // tự động tìm home.blade.php trong resources/views
@@ -18,7 +20,10 @@ Route::get('/admin', function () {
     return view('admin.dashboard');
 })->name('admin.dashboard');
 
+Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+
 // Route::get('/search', [VideoController::class, 'search'])->name('search');
+
 
 
 Route::middleware('auth')->group(function () {
@@ -47,12 +52,19 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/tat-ca-phim-le', [HomeController::class, 'showPhimLe'])->name('show.phimle');
+Route::get('/tat-ca-phim-bo', [HomeController::class, 'showPhimBo'])->name('show.phimbo');
+Route::get('/the-loai/tinh-cam', [HomeController::class, 'showPhimTinhCam'])->name('show.tinhcam');
+Route::get('/the-loai/hoat-hinh', [HomeController::class, 'showPhimHoatHinh'])->name('show.hoathinh');
+Route::get('/tim-kiem', [HomeController::class, 'showSearchPage'])->name('page.timkiem');
+Route::get('/ajax-search', [HomeController::class, 'ajaxSearch'])->name('ajax.search');
 
 // routes/web.php
 
 // Định nghĩa route cho việc xem một bộ phim
 Route::get('/xem-phim/{phim}', [HomeController::class, 'phuongThucXemPhim'])
-      ->name('xemphim'); // Đặt tên route là 'xemphim'
+    ->name('xemphim');
+// Đặt tên route là 'xemphim'
 
 
 
@@ -114,7 +126,6 @@ Route::prefix('admin/phim')->name('phim.')->group(function () {
         Route::get('/{tapPhim}/chinh-sua', [TapPhimController::class, 'edit'])->name('edit');
         Route::put('/{tapPhim}', [TapPhimController::class, 'update'])->name('update');
     });
-
 });
 
 
@@ -136,3 +147,18 @@ Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallba
 Route::view('/user/dangnhap', 'user.dangnhap');
 Route::view('/user/dangky', 'user.dangky');
 Route::view('/user/taikhoan', 'user.taikhoan');
+
+// Admin ViewController routes
+Route::prefix('admin')->group(function () {
+
+    // 1. Xem danh sách view (nếu cần)
+    Route::get('/views', [ViewController::class, 'index'])->name('views.index');
+
+    // 2. Route cho Phim Lẻ (Bảng views)
+    Route::get('/views/{id}/edit', [ViewController::class, 'edit'])->name('views.edit');
+    Route::put('/views/{id}', [ViewController::class, 'update'])->name('views.update');
+
+    // 3. Route cho Phim Bộ (Bảng tap_phim)
+    Route::get('/views/tap/{id}/edit', [ViewController::class, 'editTap'])->name('views.tap.edit');
+    Route::put('/views/tap/{id}', [ViewController::class, 'updateTap'])->name('views.tap.update');
+});
