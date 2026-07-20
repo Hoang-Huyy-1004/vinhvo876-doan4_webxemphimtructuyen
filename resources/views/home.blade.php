@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-    <link rel="stylesheet" href="{{ asset('css/top10.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/top10.css') }}?v=1.0.3">
 
     <style>
         body {

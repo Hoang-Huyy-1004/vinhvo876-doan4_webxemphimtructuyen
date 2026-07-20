@@ -96,10 +96,12 @@
 }
 .top10-poster {
     width: 100%;
+    max-height: 270px;
     aspect-ratio: 2/3;
     object-fit: cover;
     display: block;
 }
+
 
 /* Số hạng & Màu Top 10 */
 .top10-rank {
