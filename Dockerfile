@@ -42,8 +42,9 @@ COPY . .
 # Copy thư mục build CSS/JS đã được tạo từ Stage 1
 COPY --from=frontend-builder /app/public/build ./public/build
 
-# Cài đặt các thư viện PHP cần thiết (loại bỏ dev dependencies để tối ưu hiệu năng)
-RUN composer install --no-dev --optimize-autoloader
+# Cài đặt các thư viện PHP cần thiết (loại bỏ dev dependencies và bỏ qua scripts để tránh lỗi kết nối DB lúc build)
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+
 
 # Thiết lập quyền ghi thư mục cho Apache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
@@ -52,5 +53,5 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Cổng mạng 80 mặc định
 EXPOSE 80
 
-# Chạy Apache Web Server
-CMD ["apache2-foreground"]
+# Thực hiện chạy package:discover và khởi động Apache Web Server ở runtime
+CMD ["sh", "-c", "php artisan package:discover --ansi && apache2-foreground"]
