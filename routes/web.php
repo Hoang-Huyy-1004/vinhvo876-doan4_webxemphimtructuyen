@@ -11,6 +11,9 @@ use App\Http\Controllers\TapPhimController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ViewController;
+//lịch sử xem phim test
+use App\Http\Controllers\RecommendationController;
+
 
 Route::get('/', function () {
     return view('home');  // tự động tìm home.blade.php trong resources/views
@@ -162,3 +165,11 @@ Route::prefix('admin')->group(function () {
     Route::get('/views/tap/{id}/edit', [ViewController::class, 'editTap'])->name('views.tap.edit');
     Route::put('/views/tap/{id}', [ViewController::class, 'updateTap'])->name('views.tap.update');
 });
+
+// Lịch sử xem phim test
+
+// Route::get('/recommend', [RecommendController::class, 'index']);
+
+// Route::post('/recommend', [RecommendController::class, 'recommend']);
+Route::get('/recommend/{userId}', [RecommendationController::class,'recommend']);
+Route::get('/recommend/{id}', [RecommendationController::class, 'recommend']);
