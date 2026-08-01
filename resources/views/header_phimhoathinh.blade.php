@@ -68,7 +68,7 @@ use Illuminate\Support\Str;
 
     <main class="container my-4 text-black">
 
-        <h4 class="mb-3">🧸 Phim Hoạt Hình</h4>
+        <h4 class="mb-3">Phim Hoạt Hình</h4>
 
         <div class="row g-3">
             @if($danhSachPhim->count() > 0)

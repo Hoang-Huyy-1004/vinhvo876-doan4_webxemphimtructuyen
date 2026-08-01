@@ -93,6 +93,12 @@
             text-decoration: underline;
             color: var(--primary-hover);
         }
+
+        /* Tùy chỉnh nút Google: Biến nó thành block và căn giữa */
+        .google-login-container {
+            margin-top: 1rem; /* Thay thế mt-3 của nút */
+            text-align: center; /* Căn giữa nội dung inline bên trong */
+        }
     </style>
 </head>
 
@@ -112,9 +118,11 @@
             </form>
             <a href="{{ route('dangky.form') }}" class="link-text text-center">Chưa có tài khoản? Đăng ký</a>
 
-            <a href="{{ route('google.login') }}" class="btn btn-danger mt-3">
-                <i class="fab fa-google"></i> Đăng nhập bằng Google
-            </a>
+            <div class="google-login-container">
+                <a href="{{ route('google.login') }}" class="btn btn-danger">
+                    <i class="fab fa-google"></i> Đăng nhập bằng Google
+                </a>
+            </div>
 
         </div>
         @if ($errors->any())
