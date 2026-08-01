@@ -171,5 +171,4 @@ Route::prefix('admin')->group(function () {
 // Route::get('/recommend', [RecommendController::class, 'index']);
 
 // Route::post('/recommend', [RecommendController::class, 'recommend']);
-Route::get('/recommend/{userId}', [RecommendationController::class,'recommend']);
-Route::get('/recommend/{id}', [RecommendationController::class, 'recommend']);
+Route::get('/recommend/{userId}', [RecommendationController::class, 'recommend'])->name('recommend');
