@@ -19,9 +19,11 @@
             --brand-red: #e50914;
             --brand-red-hover: #ff1e27;
             --brand-red-dark: #b20710;
-            --dark-bg: #07090e;
-            --card-bg: rgba(15, 23, 42, 0.75);
-            --border-glass: rgba(255, 255, 255, 0.1);
+            --light-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
         }
 
         * {
@@ -30,11 +32,11 @@
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--dark-bg);
+            background-color: var(--light-bg);
             background-image: 
-                radial-gradient(at 15% 15%, rgba(229, 9, 20, 0.18) 0px, transparent 50%),
-                radial-gradient(at 85% 85%, rgba(14, 165, 233, 0.12) 0px, transparent 50%),
-                radial-gradient(at 50% 50%, rgba(99, 102, 241, 0.08) 0px, transparent 60%);
+                radial-gradient(at 10% 10%, rgba(229, 9, 20, 0.07) 0px, transparent 45%),
+                radial-gradient(at 90% 90%, rgba(14, 165, 233, 0.08) 0px, transparent 45%),
+                radial-gradient(at 50% 30%, rgba(99, 102, 241, 0.05) 0px, transparent 55%);
             background-attachment: fixed;
             min-height: 100vh;
             display: flex;
@@ -42,21 +44,9 @@
             justify-content: center;
             margin: 0;
             padding: 1.5rem;
-            color: #f8fafc;
+            color: var(--text-dark);
             position: relative;
             overflow-x: hidden;
-        }
-
-        /* Ambient Glow Decor */
-        .ambient-glow {
-            position: absolute;
-            width: 450px;
-            height: 450px;
-            background: radial-gradient(circle, rgba(229, 9, 20, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            filter: blur(50px);
-            z-index: 0;
         }
 
         .auth-card {
@@ -65,19 +55,17 @@
             width: 100%;
             max-width: 440px;
             background: var(--card-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--border-glass);
+            border: 1px solid var(--border-color);
             border-radius: 24px;
             padding: 2.75rem 2.25rem;
             box-shadow: 
-                0 25px 50px -12px rgba(0, 0, 0, 0.7),
-                0 0 35px rgba(229, 9, 20, 0.12);
-            animation: fadeIn 0.5s ease-out;
+                0 20px 45px -10px rgba(15, 23, 42, 0.08),
+                0 0 1px rgba(15, 23, 42, 0.12);
+            animation: fadeIn 0.4s ease-out;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
+            from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -87,7 +75,7 @@
             align-items: center;
             gap: 8px;
             text-decoration: none;
-            color: #ffffff;
+            color: var(--text-dark);
             font-size: 1.75rem;
             font-weight: 800;
             letter-spacing: 0.5px;
@@ -97,17 +85,17 @@
         .brand-logo i {
             color: var(--brand-red);
             font-size: 1.9rem;
-            filter: drop-shadow(0 0 10px rgba(229, 9, 20, 0.6));
+            filter: drop-shadow(0 2px 8px rgba(229, 9, 20, 0.3));
         }
 
         .brand-logo span {
-            background: linear-gradient(135deg, #ffffff 40%, #cbd5e1 100%);
+            background: linear-gradient(135deg, #0f172a 30%, #334155 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .subtitle {
-            color: #94a3b8;
+            color: var(--text-muted);
             font-size: 0.9rem;
             margin-bottom: 2rem;
         }
@@ -116,7 +104,7 @@
         .form-label {
             font-size: 0.85rem;
             font-weight: 600;
-            color: #cbd5e1;
+            color: #334155;
             margin-bottom: 0.4rem;
         }
 
@@ -129,7 +117,7 @@
         .input-icon {
             position: absolute;
             left: 1rem;
-            color: #64748b;
+            color: #94a3b8;
             font-size: 1.1rem;
             pointer-events: none;
             transition: color 0.2s;
@@ -138,25 +126,27 @@
 
         .form-control-custom {
             width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: #f8fafc;
+            border: 1.5px solid var(--border-color);
             border-radius: 12px;
             padding: 0.85rem 1rem 0.85rem 2.85rem;
-            color: #ffffff;
+            color: var(--text-dark);
             font-size: 0.95rem;
+            font-weight: 500;
             transition: all 0.25s ease;
         }
 
         .form-control-custom::placeholder {
-            color: #64748b;
+            color: #94a3b8;
+            font-weight: 400;
         }
 
         .form-control-custom:focus {
-            background: rgba(255, 255, 255, 0.08);
+            background: #ffffff;
             border-color: var(--brand-red);
-            box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.2);
+            box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.12);
             outline: none;
-            color: #ffffff;
+            color: var(--text-dark);
         }
 
         .input-group-custom:focus-within .input-icon {
@@ -166,7 +156,7 @@
         .toggle-password {
             position: absolute;
             right: 1rem;
-            color: #64748b;
+            color: #94a3b8;
             cursor: pointer;
             border: none;
             background: transparent;
@@ -177,7 +167,7 @@
         }
 
         .toggle-password:hover {
-            color: #cbd5e1;
+            color: #475569;
         }
 
         /* Buttons */
@@ -192,7 +182,7 @@
             font-weight: 700;
             letter-spacing: 0.3px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 20px rgba(229, 9, 20, 0.35);
+            box-shadow: 0 6px 18px rgba(229, 9, 20, 0.25);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -202,7 +192,7 @@
         .btn-submit:hover {
             background: linear-gradient(135deg, var(--brand-red-hover) 0%, var(--brand-red) 100%);
             transform: translateY(-2px);
-            box-shadow: 0 12px 26px rgba(229, 9, 20, 0.45);
+            box-shadow: 0 10px 24px rgba(229, 9, 20, 0.35);
             color: #ffffff;
         }
 
@@ -216,7 +206,7 @@
             align-items: center;
             text-align: center;
             margin: 1.5rem 0;
-            color: #64748b;
+            color: #94a3b8;
             font-size: 0.78rem;
             font-weight: 600;
             letter-spacing: 0.5px;
@@ -227,7 +217,7 @@
         .divider::after {
             content: '';
             flex: 1;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .divider::before { margin-right: 0.75rem; }
@@ -236,11 +226,11 @@
         /* Google Button */
         .btn-google {
             width: 100%;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: #ffffff;
+            border: 1.5px solid var(--border-color);
             border-radius: 12px;
             padding: 0.85rem;
-            color: #ffffff;
+            color: #334155;
             font-size: 0.95rem;
             font-weight: 600;
             display: flex;
@@ -249,14 +239,15 @@
             gap: 10px;
             text-decoration: none;
             transition: all 0.25s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
         }
 
         .btn-google:hover {
-            background: rgba(255, 255, 255, 0.14);
-            border-color: rgba(255, 255, 255, 0.3);
-            color: #ffffff;
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: #0f172a;
             transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
         }
 
         /* Links */
@@ -264,18 +255,18 @@
             margin-top: 1.75rem;
             text-align: center;
             font-size: 0.9rem;
-            color: #94a3b8;
+            color: var(--text-muted);
         }
 
         .auth-footer a {
-            color: #38bdf8;
-            font-weight: 600;
+            color: var(--brand-red);
+            font-weight: 700;
             text-decoration: none;
             transition: all 0.2s;
         }
 
         .auth-footer a:hover {
-            color: #7dd3fc;
+            color: var(--brand-red-hover);
             text-decoration: underline;
         }
 
@@ -283,31 +274,32 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            color: #64748b;
+            color: var(--text-muted);
             font-size: 0.85rem;
+            font-weight: 500;
             text-decoration: none;
             margin-bottom: 1.25rem;
             transition: color 0.2s;
         }
 
         .back-home:hover {
-            color: #cbd5e1;
+            color: var(--text-dark);
         }
 
         /* Alerts */
         .alert-custom-danger {
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #fca5a5;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
             border-radius: 12px;
             font-size: 0.88rem;
             padding: 0.75rem 1rem;
         }
 
         .alert-custom-success {
-            background: rgba(34, 197, 94, 0.15);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            color: #86efac;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #15803d;
             border-radius: 12px;
             font-size: 0.88rem;
             padding: 0.75rem 1rem;
@@ -316,9 +308,6 @@
 </head>
 
 <body>
-    <!-- Ambient glowing light -->
-    <div class="ambient-glow"></div>
-
     <div class="auth-card">
         <!-- Quay lại trang chủ -->
         <a href="{{ route('home') }}" class="back-home">
