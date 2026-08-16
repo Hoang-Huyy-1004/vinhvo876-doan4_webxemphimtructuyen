@@ -20,8 +20,21 @@ class HomeController extends Controller
 
     public function phuongThucXemPhim($id)
     {
-        // 1. Load phim kèm thể loại (Chú ý: dùng 'theloais' viết liền giống trong Model vừa sửa)
+        // 1. Load phim kèm thể loại
         $phim = Phim::with('theloais')->findOrFail($id);
+
+        // TỰ ĐỘNG GHI NHẬN LỊCH SỬ XEM CỦA USER ĐANG ĐĂNG NHẬP VÀO DATABASE
+        if (\Illuminate\Support\Facades\Auth::check()) {
+            \App\Models\LuotXem::updateOrCreate(
+                [
+                    'user_id' => \Illuminate\Support\Facades\Auth::id(),
+                    'phim_id' => $id,
+                ],
+                [
+                    'xem_luc' => now(),
+                ]
+            );
+        }
 
         $viewTong = Views::firstOrCreate(
             ['phim_id' => $id],

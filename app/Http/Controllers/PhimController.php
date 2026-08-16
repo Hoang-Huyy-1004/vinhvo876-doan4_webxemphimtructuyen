@@ -15,6 +15,18 @@ class PhimController extends Controller
     {
         $phim = Phim::with(['theloais', 'taps'])->findOrFail($id);
 
+        if (\Illuminate\Support\Facades\Auth::check()) {
+            \App\Models\LuotXem::updateOrCreate(
+                [
+                    'user_id' => \Illuminate\Support\Facades\Auth::id(),
+                    'phim_id' => $id,
+                ],
+                [
+                    'xem_luc' => now(),
+                ]
+            );
+        }
+
         // Nếu view ở ngoài resources/views
         return view('xem_phim', compact('phim'));
 
