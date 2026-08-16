@@ -115,42 +115,6 @@
             100% { transform: translate(-30px, 40px) scale(0.95); }
         }
 
-        /* Floating Cinema Floating Badges */
-        .cinema-badge {
-            position: absolute;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06), 0 0 1px rgba(15, 23, 42, 0.1);
-            border-radius: 50px;
-            padding: 0.5rem 1rem;
-            font-size: 0.82rem;
-            font-weight: 700;
-            color: #334155;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            animation: floatBadge 6s ease-in-out infinite alternate;
-            pointer-events: none;
-            user-select: none;
-        }
-
-        .badge-pos-1 { top: 12%; left: 8%; animation-delay: 0s; }
-        .badge-pos-2 { top: 18%; right: 10%; animation-delay: -2s; }
-        .badge-pos-3 { bottom: 15%; left: 10%; animation-delay: -4s; }
-        .badge-pos-4 { bottom: 12%; right: 8%; animation-delay: -1.5s; }
-
-        @media (max-width: 991px) {
-            .cinema-badge { display: none; }
-        }
-
-        @keyframes floatBadge {
-            0% { transform: translateY(0px) rotate(0deg); }
-            100% { transform: translateY(-12px) rotate(2deg); }
-        }
-
         /* Auth Card */
         .auth-card {
             position: relative;
@@ -158,6 +122,17 @@
             width: 100%;
             max-width: 440px;
             background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--brand-red);
+            border-radius: 24px;
+            padding: 2.75rem 2.25rem;
+            box-shadow: 
+                0 25px 50px -12px rgba(15, 23, 42, 0.12),
+                0 0 25px rgba(229, 9, 20, 0.06);
+            animation: fadeIn 0.4s ease-out;
+        }
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border-color);
@@ -361,24 +336,6 @@
         <div class="aurora-blob blob-2"></div>
         <div class="aurora-blob blob-3"></div>
         <div class="aurora-blob blob-4"></div>
-    </div>
-
-    <!-- Floating 3D Cinema Watermark Badges -->
-    <div class="cinema-badge badge-pos-1">
-        <i class="bi bi-film text-danger fs-5"></i>
-        <span>Rạp Phim Trực Tuyến</span>
-    </div>
-    <div class="cinema-badge badge-pos-2">
-        <i class="bi bi-stars text-warning fs-5"></i>
-        <span>10.000+ Phim Full HD</span>
-    </div>
-    <div class="cinema-badge badge-pos-3">
-        <i class="bi bi-tv-fill text-primary fs-5"></i>
-        <span>Xem Mọi Lúc Mọi Nơi</span>
-    </div>
-    <div class="cinema-badge badge-pos-4">
-        <i class="bi bi-ticket-perforated-fill text-danger fs-5"></i>
-        <span>Âm Thanh Vòm Dolby</span>
     </div>
 
     <div class="auth-card">
