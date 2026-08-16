@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,14 +14,17 @@
             min-height: 100vh;
             background-color: #f8f9fa;
         }
+
         main {
             flex: 1;
         }
+
         .section-title {
             position: relative;
             display: inline-block;
             padding-bottom: 8px;
         }
+
         .watched-card {
             border-radius: 12px;
             cursor: pointer;
@@ -28,22 +32,27 @@
             background: #ffffff;
             border: 2px solid #e2e8f0;
         }
+
         .watched-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
             border-color: #0d6efd;
         }
+
         .watched-card.active {
             border-color: #0d6efd;
             background-color: #f0f7ff;
             box-shadow: 0 8px 20px rgba(13, 110, 253, 0.25) !important;
         }
+
         .watched-card .badge-active {
             display: none;
         }
+
         .watched-card.active .badge-active {
             display: inline-block;
         }
+
         .recommend-card {
             border-radius: 16px;
             overflow: hidden;
@@ -52,23 +61,28 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
+
         .recommend-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 16px 32px rgba(13, 110, 253, 0.15) !important;
             border-color: rgba(13, 110, 253, 0.3);
         }
+
         .rec-header-1 {
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: #ffffff;
         }
+
         .rec-header-2 {
             background: linear-gradient(135deg, #0284c7, #0369a1);
             color: #ffffff;
         }
+
         .rec-header-3 {
             background: linear-gradient(135deg, #6366f1, #4f46e5);
             color: #ffffff;
         }
+
         .rec-poster-container {
             position: relative;
             width: 100%;
@@ -76,15 +90,18 @@
             overflow: hidden;
             background: #0f172a;
         }
+
         .rec-poster-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: transform 0.4s ease;
         }
+
         .recommend-card:hover .rec-poster-img {
             transform: scale(1.06);
         }
+
         .rec-rating-badge {
             display: inline-flex;
             align-items: center;
@@ -96,11 +113,13 @@
             border-radius: 20px;
             font-size: 0.88rem;
         }
+
         .poster-img {
             height: 160px;
             object-fit: cover;
             border-radius: 8px 8px 0 0;
         }
+
         .placeholder-poster {
             height: 100%;
             min-height: 140px;
@@ -113,6 +132,7 @@
         }
     </style>
 </head>
+
 <body>
     @include('header')
 
@@ -133,18 +153,19 @@
                 <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3 justify-content-center">
                     @foreach($watched as $index => $item)
                         <div class="col">
-                            <div class="card watched-card shadow-sm h-100 {{ $index === 0 ? 'active' : '' }}" 
-                                 data-movie-title="{{ $item['title'] }}"
-                                 style="cursor: pointer;">
+                            <div class="card watched-card shadow-sm h-100 {{ $index === 0 ? 'active' : '' }}"
+                                data-movie-title="{{ $item['title'] }}" style="cursor: pointer;">
                                 @if(!empty($item['anh_bia']))
-                                    <img src="{{ asset($item['anh_bia']) }}" class="card-img-top poster-img" alt="{{ $item['title'] }}"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <img src="{{ asset($item['anh_bia']) }}" class="card-img-top poster-img"
+                                        alt="{{ $item['title'] }}"
+                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                     <div class="placeholder-poster" style="display: none;">🎬</div>
                                 @else
                                     <div class="placeholder-poster">🎬</div>
                                 @endif
                                 <div class="card-body p-2 text-center d-flex flex-column justify-content-between">
-                                    <h6 class="card-title text-dark fw-bold mb-1 fs-7 text-truncate" title="{{ $item['title'] }}">
+                                    <h6 class="card-title text-dark fw-bold mb-1 fs-7 text-truncate"
+                                        title="{{ $item['title'] }}">
                                         {{ $item['title'] }}
                                     </h6>
                                     <div>
@@ -172,7 +193,8 @@
         <!-- THÔNG TIN GỢI Ý PHIM -->
         <section id="recommendation-section">
             <h2 class="text-center mb-4 fw-bold text-dark" id="recommendation-header">
-                🎯 TOP 3 PHIM GỢI Ý <span id="recommend-target-title" class="text-primary">DÀNH CHO {{ strtoupper($userName) }}</span>
+                🎯 TOP 3 PHIM GỢI Ý <span id="recommend-target-title" class="text-primary">DÀNH CHO
+                    {{ strtoupper($userName) }}</span>
             </h2>
 
             <div id="recommendation-container">
@@ -181,7 +203,8 @@
                         @foreach($recommendations as $index => $movie)
                             <div class="col-md-4 mb-4">
                                 <div class="card recommend-card shadow-sm h-100">
-                                    <div class="card-header {{ $index == 0 ? 'rec-header-1' : ($index == 1 ? 'rec-header-2' : 'rec-header-3') }} text-center py-3 border-0">
+                                    <div
+                                        class="card-header {{ $index == 0 ? 'rec-header-1' : ($index == 1 ? 'rec-header-2' : 'rec-header-3') }} text-center py-3 border-0">
                                         <h5 class="mb-0 fw-bold">
                                             @if($index == 0)
                                                 🥇 GỢI Ý HÀNG ĐẦU
@@ -192,11 +215,12 @@
                                             @endif
                                         </h5>
                                     </div>
-                                    
+
                                     <div class="rec-poster-container">
                                         @if(!empty($movie['anh_bia']))
-                                            <img src="{{ asset($movie['anh_bia']) }}" class="rec-poster-img" alt="{{ $movie['title'] }}"
-                                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                            <img src="{{ asset($movie['anh_bia']) }}" class="rec-poster-img"
+                                                alt="{{ $movie['title'] }}"
+                                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                             <div class="placeholder-poster" style="display: none;">🎬</div>
                                         @else
                                             <div class="placeholder-poster">🎬</div>
@@ -215,15 +239,17 @@
                                                 </span>
                                             </div>
                                         </div>
-                                        
+
                                         @if(isset($movie['id']) && $movie['id'])
-                                        <a href="{{ route('xemphim', $movie['id']) }}" class="btn btn-primary rounded-pill py-2 fw-bold d-flex align-items-center justify-content-center gap-2 mt-3 shadow-sm">
-                                            <i class="bi bi-play-circle-fill fs-5"></i> Xem Phim Ngay
-                                        </a>
+                                            <a href="{{ route('xemphim', $movie['id']) }}"
+                                                class="btn btn-primary rounded-pill py-2 fw-bold d-flex align-items-center justify-content-center gap-2 mt-3 shadow-sm">
+                                                <i class="bi bi-play-circle-fill fs-5"></i> Xem Phim Ngay
+                                            </a>
                                         @else
-                                        <a href="{{ route('page.timkiem', ['query' => $movie['title'] ?? '']) }}" class="btn btn-outline-primary rounded-pill py-2 fw-bold d-flex align-items-center justify-content-center gap-2 mt-3">
-                                            <i class="bi bi-search"></i> Khám Phá Phim
-                                        </a>
+                                            <a href="{{ route('page.timkiem', ['query' => $movie['title'] ?? '']) }}"
+                                                class="btn btn-outline-primary rounded-pill py-2 fw-bold d-flex align-items-center justify-content-center gap-2 mt-3">
+                                                <i class="bi bi-search"></i> Khám Phá Phim
+                                            </a>
                                         @endif
                                     </div>
                                 </div>
@@ -231,7 +257,8 @@
                         @endforeach
                     </div>
                 @else
-                    <div class="alert alert-warning text-center py-4 rounded-4 shadow-sm" role="alert" id="no-recommendation-alert">
+                    <div class="alert alert-warning text-center py-4 rounded-4 shadow-sm" role="alert"
+                        id="no-recommendation-alert">
                         <i class="bi bi-info-circle fs-3 d-block mb-2"></i>
                         Hiện chưa có dữ liệu gợi ý cho người dùng này.
                     </div>
@@ -370,4 +397,5 @@
         });
     </script>
 </body>
+
 </html>
