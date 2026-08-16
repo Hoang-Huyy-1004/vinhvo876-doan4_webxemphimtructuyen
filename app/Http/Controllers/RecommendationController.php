@@ -72,12 +72,13 @@ class RecommendationController extends Controller
             }
         }
 
-        // Fallback dữ liệu nếu chưa có dữ liệu từ AI script
-        if (empty($recommendations)) {
+        // Fallback và xây dựng danh sách gợi ý cho từng phim nếu chưa có dữ liệu từ AI
+        if (empty($watched)) {
             try {
-                $phims = Phim::inRandomOrder()->take(6)->get();
-                if ($phims->count() > 0) {
-                    foreach ($phims->take(3) as $index => $phim) {
+                $allPhims = Phim::all();
+                if ($allPhims->count() > 0) {
+                    $watchedPhims = $allPhims->take(4);
+                    foreach ($watchedPhims as $phim) {
                         $watched[] = [
                             'title' => $phim->ten_phim,
                             'id' => $phim->id,
@@ -85,30 +86,54 @@ class RecommendationController extends Controller
                             'slug' => $phim->duong_dan,
                         ];
                     }
-                    foreach ($phims->skip(3)->take(3) as $index => $phim) {
-                        $recommendations[] = [
-                            'title' => $phim->ten_phim ?? ('Phim gợi ý ' . ($index + 1)),
-                            'score' => round(4.9 - ($index * 0.2), 1),
-                            'confidence' => 98 - ($index * 5),
-                            'lift' => round(2.1 - ($index * 0.3), 1),
-                            'id' => $phim->id ?? null,
-                            'anh_bia' => $phim->anh_bia ?? null,
-                        ];
-                    }
                 }
             } catch (\Exception $e) {
-                // Fallback mock data
                 $watched = [
-                    ['title' => 'Cô Ba Sài Gòn (2017)', 'id' => null],
-                    ['title' => 'Mai (2024)', 'id' => null],
-                    ['title' => 'Kẻ Ăn Hồn (2023)', 'id' => null],
-                ];
-                $recommendations = [
-                    ['title' => 'Cuộc Chiến Vô Cực', 'score' => 4.9, 'confidence' => 98, 'lift' => 2.1, 'id' => null],
-                    ['title' => 'Hành Tinh Mẹ', 'score' => 4.7, 'confidence' => 93, 'lift' => 1.8, 'id' => null],
-                    ['title' => 'Thế Giới Vuông', 'score' => 4.5, 'confidence' => 88, 'lift' => 1.5, 'id' => null],
+                    ['title' => 'Cô Ba Sài Gòn', 'id' => null, 'anh_bia' => null],
+                    ['title' => 'Mai', 'id' => null, 'anh_bia' => null],
+                    ['title' => 'Kẻ Ăn Hồn', 'id' => null, 'anh_bia' => null],
                 ];
             }
+        }
+
+        // Đảm bảo luôn có bộ gợi ý riêng biệt cho TỪNG phim đã xem
+        if (empty($movieRecommendations) && !empty($watched)) {
+            try {
+                $allPhims = Phim::all();
+                foreach ($watched as $wIndex => $wMovie) {
+                    $candidates = $allPhims->where('id', '!=', $wMovie['id'] ?? 0);
+                    $suggested = $candidates->shuffle()->take(3);
+
+                    $recsForMovie = [];
+                    $scores = [4.9, 4.7, 4.5];
+                    $i = 0;
+                    foreach ($suggested as $sPhim) {
+                        $recsForMovie[] = [
+                            'title' => $sPhim->ten_phim,
+                            'id' => $sPhim->id,
+                            'anh_bia' => $sPhim->anh_bia,
+                            'score' => $scores[$i] ?? 4.5,
+                        ];
+                        $i++;
+                    }
+
+                    $movieRecommendations[$wMovie['title']] = $recsForMovie;
+                }
+            } catch (\Exception $e) {
+                // Mock dữ liệu gợi ý riêng cho từng phim nếu không kết nối được DB
+                foreach ($watched as $wMovie) {
+                    $movieRecommendations[$wMovie['title']] = [
+                        ['title' => 'Cuộc Chiến Vô Cực', 'score' => 4.9, 'id' => null, 'anh_bia' => null],
+                        ['title' => 'Hành Tinh Mẹ', 'score' => 4.7, 'id' => null, 'anh_bia' => null],
+                        ['title' => 'Thế Giới Vuông', 'score' => 4.5, 'id' => null, 'anh_bia' => null],
+                    ];
+                }
+            }
+        }
+
+        // Gán gợi ý mặc định là danh sách của phim đầu tiên
+        if (!empty($watched[0]['title']) && isset($movieRecommendations[$watched[0]['title']])) {
+            $recommendations = $movieRecommendations[$watched[0]['title']];
         }
 
         // Lấy thông tin user để hiển thị tên chính xác

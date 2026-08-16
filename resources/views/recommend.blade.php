@@ -134,7 +134,8 @@
                     @foreach($watched as $index => $item)
                         <div class="col">
                             <div class="card watched-card shadow-sm h-100 {{ $index === 0 ? 'active' : '' }}" 
-                                 onclick="selectWatchedMovie(this, '{{ addslashes($item['title']) }}')">
+                                 data-movie-title="{{ $item['title'] }}"
+                                 style="cursor: pointer;">
                                 @if(!empty($item['anh_bia']))
                                     <img src="{{ asset($item['anh_bia']) }}" class="card-img-top poster-img" alt="{{ $item['title'] }}"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -250,6 +251,8 @@
         const userId = @json($userId);
 
         function selectWatchedMovie(element, movieTitle) {
+            if (!movieTitle) return;
+
             // Đổi active card
             document.querySelectorAll('.watched-card').forEach(card => card.classList.remove('active'));
             if (element) {
@@ -262,12 +265,27 @@
                 targetTitleEl.innerText = `KHI XEM "${movieTitle.toUpperCase()}"`;
             }
 
-            // Lấy danh sách gợi ý cho phim đã chọn
-            let recs = movieRecommendations[movieTitle] || defaultRecommendations;
+            // Lấy danh sách gợi ý cho phim đã chọn (hoặc default)
+            let recs = movieRecommendations[movieTitle];
+            if (!recs || recs.length === 0) {
+                for (let key in movieRecommendations) {
+                    if (key.toLowerCase().includes(movieTitle.toLowerCase()) || movieTitle.toLowerCase().includes(key.toLowerCase())) {
+                        recs = movieRecommendations[key];
+                        break;
+                    }
+                }
+            }
+            if (!recs || recs.length === 0) {
+                recs = defaultRecommendations;
+            }
+
             renderRecommendations(recs);
 
             // Cuộn mượt tới phần gợi ý
-            document.getElementById('recommendation-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const recSection = document.getElementById('recommendation-section');
+            if (recSection) {
+                recSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
         }
 
         function renderRecommendations(recs) {
@@ -290,7 +308,7 @@
                 let xemUrl = movie.id ? `/xem-phim/${movie.id}` : `/tim-kiem?query=${encodeURIComponent(movie.title)}`;
                 let btnText = movie.id ? '<i class="bi bi-play-circle-fill fs-5"></i> Xem Phim Ngay' : '<i class="bi bi-search"></i> Khám Phá Phim';
                 let btnClass = movie.id ? 'btn-primary' : 'btn-outline-primary';
-                let posterSrc = movie.anh_bia ? `/${movie.anh_bia.replace(/^\\//, '')}` : '';
+                let posterSrc = movie.anh_bia ? `/${movie.anh_bia.replace(/^\/+/, '')}` : '';
 
                 html += `
                     <div class="col-md-4 mb-4">
@@ -302,9 +320,9 @@
                             <div class="rec-poster-container">
                                 ${posterSrc ? `
                                     <img src="${posterSrc}" class="rec-poster-img" alt="${movie.title}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="placeholder-poster" style="display: none;">🎬</div>
+                                    <div class="placeholder-poster h-100" style="display: none;">🎬</div>
                                 ` : `
-                                    <div class="placeholder-poster">🎬</div>
+                                    <div class="placeholder-poster h-100">🎬</div>
                                 `}
                             </div>
 
@@ -333,11 +351,18 @@
             container.innerHTML = html;
         }
 
-        // Tự động kích hoạt phim đầu tiên trong danh sách nếu có
+        // Tự động gán sự kiện click và kích hoạt phim đầu tiên
         document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('.watched-card').forEach(card => {
+                card.addEventListener('click', function () {
+                    const title = this.getAttribute('data-movie-title');
+                    selectWatchedMovie(this, title);
+                });
+            });
+
             const firstActive = document.querySelector('.watched-card.active');
             if (firstActive) {
-                const title = firstActive.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
+                const title = firstActive.getAttribute('data-movie-title');
                 if (title && movieRecommendations[title]) {
                     selectWatchedMovie(firstActive, title);
                 }
