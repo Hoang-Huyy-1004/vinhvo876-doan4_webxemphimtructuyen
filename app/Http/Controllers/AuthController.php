@@ -61,24 +61,28 @@ class AuthController extends Controller
     // Xử lý đăng nhập
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $loginInput = $request->input('email');
+        $password = $request->input('password');
 
-        if (Auth::attempt($credentials)) {
+        // Tìm người dùng theo Email hoặc Tên tài khoản (name)
+        $user = User::where('email', $loginInput)->orWhere('name', $loginInput)->first();
 
-            /** @var \App\Models\User $user */
-            $user = Auth::user();
-
-            // Buộc tải trạng thái mới nhất từ DB để khắc phục lỗi cache
+        if ($user && Hash::check($password, $user->password)) {
             $user->refresh();
 
             // Kiểm tra nếu tài khoản thực sự bị khóa (status = 0)
             if ($user->status !== null && (int)$user->status === 0) {
-                Auth::logout();
                 return redirect()->back()->withErrors([
                     'email' => 'Tài khoản của bạn đã bị khóa.',
                 ]);
             }
 
+            Auth::login($user);
+
+            // Nếu là Admin (tên 'admin123' hoặc email 'admin123@gmail.com') -> Chuyển hướng sang trang Admin
+            if ($user->name === 'admin123' || $user->email === 'admin123@gmail.com' || $user->email === 'admin123') {
+                return redirect()->route('admin.dashboard')->with('success', 'Đăng nhập Quản trị viên thành công!');
+            }
 
             return redirect('/')->with('success', 'Đăng nhập thành công');
         }
@@ -87,6 +91,7 @@ class AuthController extends Controller
             'email' => 'Thông tin đăng nhập không chính xác.',
         ]);
     }
+
 
     // Đăng xuất
     public function logout(Request $request)

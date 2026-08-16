@@ -109,7 +109,7 @@
             <form action="{{ route('dangnhap') }}" method="POST">
                 @csrf
                 <div class="mb-4">
-                    <input type="email" name="email" class="form-control" placeholder="Nhập Gmail" required>
+                    <input type="text" name="email" class="form-control" placeholder="Nhập Email hoặc Tên đăng nhập" required>
                 </div>
                 <div class="mb-4">
                     <input type="password" name="password" class="form-control" placeholder="Nhập mật khẩu" required>
