@@ -52,14 +52,21 @@
         <!-- <button type="submit" class="border-0 bg-transparent ms-2">
           <i class="bi bi-search text-white"></i>
         </button> -->
-        <a href="{{ route('page.timkiem') }}" class="border-0 bg-transparent ms-2 text-decoration-none">
+        <a href="{{ route('page.timkiem') }}" class="border-0 bg-transparent ms-2 text-decoration-none" title="Tìm kiếm">
           <i class="bi bi-search text-white"></i>
         </a>
       </form>
 
+      {{-- Icon Gợi ý phim (Chỉ hiển thị khi người dùng đã đăng nhập) --}}
+      @auth
+      <a href="{{ route('recommend', Auth::user()->user_id ?? Auth::id()) }}" class="text-warning text-decoration-none d-flex align-items-center position-relative px-1" title="Gợi ý phim thông minh">
+        <i class="bi bi-lightbulb-fill fs-4"></i>
+      </a>
+      @endauth
+
       {{-- Notification --}}
       <div class="dropdown">
-        <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Thông báo">
           <i class="bi bi-bell text-white fs-5"></i>
           @if(isset($notifications) && $notifications->where('is_read', false)->count() > 0)
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -91,11 +98,13 @@
         </a>
 
         <div class="dropdown-menu dropdown-menu-dark p-3 dropdown-menu-end" aria-labelledby="userDropdown" style="min-width:180px;">
-          {{-- Nếu dùng Laravel Auth, bạn có thể đổi @guest/@auth --}}
           @guest
           <a class="dropdown-item text-white" href="{{ url('user/dangnhap') }}">Đăng nhập</a>
           <a class="dropdown-item text-white" href="{{ url('user/dangky') }}">Đăng ký</a>
           @else
+          <a class="dropdown-item text-warning fw-semibold" href="{{ route('recommend', Auth::user()->user_id ?? Auth::id()) }}">
+            <i class="bi bi-lightbulb-fill me-2"></i>Gợi ý phim cho bạn
+          </a>
           <a class="dropdown-item text-white" href="{{ route('thongtintaikhoan') }}">Tài khoản của tôi</a>
           <hr class="dropdown-divider">
           <form action="{{ route('dangxuat') }}" method="POST" class="m-0">

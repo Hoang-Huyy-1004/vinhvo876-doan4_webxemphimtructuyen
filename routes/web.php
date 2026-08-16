@@ -166,9 +166,8 @@ Route::prefix('admin')->group(function () {
     Route::put('/views/tap/{id}', [ViewController::class, 'updateTap'])->name('views.tap.update');
 });
 
-// Lịch sử xem phim test
+// Lịch sử xem phim test và Gợi ý phim
+Route::get('/recommend/{userId?}', [RecommendationController::class, 'recommend'])
+    ->middleware('auth')
+    ->name('recommend');
 
-// Route::get('/recommend', [RecommendController::class, 'index']);
-
-// Route::post('/recommend', [RecommendController::class, 'recommend']);
-Route::get('/recommend/{userId}', [RecommendationController::class, 'recommend'])->name('recommend');

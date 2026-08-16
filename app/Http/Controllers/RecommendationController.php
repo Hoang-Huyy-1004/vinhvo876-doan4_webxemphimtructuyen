@@ -3,12 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Phim;
 
 class RecommendationController extends Controller
 {
-    public function recommend($userId)
+    public function recommend($userId = null)
     {
+        // Nếu không truyền userId, tự động lấy user_id hoặc id của người dùng đang đăng nhập
+        if (empty($userId)) {
+            if (!Auth::check()) {
+                return redirect()->route('dangnhap.form')->withErrors(['email' => 'Vui lòng đăng nhập để xem gợi ý phim.']);
+            }
+            $userId = Auth::user()->user_id ?? Auth::id();
+        }
+
         $python = base_path(".venv\\Scripts\\python.exe");
         $script = storage_path("app/ai/recommend.py");
 
