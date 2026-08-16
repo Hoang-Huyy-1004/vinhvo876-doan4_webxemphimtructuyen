@@ -231,126 +231,120 @@ class PhimController extends Controller
             ]);
         }
 
-        $slug = null;
-        if ($request->filled('duong_dan')) {
-            $slug = Str::afterLast(rtrim($request->duong_dan, '/'), '/');
-        }
-
-        // Tạo thư mục theo loại và tên phim
-        $tenThuMuc = Str::slug($request->ten_phim, '_');
-        $basePath = public_path('img/ds_phim');
-
-        // Chuyển đổi giá trị 'le' và 'bo' từ form thành 'phim_le' và 'phim_bo' cho DB
-        $loaiValue = ($request->loai === 'le') ? 'phim_le' : 'phim_bo';
-
-        // Lấy giá trị trực tiếp từ form
-        $trangThaiValue = $request->trang_thai;
-
-        // Dòng mới: Lấy giá trị trực tiếp từ form cho 'hien_thi'
-        $hienThiValue = $request->hien_thi;
-
-
-        $tapPhimFolder = null; // Khởi tạo biến cho thư mục tập phim
-
-        if ($request->loai === 'bo') {
-            $folder = $basePath . '/ds_phim_bo/' . $tenThuMuc;
-            $dbPath = 'img/ds_phim/ds_phim_bo/' . $tenThuMuc;
-            $tapPhimFolder = $folder . '/ds_tap_phim'; // TẠO ĐƯỜNG DẪN THƯ MỤC TẬP PHIM
-        } else {
-            $folder = $basePath . '/ds_phim_le/' . $tenThuMuc;
-            $dbPath = 'img/ds_phim/ds_phim_le/' . $tenThuMuc;
-        }
-
-        if (!file_exists($folder)) {
-            mkdir($folder, 0777, true);
-        }
-
-        // TẠO THÊM THƯ MỤC ds_tap_phim nếu là phim bộ
-        if ($request->loai === 'bo' && !file_exists($tapPhimFolder)) {
-            mkdir($tapPhimFolder, 0777, true);
-        }
-
-        // Upload file
-        $anhBiaDb = null;
-        $trailerDb = null;
-        $videoDb = null;
-
-        if ($request->hasFile('anh_bia')) {
-            $fileName = time() . '_' . $request->file('anh_bia')->getClientOriginalName();
-            $request->file('anh_bia')->move($folder, $fileName);
-            $anhBiaDb = $dbPath . '/' . $fileName;
-        } elseif ($request->filled('anh_bia_url')) {
-            // Nếu nhập URL
-            $anhBiaDb = $request->anh_bia_url;
-        }
-
-        // if ($request->hasFile('trailer')) {
-        //     $fileName = time() . '_' . $request->file('trailer')->getClientOriginalName();
-        //     $request->file('trailer')->move($folder, $fileName);
-        //     $trailerDb = $dbPath . '/' . $fileName;
-        // }
-
-        if ($request->trailer_type === 'file' && $request->hasFile('trailer_file')) {
-            $fileName = time() . '_' . $request->file('trailer_file')->getClientOriginalName();
-            $request->file('trailer_file')->move($folder, $fileName);
-            $trailerDb = $dbPath . '/' . $fileName;
-        } elseif ($request->trailer_type === 'url') {
-            $trailerDb = $request->trailer_url;
-        }
-
-        // Chỉ upload video nếu là phim lẻ
-        if ($request->loai === 'le') {
-            if ($request->video_type === 'file' && $request->hasFile('video_file')) {
-                $fileName = time() . '_' . $request->file('video_file')->getClientOriginalName();
-                $request->file('video_file')->move($folder, $fileName);
-                $videoDb = $dbPath . '/' . $fileName;
-            } elseif ($request->video_type === 'url' && $request->filled('video_url')) {
-                $videoDb = $request->video_url;
+        try {
+            $slug = null;
+            if ($request->filled('duong_dan')) {
+                $slug = Str::afterLast(rtrim($request->duong_dan, '/'), '/');
             }
-        }
 
-        // Lưu phim
-        $phim = Phim::create([
-            'ten_phim' => $request->ten_phim,
-            'slug' => $slug,
-            'mo_ta' => $request->mo_ta,
-            'nam_phat_hanh' => $request->nam_phat_hanh,
-            'anh_bia' => $anhBiaDb,
-            'loai' => $loaiValue,
-            'trailer' => $trailerDb,
-            'video' => $videoDb,
-            'so_tap' => ($loaiValue === 'phim_bo') ? $request->so_tap : null,  // KIỂM TRA PHIM BỘ
-            'thoi_luong' => $request->thoi_luong,
-            'trang_thai' => $trangThaiValue,
-            // Thêm trường 'duong_dan' với giá trị mặc định là null
-            // Dòng mới: Thêm trường 'hien_thi' vào đây
-            'hien_thi' => $hienThiValue,
-            'duong_dan' => null,
-        ]);
+            // Tạo thư mục theo loại và tên phim
+            $tenThuMuc = Str::slug($request->ten_phim, '_');
+            $basePath = public_path('img/ds_phim');
 
-        // Gán thể loại
-        $phim->theloais()->attach($request->theloai);
+            // Chuyển đổi giá trị 'le' và 'bo' từ form thành 'phim_le' và 'phim_bo' cho DB
+            $loaiValue = ($request->loai === 'le') ? 'phim_le' : 'phim_bo';
 
-        // *** CODE MỚI: TẠO TỰ ĐỘNG CÁC TẬP PHIM CHO PHIM BỘ ***
-        if ($request->loai === 'bo' && $request->so_tap > 0) {
-            $taps = [];
-            // Lặp từ 1 đến tổng số tập đã nhập
-            for ($i = 1; $i <= $request->so_tap; $i++) {
-                $taps[] = [
-                    'phim_id' => $phim->id,
-                    'ten_phim' => $request->ten_phim, // Sử dụng tên cột 'ten_phim' trong bảng tap_phim
-                    'video' => null,
-                    'tap' => $i, // Số thứ tự tập (Sử dụng tên cột 'tap')
-                    'trang_thai' => 'nhap', // Mặc định là nháp
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+            // Lấy giá trị trực tiếp từ form
+            $trangThaiValue = $request->trang_thai;
+            $hienThiValue = $request->hien_thi;
+
+            $tapPhimFolder = null; // Khởi tạo biến cho thư mục tập phim
+
+            if ($request->loai === 'bo') {
+                $folder = $basePath . '/ds_phim_bo/' . $tenThuMuc;
+                $dbPath = 'img/ds_phim/ds_phim_bo/' . $tenThuMuc;
+                $tapPhimFolder = $folder . '/ds_tap_phim';
+            } else {
+                $folder = $basePath . '/ds_phim_le/' . $tenThuMuc;
+                $dbPath = 'img/ds_phim/ds_phim_le/' . $tenThuMuc;
             }
-            // Chèn tất cả các tập phim vào database
-            TapPhim::insert($taps);
-        }
 
-        return redirect()->route('phim.create')->with('success', 'Thêm phim thành công!');
+            // Tạo thư mục phim an toàn
+            File::ensureDirectoryExists($folder, 0775);
+
+            // TẠO THÊM THƯ MỤC ds_tap_phim nếu là phim bộ
+            if ($request->loai === 'bo' && $tapPhimFolder) {
+                File::ensureDirectoryExists($tapPhimFolder, 0775);
+            }
+
+            // Upload file
+            $anhBiaDb = null;
+            $trailerDb = null;
+            $videoDb = null;
+
+            if ($request->hasFile('anh_bia')) {
+                $fileName = time() . '_' . $request->file('anh_bia')->getClientOriginalName();
+                $request->file('anh_bia')->move($folder, $fileName);
+                $anhBiaDb = $dbPath . '/' . $fileName;
+            } elseif ($request->filled('anh_bia_url')) {
+                $anhBiaDb = $request->anh_bia_url;
+            }
+
+            if ($request->trailer_type === 'file' && $request->hasFile('trailer_file')) {
+                $fileName = time() . '_' . $request->file('trailer_file')->getClientOriginalName();
+                $request->file('trailer_file')->move($folder, $fileName);
+                $trailerDb = $dbPath . '/' . $fileName;
+            } elseif ($request->trailer_type === 'url') {
+                $trailerDb = $request->trailer_url;
+            }
+
+            // Chỉ upload video nếu là phim lẻ
+            if ($request->loai === 'le') {
+                if ($request->video_type === 'file' && $request->hasFile('video_file')) {
+                    $fileName = time() . '_' . $request->file('video_file')->getClientOriginalName();
+                    $request->file('video_file')->move($folder, $fileName);
+                    $videoDb = $dbPath . '/' . $fileName;
+                } elseif ($request->video_type === 'url' && $request->filled('video_url')) {
+                    $videoDb = $request->video_url;
+                }
+            }
+
+            // Lưu phim
+            $phim = Phim::create([
+                'ten_phim' => $request->ten_phim,
+                'slug' => $slug,
+                'mo_ta' => $request->mo_ta,
+                'nam_phat_hanh' => $request->nam_phat_hanh,
+                'anh_bia' => $anhBiaDb,
+                'loai' => $loaiValue,
+                'trailer' => $trailerDb,
+                'video' => $videoDb,
+                'so_tap' => ($loaiValue === 'phim_bo') ? $request->so_tap : null,
+                'thoi_luong' => $request->thoi_luong,
+                'trang_thai' => $trangThaiValue,
+                'hien_thi' => $hienThiValue,
+                'duong_dan' => null,
+            ]);
+
+            // Gán thể loại
+            if ($request->has('theloai')) {
+                $phim->theloais()->attach($request->theloai);
+            }
+
+            // Tạo tự động các tập phim cho phim bộ
+            if ($request->loai === 'bo' && $request->so_tap > 0) {
+                $taps = [];
+                for ($i = 1; $i <= $request->so_tap; $i++) {
+                    $taps[] = [
+                        'phim_id' => $phim->id,
+                        'ten_phim' => $request->ten_phim,
+                        'video' => null,
+                        'tap' => $i,
+                        'trang_thai' => 'nhap',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+                TapPhim::insert($taps);
+            }
+
+            return redirect()->route('phim.create')->with('success', 'Thêm phim thành công!');
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Lỗi khi thêm phim: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+            return redirect()->back()->withInput()->with('error', 'Có lỗi xảy ra khi lưu phim: ' . $e->getMessage());
+        }
     }
     // Xóa phim
     public function destroy(Phim $phim)
@@ -425,139 +419,117 @@ class PhimController extends Controller
             'hien_thi' => 'required|string|in:binh_thuong,noi_bat,moi,hot',
         ]);
 
-        // 2. Chuẩn bị dữ liệu và xử lý file (tương tự như store, nhưng phức tạp hơn)
+        try {
+            // 2. Chuẩn bị dữ liệu và xử lý file (tương tự như store, nhưng phức tạp hơn)
 
-        // Chuyển đổi giá trị 'le' và 'bo'
-        $loaiValue = ($request->loai === 'le') ? 'phim_le' : 'phim_bo';
-        $trangThaiValue = $request->trang_thai;
-        $hienThiValue = $request->hien_thi;
+            // Chuyển đổi giá trị 'le' và 'bo'
+            $loaiValue = ($request->loai === 'le') ? 'phim_le' : 'phim_bo';
+            $trangThaiValue = $request->trang_thai;
+            $hienThiValue = $request->hien_thi;
 
-        // Lưu trữ đường dẫn cũ
-        $anhBiaDb = $phim->anh_bia;
-        $trailerDb = $phim->trailer;
-        $videoDb = $phim->video;
+            // Lưu trữ đường dẫn cũ
+            $anhBiaDb = $phim->anh_bia;
+            $trailerDb = $phim->trailer;
+            $videoDb = $phim->video;
 
-        // *** Xử lý việc di chuyển/đổi tên thư mục nếu 'loai' hoặc 'ten_phim' thay đổi ***
-        // Việc này khá phức tạp, tạm thời chúng ta sẽ chỉ tập trung vào cập nhật file trong thư mục hiện tại.
-        // Trong trường hợp này, ta sẽ không đổi tên thư mục.
+            // Lấy lại tên thư mục dựa trên thông tin hiện tại trong DB hoặc request
+            $tenThuMuc = Str::slug($phim->ten_phim, '_');
+            $basePath = public_path('img/ds_phim');
 
-        // Lấy lại tên thư mục dựa trên thông tin hiện tại trong DB hoặc request
-        $tenThuMuc = Str::slug($phim->ten_phim, '_');
-        $basePath = public_path('img/ds_phim');
-
-        if ($phim->loai === 'phim_bo') {
-            $folder = $basePath . '/ds_phim_bo/' . $tenThuMuc;
-            $dbPath = 'img/ds_phim/ds_phim_bo/' . $tenThuMuc;
-        } else {
-            $folder = $basePath . '/ds_phim_le/' . $tenThuMuc;
-            $dbPath = 'img/ds_phim/ds_phim_le/' . $tenThuMuc;
-        }
-
-        // Nếu thư mục không tồn tại (chẳng may bị xóa), tạo lại
-        if (!file_exists($folder)) {
-            \Illuminate\Support\Facades\File::makeDirectory($folder, 0777, true, true);
-        }
-
-
-        // Xử lý upload và xóa file cũ nếu có file mới
-        if ($request->hasFile('anh_bia')) {
-            // Xóa file cũ nếu tồn tại
-            if ($phim->anh_bia && \Illuminate\Support\Facades\File::exists(public_path($phim->anh_bia))) {
-                \Illuminate\Support\Facades\File::delete(public_path($phim->anh_bia));
+            if ($phim->loai === 'phim_bo') {
+                $folder = $basePath . '/ds_phim_bo/' . $tenThuMuc;
+                $dbPath = 'img/ds_phim/ds_phim_bo/' . $tenThuMuc;
+            } else {
+                $folder = $basePath . '/ds_phim_le/' . $tenThuMuc;
+                $dbPath = 'img/ds_phim/ds_phim_le/' . $tenThuMuc;
             }
-            $fileName = time() . '_' . $request->file('anh_bia')->getClientOriginalName();
-            $request->file('anh_bia')->move($folder, $fileName);
-            $anhBiaDb = $dbPath . '/' . $fileName;
-        }
 
-        // if ($request->hasFile('trailer')) {
-        //     if ($phim->trailer && \Illuminate\Support\Facades\File::exists(public_path($phim->trailer))) {
-        //         \Illuminate\Support\Facades\File::delete(public_path($phim->trailer));
-        //     }
-        //     $fileName = time() . '_' . $request->file('trailer')->getClientOriginalName();
-        //     $request->file('trailer')->move($folder, $fileName);
-        //     $trailerDb = $dbPath . '/' . $fileName;
-        // }
-        // *** BẮT ĐẦU CODE MỚI XỬ LÝ CẬP NHẬT TRAILER ***
-        $trailerDb = $phim->trailer; // Giữ giá trị cũ làm mặc định
+            // Đảm bảo thư mục tồn tại an toàn
+            File::ensureDirectoryExists($folder, 0775);
 
-        // Hàm kiểm tra xem một chuỗi có phải là URL không
-        $isUrl = function ($string) {
-            return filter_var($string, FILTER_VALIDATE_URL) !== false;
-        };
-
-        if ($request->trailer_type === 'file' && $request->hasFile('trailer_file')) {
-            // Nếu trailer cũ là file (không phải URL), thì xóa nó đi
-            if ($phim->trailer && !$isUrl($phim->trailer) && File::exists(public_path($phim->trailer))) {
-                File::delete(public_path($phim->trailer));
-            }
-            // Upload file mới
-            $fileName = time() . '_' . $request->file('trailer_file')->getClientOriginalName();
-            $request->file('trailer_file')->move($folder, $fileName);
-            $trailerDb = $dbPath . '/' . $fileName;
-        } elseif ($request->trailer_type === 'url' && $request->filled('trailer_url')) {
-            // Xóa trailer cũ nếu nó là file (không phải URL)
-            if ($phim->trailer && !$isUrl($phim->trailer) && File::exists(public_path($phim->trailer))) {
-                File::delete(public_path($phim->trailer));
-            }
-            $trailerDb = $request->trailer_url;
-        }
-        // *** KẾT THÚC CODE MỚI ***
-
-        // *** ĐIỀU CHỈNH: Xử lý Video (Phim Lẻ) hoặc Số tập (Phim Bộ) ***
-        $videoDb = $phim->video; // Giữ giá trị cũ
-        $soTapValue = $phim->so_tap; // Giữ giá trị cũ
-
-        if ($phim->loai === 'phim_le') {
-            if ($request->video_type === 'file' && $request->hasFile('video_file')) {
-                // Xóa video cũ nếu nó là file
-                if ($phim->video && !$isUrl($phim->video) && File::exists(public_path($phim->video))) {
-                    File::delete(public_path($phim->video));
+            // Xử lý upload và xóa file cũ nếu có file mới
+            if ($request->hasFile('anh_bia')) {
+                // Xóa file cũ nếu tồn tại
+                if ($phim->anh_bia && File::exists(public_path($phim->anh_bia))) {
+                    try { File::delete(public_path($phim->anh_bia)); } catch (\Throwable $e) {}
                 }
-                // Tải video mới
-                $fileName = time() . '_' . $request->file('video_file')->getClientOriginalName();
-                $request->file('video_file')->move($folder, $fileName);
-                $videoDb = $dbPath . '/' . $fileName;
-            } elseif ($request->video_type === 'url' && $request->filled('video_url')) {
-                // Xóa video cũ nếu nó là file
-                if ($phim->video && !$isUrl($phim->video) && File::exists(public_path($phim->video))) {
-                    File::delete(public_path($phim->video));
+                $fileName = time() . '_' . $request->file('anh_bia')->getClientOriginalName();
+                $request->file('anh_bia')->move($folder, $fileName);
+                $anhBiaDb = $dbPath . '/' . $fileName;
+            }
+
+            $trailerDb = $phim->trailer; // Giữ giá trị cũ làm mặc định
+
+            // Hàm kiểm tra xem một chuỗi có phải là URL không
+            $isUrl = function ($string) {
+                return filter_var($string, FILTER_VALIDATE_URL) !== false;
+            };
+
+            if ($request->trailer_type === 'file' && $request->hasFile('trailer_file')) {
+                if ($phim->trailer && !$isUrl($phim->trailer) && File::exists(public_path($phim->trailer))) {
+                    try { File::delete(public_path($phim->trailer)); } catch (\Throwable $e) {}
                 }
-                $videoDb = $request->video_url;
+                $fileName = time() . '_' . $request->file('trailer_file')->getClientOriginalName();
+                $request->file('trailer_file')->move($folder, $fileName);
+                $trailerDb = $dbPath . '/' . $fileName;
+            } elseif ($request->trailer_type === 'url' && $request->filled('trailer_url')) {
+                if ($phim->trailer && !$isUrl($phim->trailer) && File::exists(public_path($phim->trailer))) {
+                    try { File::delete(public_path($phim->trailer)); } catch (\Throwable $e) {}
+                }
+                $trailerDb = $request->trailer_url;
             }
-            $soTapValue = null; // Phim lẻ không có số tập
-        } elseif ($phim->loai === 'phim_bo') {
-            $soTapValue = $request->so_tap;
-            // Phim bộ không có video chính, xóa file nếu có
-            if ($phim->video && !$isUrl($phim->video) && File::exists(public_path($phim->video))) {
-                File::delete(public_path($phim->video));
+
+            $videoDb = $phim->video; // Giữ giá trị cũ
+            $soTapValue = $phim->so_tap; // Giữ giá trị cũ
+
+            if ($phim->loai === 'phim_le') {
+                if ($request->video_type === 'file' && $request->hasFile('video_file')) {
+                    if ($phim->video && !$isUrl($phim->video) && File::exists(public_path($phim->video))) {
+                        try { File::delete(public_path($phim->video)); } catch (\Throwable $e) {}
+                    }
+                    $fileName = time() . '_' . $request->file('video_file')->getClientOriginalName();
+                    $request->file('video_file')->move($folder, $fileName);
+                    $videoDb = $dbPath . '/' . $fileName;
+                } elseif ($request->video_type === 'url' && $request->filled('video_url')) {
+                    if ($phim->video && !$isUrl($phim->video) && File::exists(public_path($phim->video))) {
+                        try { File::delete(public_path($phim->video)); } catch (\Throwable $e) {}
+                    }
+                    $videoDb = $request->video_url;
+                }
+                $soTapValue = null; // Phim lẻ không có số tập
+            } elseif ($phim->loai === 'phim_bo') {
+                $soTapValue = $request->so_tap;
+                if ($phim->video && !$isUrl($phim->video) && File::exists(public_path($phim->video))) {
+                    try { File::delete(public_path($phim->video)); } catch (\Throwable $e) {}
+                }
+                $videoDb = null;
             }
-            $videoDb = null;
+
+            // 3. Cập nhật thông tin vào DB
+            $phim->update([
+                'ten_phim' => $request->ten_phim,
+                'mo_ta' => $request->mo_ta,
+                'nam_phat_hanh' => $request->nam_phat_hanh,
+                'anh_bia' => $anhBiaDb,
+                'trailer' => $trailerDb,
+                'video' => $videoDb,
+                'so_tap' => $soTapValue,
+                'thoi_luong' => $request->thoi_luong,
+                'trang_thai' => $trangThaiValue,
+                'hien_thi' => $hienThiValue,
+            ]);
+
+            // 4. Đồng bộ thể loại
+            $phim->theloais()->sync($request->theloai);
+
+            $redirectRoute = ($phim->loai === 'phim_bo') ? 'phim.phim_bo' : 'phim.phim_le';
+            return redirect()->route($redirectRoute)->with('success', 'Cập nhật phim thành công!');
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Lỗi khi cập nhật phim: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
+            return redirect()->back()->withInput()->with('error', 'Có lỗi xảy ra khi cập nhật phim: ' . $e->getMessage());
         }
-
-        // 3. Cập nhật thông tin vào DB
-        $phim->update([
-            'ten_phim' => $request->ten_phim,
-            'mo_ta' => $request->mo_ta,
-            'nam_phat_hanh' => $request->nam_phat_hanh,
-            'anh_bia' => $anhBiaDb,
-            // KHÔNG CẬP NHẬT 'loai' ở đây để tránh lỗi đường dẫn thư mục phức tạp
-            // Nếu bạn muốn update 'loai', bạn phải xử lý đổi tên và di chuyển thư mục
-            'trailer' => $trailerDb,
-            'video' => $videoDb,
-            'so_tap' => $soTapValue,    // Cập nhật số tập
-            'thoi_luong' => $request->thoi_luong,
-            'trang_thai' => $trangThaiValue,
-            'hien_thi' => $hienThiValue,
-            // 'duong_dan' => null, // Giữ nguyên null hoặc cập nhật nếu cần
-        ]);
-
-        // 4. Đồng bộ thể loại (sync sẽ xóa cái cũ và thêm cái mới)
-        $phim->theloais()->sync($request->theloai);
-
-        // CHUYỂN HƯỚNG VỀ DANH SÁCH PHIM TƯƠNG ỨNG
-        $redirectRoute = ($phim->loai === 'phim_bo') ? 'phim.phim_bo' : 'phim.phim_le';
-        return redirect()->route($redirectRoute)->with('success', 'Cập nhật phim thành công!');
     }
     // public function show(Phim $phim)
     // {

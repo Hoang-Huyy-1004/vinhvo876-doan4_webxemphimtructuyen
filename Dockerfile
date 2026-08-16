@@ -22,6 +22,13 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql gd zip bcmath
 
+# Cấu hình PHP Upload Limits và Execution Timeout cho phép upload phim lớn
+RUN echo "upload_max_filesize = 512M" > /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "post_max_size = 512M" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "max_execution_time = 600" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "max_input_time = 600" >> /usr/local/etc/php/conf.d/uploads.ini
+
 # Bật module rewrite của Apache (để chạy Laravel routing mượt mà)
 RUN a2enmod rewrite
 
@@ -45,10 +52,13 @@ COPY --from=frontend-builder /app/public/build ./public/build
 # Cài đặt các thư viện PHP cần thiết (loại bỏ dev dependencies và bỏ qua scripts để tránh lỗi kết nối DB lúc build)
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-
-# Thiết lập quyền ghi thư mục cho Apache
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# Tạo các thư mục lưu phim và cấp toàn quyền ghi cho Apache (www-data)
+RUN mkdir -p /var/www/html/public/img/ds_phim/ds_phim_le \
+             /var/www/html/public/img/ds_phim/ds_phim_bo \
+             /var/www/html/storage \
+             /var/www/html/bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html/public /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/public /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Cổng mạng 80 mặc định
 EXPOSE 80
