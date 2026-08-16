@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gợi Ý Phim - User {{ $userId }}</title>
+    <title>Gợi Ý Phim - {{ $userName ?? 'Dành Cho Bạn' }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <style>
@@ -77,8 +77,8 @@
         <!-- THÔNG TIN PHIM ĐÃ XEM CỦA USER -->
         <section class="mb-5">
             <div class="text-center mb-4">
-                <h3 class="fw-bold text-dark section-title">
-                    📺 DANH SÁCH PHIM USER #{{ $userId }} ĐANG / ĐÃ XEM
+                <h3 class="fw-bold text-dark section-title text-uppercase">
+                    📺 DANH SÁCH PHIM <span class="text-primary">{{ $userName }}</span> ĐANG / ĐÃ XEM
                 </h3>
                 <p class="text-muted fs-6">
                     Nhấp vào một bộ phim bên dưới để xem các phim gợi ý phù hợp nhất cho phim đó!
@@ -117,7 +117,7 @@
                 </div>
             @else
                 <div class="alert alert-secondary text-center" role="alert">
-                    Chưa có lịch sử phim đã xem cho User này.
+                    Chưa có lịch sử phim đã xem cho {{ $userName }}.
                 </div>
             @endif
         </section>
@@ -127,7 +127,7 @@
         <!-- THÔNG TIN GỢI Ý PHIM -->
         <section id="recommendation-section">
             <h2 class="text-center mb-4 fw-bold text-dark" id="recommendation-header">
-                🎯 TOP 3 PHIM GỢI Ý <span id="recommend-target-title" class="text-primary">CHO USER #{{ $userId }}</span>
+                🎯 TOP 3 PHIM GỢI Ý <span id="recommend-target-title" class="text-primary">DÀNH CHO {{ strtoupper($userName) }}</span>
             </h2>
 
             <div id="recommendation-container">

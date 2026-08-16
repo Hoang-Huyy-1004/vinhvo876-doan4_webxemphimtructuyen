@@ -111,8 +111,13 @@ class RecommendationController extends Controller
             }
         }
 
+        // Lấy thông tin user để hiển thị tên chính xác
+        $userObj = \App\Models\User::where('user_id', $userId)->orWhere('id', $userId)->first();
+        $userName = $userObj->name ?? (Auth::check() ? Auth::user()->name : "Người dùng");
+
         return view('recommend', [
             'userId' => $userId,
+            'userName' => $userName,
             'watched' => $watched,
             'recommendations' => $recommendations,
             'movieRecommendations' => $movieRecommendations,
