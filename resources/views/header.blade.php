@@ -88,6 +88,16 @@
         </ul>
       </div>
 
+      {{-- Nút Trang Quản Trị Admin (Chỉ hiện khi tài khoản là Admin) --}}
+      @auth
+      @if(str_contains(strtolower(Auth::user()->name ?? ''), 'admin') || str_contains(strtolower(Auth::user()->email ?? ''), 'admin'))
+      <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-1" title="Vào bảng điều khiển Quản trị">
+        <i class="bi bi-shield-lock-fill"></i>
+        <span>Admin</span>
+      </a>
+      @endif
+      @endauth
+
       {{-- Mua gói --}}
       <a href="#" class="btn btn-danger rounded-pill px-3">Mua gói</a>
 
@@ -102,6 +112,12 @@
           <a class="dropdown-item text-white" href="{{ route('dangnhap.form') }}">Đăng nhập</a>
           <a class="dropdown-item text-white" href="{{ route('dangky.form') }}">Đăng ký</a>
           @else
+          @if(str_contains(strtolower(Auth::user()->name ?? ''), 'admin') || str_contains(strtolower(Auth::user()->email ?? ''), 'admin'))
+          <a class="dropdown-item text-danger fw-bold" href="{{ route('admin.dashboard') }}">
+            <i class="bi bi-shield-lock-fill me-2"></i>Trang Quản Trị
+          </a>
+          <hr class="dropdown-divider">
+          @endif
           <a class="dropdown-item text-warning fw-semibold" href="{{ route('recommend', Auth::user()->user_id ?? Auth::id()) }}">
             <i class="bi bi-lightbulb-fill me-2"></i>Gợi ý phim cho bạn
           </a>

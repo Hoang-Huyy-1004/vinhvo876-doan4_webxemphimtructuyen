@@ -60,7 +60,15 @@ class GoogleController extends Controller
 
             Auth::login($user);
 
+            $nameLower = strtolower(trim($user->name ?? ''));
+            $emailLower = strtolower(trim($user->email ?? ''));
+
+            if (str_contains($nameLower, 'admin') || str_contains($emailLower, 'admin')) {
+                return redirect()->route('admin.dashboard')->with('success', 'Đăng nhập Quản trị viên Google thành công!');
+            }
+
             return redirect('/')->with('success', 'Đăng nhập Google thành công!');
+
         } catch (\Exception $e) {
             // GHI LỖI CHI TIẾT VÀO LOG FILE
             Log::error("Google Login Failed: " . $e->getMessage(), ['exception' => $e]);

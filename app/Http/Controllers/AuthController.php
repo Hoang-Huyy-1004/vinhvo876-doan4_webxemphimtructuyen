@@ -79,12 +79,16 @@ class AuthController extends Controller
 
             Auth::login($user);
 
-            // Nếu là Admin (tên 'admin123' hoặc email 'admin123@gmail.com') -> Chuyển hướng sang trang Admin
-            if ($user->name === 'admin123' || $user->email === 'admin123@gmail.com' || $user->email === 'admin123') {
+            // Kiểm tra nếu là Admin (tên hoặc email có chứa 'admin', ví dụ admin123, admin123@gmail.com)
+            $nameLower = strtolower(trim($user->name ?? ''));
+            $emailLower = strtolower(trim($user->email ?? ''));
+
+            if (str_contains($nameLower, 'admin') || str_contains($emailLower, 'admin')) {
                 return redirect()->route('admin.dashboard')->with('success', 'Đăng nhập Quản trị viên thành công!');
             }
 
             return redirect('/')->with('success', 'Đăng nhập thành công');
+
         }
 
         return redirect()->back()->withErrors([
