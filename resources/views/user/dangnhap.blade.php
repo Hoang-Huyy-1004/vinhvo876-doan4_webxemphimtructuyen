@@ -20,10 +20,10 @@
             --brand-red-hover: #ff1e27;
             --brand-red-dark: #b20710;
             --light-bg: #f8fafc;
-            --card-bg: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.92);
             --text-dark: #0f172a;
             --text-muted: #64748b;
-            --border-color: #e2e8f0;
+            --border-color: rgba(226, 232, 240, 0.8);
         }
 
         * {
@@ -33,39 +33,145 @@
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--light-bg);
+            /* Dot-matrix subtle texture */
             background-image: 
-                radial-gradient(at 10% 10%, rgba(229, 9, 20, 0.07) 0px, transparent 45%),
-                radial-gradient(at 90% 90%, rgba(14, 165, 233, 0.08) 0px, transparent 45%),
-                radial-gradient(at 50% 30%, rgba(99, 102, 241, 0.05) 0px, transparent 55%);
-            background-attachment: fixed;
+                radial-gradient(rgba(148, 163, 184, 0.25) 1.2px, transparent 1.2px),
+                radial-gradient(rgba(148, 163, 184, 0.15) 1.2px, transparent 1.2px);
+            background-size: 32px 32px;
+            background-position: 0 0, 16px 16px;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0;
-            padding: 1.5rem;
+            padding: 2rem 1.5rem;
             color: var(--text-dark);
             position: relative;
             overflow-x: hidden;
         }
 
+        /* Animated Aurora Blobs in background */
+        .aurora-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .aurora-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.65;
+            animation: floatBlob 16s ease-in-out infinite alternate;
+        }
+
+        .blob-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(229, 9, 20, 0.22) 0%, rgba(244, 63, 94, 0.08) 60%, transparent 80%);
+            top: -10%;
+            left: -5%;
+            animation-duration: 18s;
+        }
+
+        .blob-2 {
+            width: 480px;
+            height: 480px;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.22) 0%, rgba(56, 189, 248, 0.08) 60%, transparent 80%);
+            bottom: -10%;
+            right: -5%;
+            animation-duration: 22s;
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.18) 0%, rgba(168, 85, 247, 0.05) 60%, transparent 80%);
+            top: 20%;
+            right: 15%;
+            animation-duration: 20s;
+            animation-delay: -8s;
+        }
+
+        .blob-4 {
+            width: 380px;
+            height: 380px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.16) 0%, rgba(251, 191, 36, 0.05) 60%, transparent 80%);
+            bottom: 15%;
+            left: 10%;
+            animation-duration: 24s;
+            animation-delay: -12s;
+        }
+
+        @keyframes floatBlob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            50% { transform: translate(40px, -30px) scale(1.1); }
+            100% { transform: translate(-30px, 40px) scale(0.95); }
+        }
+
+        /* Floating Cinema Floating Badges */
+        .cinema-badge {
+            position: absolute;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06), 0 0 1px rgba(15, 23, 42, 0.1);
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: floatBadge 6s ease-in-out infinite alternate;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .badge-pos-1 { top: 12%; left: 8%; animation-delay: 0s; }
+        .badge-pos-2 { top: 18%; right: 10%; animation-delay: -2s; }
+        .badge-pos-3 { bottom: 15%; left: 10%; animation-delay: -4s; }
+        .badge-pos-4 { bottom: 12%; right: 8%; animation-delay: -1.5s; }
+
+        @media (max-width: 991px) {
+            .cinema-badge { display: none; }
+        }
+
+        @keyframes floatBadge {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-12px) rotate(2deg); }
+        }
+
+        /* Auth Card */
         .auth-card {
             position: relative;
-            z-index: 1;
+            z-index: 2;
             width: 100%;
             max-width: 440px;
             background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border-color);
+            border-top: 4px solid var(--brand-red);
             border-radius: 24px;
             padding: 2.75rem 2.25rem;
             box-shadow: 
-                0 20px 45px -10px rgba(15, 23, 42, 0.08),
-                0 0 1px rgba(15, 23, 42, 0.12);
+                0 25px 50px -12px rgba(15, 23, 42, 0.12),
+                0 0 25px rgba(229, 9, 20, 0.06);
             animation: fadeIn 0.4s ease-out;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(12px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -76,20 +182,20 @@
             gap: 8px;
             text-decoration: none;
             color: var(--text-dark);
-            font-size: 1.75rem;
+            font-size: 1.8rem;
             font-weight: 800;
             letter-spacing: 0.5px;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
         }
 
         .brand-logo i {
             color: var(--brand-red);
-            font-size: 1.9rem;
-            filter: drop-shadow(0 2px 8px rgba(229, 9, 20, 0.3));
+            font-size: 2rem;
+            filter: drop-shadow(0 4px 10px rgba(229, 9, 20, 0.35));
         }
 
         .brand-logo span {
-            background: linear-gradient(135deg, #0f172a 30%, #334155 100%);
+            background: linear-gradient(135deg, #0f172a 20%, #334155 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -127,7 +233,7 @@
         .form-control-custom {
             width: 100%;
             background: #f8fafc;
-            border: 1.5px solid var(--border-color);
+            border: 1.5px solid #e2e8f0;
             border-radius: 12px;
             padding: 0.85rem 1rem 0.85rem 2.85rem;
             color: var(--text-dark);
@@ -182,7 +288,7 @@
             font-weight: 700;
             letter-spacing: 0.3px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 6px 18px rgba(229, 9, 20, 0.25);
+            box-shadow: 0 8px 20px rgba(229, 9, 20, 0.28);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -192,7 +298,7 @@
         .btn-submit:hover {
             background: linear-gradient(135deg, var(--brand-red-hover) 0%, var(--brand-red) 100%);
             transform: translateY(-2px);
-            box-shadow: 0 10px 24px rgba(229, 9, 20, 0.35);
+            box-shadow: 0 12px 26px rgba(229, 9, 20, 0.38);
             color: #ffffff;
         }
 
@@ -227,7 +333,7 @@
         .btn-google {
             width: 100%;
             background: #ffffff;
-            border: 1.5px solid var(--border-color);
+            border: 1.5px solid #e2e8f0;
             border-radius: 12px;
             padding: 0.85rem;
             color: #334155;
@@ -239,7 +345,7 @@
             gap: 10px;
             text-decoration: none;
             transition: all 0.25s ease;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
         .btn-google:hover {
@@ -247,7 +353,7 @@
             border-color: #cbd5e1;
             color: #0f172a;
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
         }
 
         /* Links */
@@ -308,6 +414,32 @@
 </head>
 
 <body>
+    <!-- Background Animated Aurora Light Beams -->
+    <div class="aurora-container">
+        <div class="aurora-blob blob-1"></div>
+        <div class="aurora-blob blob-2"></div>
+        <div class="aurora-blob blob-3"></div>
+        <div class="aurora-blob blob-4"></div>
+    </div>
+
+    <!-- Floating 3D Cinema Watermark Badges -->
+    <div class="cinema-badge badge-pos-1">
+        <i class="bi bi-film text-danger fs-5"></i>
+        <span>Rạp Phim Trực Tuyến</span>
+    </div>
+    <div class="cinema-badge badge-pos-2">
+        <i class="bi bi-stars text-warning fs-5"></i>
+        <span>10.000+ Phim Full HD</span>
+    </div>
+    <div class="cinema-badge badge-pos-3">
+        <i class="bi bi-tv-fill text-primary fs-5"></i>
+        <span>Xem Mọi Lúc Mọi Nơi</span>
+    </div>
+    <div class="cinema-badge badge-pos-4">
+        <i class="bi bi-ticket-perforated-fill text-danger fs-5"></i>
+        <span>Âm Thanh Vòm Dolby</span>
+    </div>
+
     <div class="auth-card">
         <!-- Quay lại trang chủ -->
         <a href="{{ route('home') }}" class="back-home">
