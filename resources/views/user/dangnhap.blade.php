@@ -124,9 +124,14 @@
                 </a>
             </div>
 
+        @if (session('success'))
+        <div class="alert alert-success mt-3 text-center">
+            {{ session('success') }}
         </div>
+        @endif
+
         @if ($errors->any())
-        <div class="alert alert-danger">
+        <div class="alert alert-danger mt-3 text-center">
             {{ $errors->first() }}
         </div>
         @endif

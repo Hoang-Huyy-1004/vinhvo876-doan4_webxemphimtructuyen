@@ -21,6 +21,13 @@ class AuthController extends Controller
         $request->validate([
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
+        ], [
+            'email.required' => 'Vui lòng nhập địa chỉ Email.',
+            'email.email' => 'Địa chỉ Email không đúng định dạng.',
+            'email.unique' => 'Email này đã được sử dụng. Vui lòng chọn Email khác hoặc đăng nhập.',
+            'password.required' => 'Vui lòng nhập mật khẩu.',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
+            'password.confirmed' => 'Xác nhận mật khẩu không khớp.',
         ]);
 
         // Tạo uid 8 số ngẫu nhiên, tránh trùng
@@ -29,7 +36,7 @@ class AuthController extends Controller
         } while (User::where('user_id', $user_id)->exists());
 
         // Tạo name mặc định từ email (phần trước @)
-        $name = strstr($request->email, '@', true);
+        $name = strstr($request->email, '@', true) ?: 'User';
 
         // Lưu vào DB với trạng thái mặc định là 1 (Hoạt động)
         User::create([
@@ -41,8 +48,9 @@ class AuthController extends Controller
         ]);
 
         return redirect()->route('dangnhap.form')
-            ->with('success', 'Đăng ký thành công! Mời bạn đăng nhập.');
+            ->with('success', 'Đăng ký tài khoản thành công! Mời bạn đăng nhập.');
     }
+
 
     // Hiển thị form đăng nhập
     public function showLogin()

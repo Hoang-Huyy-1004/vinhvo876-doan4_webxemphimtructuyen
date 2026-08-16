@@ -58,21 +58,34 @@
     <div class="card p-4 custom-card">
         <div class="card-body">
             <h2 class="card-title text-center mb-4 fs-3 fw-bold">Đăng ký</h2>
+
+            @if ($errors->any())
+            <div class="alert alert-danger p-2 mb-3 small">
+                <ul class="mb-0 ps-3">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
             <form action="{{ route('dangky') }}" method="POST">
                 @csrf
                 <div class="mb-3">
-                    <input type="email" name="email" class="form-control form-control-custom" placeholder="Nhập Gmail" required>
+                    <input type="email" name="email" class="form-control form-control-custom" placeholder="Nhập Gmail" value="{{ old('email') }}" required>
                 </div>
                 <div class="mb-3">
-                    <input type="password" name="password" class="form-control form-control-custom" placeholder="Nhập mật khẩu" required>
+                    <input type="password" name="password" class="form-control form-control-custom" placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)" required>
                 </div>
-                <div class="mb-4"> <input type="password" name="password_confirmation" class="form-control form-control-custom" placeholder="Xác nhận mật khẩu" required>
+                <div class="mb-4">
+                    <input type="password" name="password_confirmation" class="form-control form-control-custom" placeholder="Xác nhận mật khẩu" required>
                 </div>
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-custom-primary">Đăng ký</button>
                 </div>
             </form>
-            <div class="text-center mt-4"> <a href="{{ route('dangnhap.form') }}" class="link-secondary-custom">Đã có tài khoản? Đăng nhập</a>
+            <div class="text-center mt-4">
+                <a href="{{ route('dangnhap.form') }}" class="link-secondary-custom">Đã có tài khoản? Đăng nhập</a>
             </div>
         </div>
     </div>

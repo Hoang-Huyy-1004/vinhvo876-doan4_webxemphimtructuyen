@@ -99,8 +99,8 @@
 
         <div class="dropdown-menu dropdown-menu-dark p-3 dropdown-menu-end" aria-labelledby="userDropdown" style="min-width:180px;">
           @guest
-          <a class="dropdown-item text-white" href="{{ url('user/dangnhap') }}">Đăng nhập</a>
-          <a class="dropdown-item text-white" href="{{ url('user/dangky') }}">Đăng ký</a>
+          <a class="dropdown-item text-white" href="{{ route('dangnhap.form') }}">Đăng nhập</a>
+          <a class="dropdown-item text-white" href="{{ route('dangky.form') }}">Đăng ký</a>
           @else
           <a class="dropdown-item text-warning fw-semibold" href="{{ route('recommend', Auth::user()->user_id ?? Auth::id()) }}">
             <i class="bi bi-lightbulb-fill me-2"></i>Gợi ý phim cho bạn
