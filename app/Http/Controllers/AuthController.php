@@ -31,12 +31,13 @@ class AuthController extends Controller
         // Tạo name mặc định từ email (phần trước @)
         $name = strstr($request->email, '@', true);
 
-        // Lưu vào DB
+        // Lưu vào DB với trạng thái mặc định là 1 (Hoạt động)
         User::create([
             'user_id' => $user_id,
             'name' => $name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'status' => 1,
         ]);
 
         return redirect()->route('dangnhap.form')
@@ -62,13 +63,14 @@ class AuthController extends Controller
             // Buộc tải trạng thái mới nhất từ DB để khắc phục lỗi cache
             $user->refresh();
 
-            // Kiểm tra nếu tài khoản bị khóa
-            if ($user->status == 0) {
+            // Kiểm tra nếu tài khoản thực sự bị khóa (status = 0)
+            if ($user->status !== null && (int)$user->status === 0) {
                 Auth::logout();
                 return redirect()->back()->withErrors([
                     'email' => 'Tài khoản của bạn đã bị khóa.',
                 ]);
             }
+
 
             return redirect('/')->with('success', 'Đăng nhập thành công');
         }

@@ -37,6 +37,7 @@ class GoogleController extends Controller
                     'email'     => $googleUser->getEmail(),
                     'google_id' => $googleUser->getId(),
                     'password'  => bcrypt(str()->random(16)), // không cần password thực
+                    'status'    => 1,
                 ]);
             } else {
                 // Nếu đã có thì update google_id
@@ -47,14 +48,14 @@ class GoogleController extends Controller
 
             $user->refresh(); // Buộc tải trạng thái mới nhất từ DB trước khi kiểm tra
 
-
             // *** THÊM LOGIC KIỂM TRA TÀI KHOẢN BỊ KHÓA ***
-            if ($user->status == 0) {
+            if ($user->status !== null && (int)$user->status === 0) {
                 // Nếu bị khóa, KHÔNG cho đăng nhập và chuyển hướng về trang đăng nhập với lỗi
                 return redirect()->route('dangnhap.form')->withErrors([
                     'email' => 'Tài khoản của bạn đã bị khóa.', // Thông báo lỗi
                 ]);
             }
+
             // **********************************************
 
             Auth::login($user);
