@@ -15,15 +15,12 @@ use App\Http\Controllers\ViewController;
 use App\Http\Controllers\RecommendationController;
 
 
-Route::get('/', function () {
-    return view('home');  // tự động tìm home.blade.php trong resources/views
-})->name('home');
+// Trang chủ
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::get('/admin', function () {
-    return view('admin.dashboard');
-})->name('admin.dashboard');
-
+// Trang Admin Dashboard
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+
 
 // Route::get('/search', [VideoController::class, 'search'])->name('search');
 
@@ -51,10 +48,6 @@ Route::get('/taikhoan', [AuthController::class, 'profile'])
     ->name('thongtintaikhoan')
     ->middleware('auth');
 
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-
-Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/tat-ca-phim-le', [HomeController::class, 'showPhimLe'])->name('show.phimle');
 Route::get('/tat-ca-phim-bo', [HomeController::class, 'showPhimBo'])->name('show.phimbo');
 Route::get('/the-loai/tinh-cam', [HomeController::class, 'showPhimTinhCam'])->name('show.tinhcam');

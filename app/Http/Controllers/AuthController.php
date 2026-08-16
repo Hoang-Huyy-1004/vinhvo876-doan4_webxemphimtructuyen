@@ -84,8 +84,9 @@ class AuthController extends Controller
             $emailLower = strtolower(trim($user->email ?? ''));
 
             if (str_contains($nameLower, 'admin') || str_contains($emailLower, 'admin')) {
-                return redirect()->route('admin.dashboard')->with('success', 'Đăng nhập Quản trị viên thành công!');
+                return redirect('/admin')->with('success', 'Đăng nhập Quản trị viên thành công!');
             }
+
 
             return redirect('/')->with('success', 'Đăng nhập thành công');
 
